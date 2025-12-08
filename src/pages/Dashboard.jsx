@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { AlertCircle, TrendingUp, Activity, Layers, Eye, EyeOff, RefreshCw, Command, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
+import { AlertCircle, TrendingUp, Activity, Layers, Eye, EyeOff, RefreshCw, Command, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog, Plus } from 'lucide-react';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import HoldingsSection from '@/components/dashboard/HoldingsSection';
@@ -17,12 +17,14 @@ import OnboardingWizard, { useOnboarding } from '@/components/common/OnboardingW
 import MobileBottomNav from '@/components/common/MobileBottomNav';
 import LearnMoreModal, { useLearnMore } from '@/components/common/LearnMoreModal';
 import { SkeletonHeroCard } from '@/components/common/Skeleton';
+import AnalysisProgressCard from '@/components/dashboard/AnalysisProgressCard';
 import { calculateHealthScore } from '@/utils/formatters';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/context/ToastContext';
 import useAnalysisPolling from '@/hooks/useAnalysisPolling';
 import SessionSelectorDialog from '@/components/dashboard/SessionSelectorDialog';
+import NewAnalysisModal from '@/components/dashboard/NewAnalysisModal';
 
 // View tier definitions
 const VIEW_TIERS = {
@@ -42,6 +44,7 @@ const Dashboard = () => {
   const [showOptimizationStrategies, setShowOptimizationStrategies] = useState(false);
   const [analysisRunId, setAnalysisRunId] = useState(localStorage.getItem('analysisRunId') || '');
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const [newAnalysisOpen, setNewAnalysisOpen] = useState(false);
   const selectorOpenedRef = useRef(false);
   const [expandedSections, setExpandedSections] = useState({
     'health-score': true,
@@ -67,6 +70,24 @@ const Dashboard = () => {
     loadingStartTime,
   } = useAnalysisPolling(analysisRunId);
 
+  // Track which sections are still loading based on pending subtools
+  const sectionLoadingStates = useMemo(() => ({
+    // Overview needs: math_correlation, math_risk_metrics, math_volatility, optimization_stress_testing
+    overview: pending.has('math_correlation') || pending.has('math_risk_metrics') ||
+              pending.has('math_volatility') || pending.has('optimization_stress_testing'),
+    // Risk needs: math_volatility, optimization_stress_testing, optimization_risk_decomposition
+    risk: pending.has('math_volatility') || pending.has('optimization_stress_testing') ||
+          pending.has('optimization_risk_decomposition'),
+    // Holdings needs: optimization_risk_decomposition
+    holdings: pending.has('optimization_risk_decomposition'),
+    // Diversification needs: optimization_risk_decomposition
+    diversification: pending.has('optimization_risk_decomposition'),
+    // Optimization needs: optimization_strategy_generation
+    optimization: pending.has('optimization_strategy_generation'),
+    // Implementation needs: optimization_implementation
+    implementation: pending.has('optimization_implementation'),
+  }), [pending]);
+
   // Retry handler for backend errors
   const handleRetry = useCallback(() => {
     // Force re-trigger by clearing and re-setting the run ID
@@ -83,14 +104,85 @@ const Dashboard = () => {
     return liveValue;
   };
 
+  // Normalize backend field names to what Dashboard components expect
+  const normalizeVolatility = (v) => {
+    if (!v) return null;
+    return {
+      ...v,
+      annualizedPct: v.predictiveVolatilityAnnualizedPct ?? v.annualizedPct ?? 0,
+      sharpe: v.predictiveSharpeRatio ?? v.sharpe ?? 0,
+      var95DailyPct: v.historicalVar95DailyPct ?? v.var95DailyPct ?? 0,
+      cvar95DailyPct: v.historicalCvar95DailyPct ?? v.cvar95DailyPct ?? 0,
+    };
+  };
+
+  const normalizeRiskMetrics = (rm) => {
+    if (!rm) return null;
+    return {
+      ...rm,
+      alphaBookHHI: rm.alphaBookHhiScore ?? rm.alphaBookHHI ?? 0,
+      effectiveHoldings: rm.alphaBookEffectiveHoldings ?? rm.effectiveHoldings ?? 0,
+      gini: rm.alphaBookGiniCoefficient ?? rm.gini ?? 0,
+      sectorCount: rm.alphaBookSectorCount ?? rm.sectorCount ?? 0,
+      largestSector: rm.alphaBookLargestSector ?? rm.largestSector ?? 'N/A',
+      largestSectorPct: rm.alphaBookLargestSectorPct ?? rm.largestSectorPct ?? 0,
+      topHolding: {
+        ticker: rm.alphaBookTopHoldingTicker ?? rm.topHolding?.ticker ?? 'N/A',
+        weightPct: rm.alphaBookTopHoldingPct ?? rm.topHolding?.weightPct ?? 0,
+      },
+    };
+  };
+
+  const normalizeCorrelation = (c) => {
+    if (!c) return null;
+    return {
+      ...c,
+      highestBeta: {
+        ticker: c.highestBetaTicker ?? c.highestBeta?.ticker ?? 'N/A',
+        value: c.highestBetaValue ?? c.highestBeta?.value ?? 0,
+      },
+      lowestBeta: {
+        ticker: c.lowestBetaTicker ?? c.lowestBeta?.ticker ?? 'N/A',
+        value: c.lowestBetaValue ?? c.lowestBeta?.value ?? 0,
+      },
+    };
+  };
+
+  const normalizeStressTesting = (st) => {
+    if (!st) return null;
+    const tailRisk = st.tailRiskAssessment ?? st.tail_risk_assessment ?? {};
+    return {
+      ...st,
+      tail_risk_assessment: {
+        tail_risk_level: tailRisk.tailRiskLevel ?? tailRisk.tail_risk_level ?? 'UNKNOWN',
+        one_day_var: tailRisk.valuAtRiskProjections?.oneDayVar ?? tailRisk.one_day_var ?? 0,
+        one_day_cvar: tailRisk.conditionalVarAnalysis?.oneDayCvar ?? tailRisk.one_day_cvar ?? 0,
+      },
+    };
+  };
+
+  const normalizeStrategies = (s) => {
+    if (!s) return null;
+    const strategies = s.availableStrategies || {};
+    return {
+      ...s,
+      recommended: s.recommendedStrategy?.recommended ?? s.recommended ?? 'N/A',
+      expectedVol: {
+        minimumVariance: strategies.minimumVariance?.expectedPortfolioVolatility ?? 0,
+        riskParity: strategies.riskParity?.expectedPortfolioVolatility ?? 0,
+        maximumDiversification: strategies.maximumDiversification?.diversificationRatio ?? 0,
+      },
+    };
+  };
+
   const liveAnalysis = useMemo(() => ({
-    correlation: polledResults.math_correlation,
-    riskMetrics: polledResults.math_risk_metrics,
+    correlation: normalizeCorrelation(polledResults.math_correlation),
+    riskMetrics: normalizeRiskMetrics(polledResults.math_risk_metrics),
     performance: polledResults.math_performance,
-    volatility: polledResults.math_volatility,
+    volatility: normalizeVolatility(polledResults.math_volatility),
     riskDecomposition: polledResults.optimization_risk_decomposition,
-    strategies: polledResults.optimization_strategy_generation,
-    stressTesting: polledResults.optimization_stress_testing,
+    strategies: normalizeStrategies(polledResults.optimization_strategy_generation),
+    stressTesting: normalizeStressTesting(polledResults.optimization_stress_testing),
     implementation: polledResults.optimization_implementation,
   }), [polledResults]);
 
@@ -181,9 +273,12 @@ const Dashboard = () => {
   const tailPenalty = analysis.stressTesting.tail_risk_assessment.tail_risk_level === 'HIGH' ? 10 : 0;
   const diversificationPenalty = analysis.riskMetrics.effectiveHoldings < 10 ? 5 : 0;
 
-  const positionLimits = analysis.riskDecomposition?.dynamicPositionLimits || [];
-  const marginalContributions = analysis.riskDecomposition?.marginalContributions || [];
-  const stockSpecificRisks = analysis.riskDecomposition?.idiosyncraticDetails?.stockSpecificRisks || [];
+  // Backend returns nested structure: dynamicPositionLimits.positionLimits
+  const positionLimits = analysis.riskDecomposition?.dynamicPositionLimits?.positionLimits || [];
+  // Backend returns nested: marginalRiskContributions (not marginalContributions)
+  const marginalContributions = analysis.riskDecomposition?.marginalRiskContributions || [];
+  // Backend returns nested: idiosyncraticRiskAnalysis.stockSpecificRisks
+  const stockSpecificRisks = analysis.riskDecomposition?.idiosyncraticRiskAnalysis?.stockSpecificRisks || [];
 
   const holdings = positionLimits.map((pos) => {
     const risk = marginalContributions.find((m) => m.ticker === pos.ticker);
@@ -198,10 +293,10 @@ const Dashboard = () => {
       ticker: pos.ticker,
       name: pos.ticker,
       weight: pos.currentWeight,
-      recommendedMax: pos.recommendedMax,
+      recommendedMax: pos.recommendedMaxWeight, // Backend uses recommendedMaxWeight
       value: (pos.currentWeight / 100) * totalPortfolioValue,
-      riskContribution: risk?.contribution,
-      volatility: performance ? performance.individual_volatility * 100 : null,
+      riskContribution: risk?.marginalRiskContribution || risk?.contribution, // Backend uses marginalRiskContribution
+      volatility: performance ? performance.individualVolatility * 100 : null, // Backend uses individualVolatility (camelCase)
       beta: null,
       sector: pos.sector,
       action,
@@ -210,15 +305,17 @@ const Dashboard = () => {
 
   const riskContributionData = marginalContributions.map((item) => ({
     ticker: item.ticker,
-    contribution: item.contribution,
+    contribution: item.marginalRiskContribution || item.contribution,
   }));
 
   // Debug: Log what data is coming through for holdings
   useEffect(() => {
     console.log('[Dashboard] Raw polledResults:', polledResults);
     console.log('[Dashboard] optimization_risk_decomposition:', polledResults.optimization_risk_decomposition);
-    console.log('[Dashboard] positionLimits:', positionLimits.length, positionLimits);
-    console.log('[Dashboard] holdings:', holdings.length, holdings);
+    console.log('[Dashboard] dynamicPositionLimits:', polledResults.optimization_risk_decomposition?.dynamicPositionLimits);
+    console.log('[Dashboard] positionLimits (nested):', polledResults.optimization_risk_decomposition?.dynamicPositionLimits?.positionLimits);
+    console.log('[Dashboard] Extracted positionLimits:', positionLimits.length, positionLimits);
+    console.log('[Dashboard] Extracted holdings:', holdings.length, holdings);
   }, [polledResults, positionLimits, holdings]);
 
   // Section navigation - these are page sections, NOT view tiers
@@ -305,6 +402,17 @@ const Dashboard = () => {
     setError(null);
   };
 
+  const handleAnalysisStarted = (runId, enrichedHoldings) => {
+    localStorage.setItem('analysisRunId', runId);
+    setAnalysisRunId(runId);
+    setNewAnalysisOpen(false);
+    toast.success('Analysis Started', 'Your portfolio analysis is now running.');
+  };
+
+  const handleOpenNewAnalysis = () => {
+    setNewAnalysisOpen(true);
+  };
+
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -385,37 +493,13 @@ const Dashboard = () => {
         />
       )}
 
-      {/* Normal progress indicator once connected */}
-      {polling && connectionStatus === 'connected' && (
-        <div className="card-glass-blue px-4 py-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-ios-blue animate-pulse" />
-              <span className="text-sm font-semibold" style={{ color: '#1C1C1E' }}>
-                Analyzing portfolio
-              </span>
-            </div>
-            <div className="flex-1 min-w-[120px] max-w-[200px]">
-              <div className="progress-ios">
-                <div
-                  className="progress-ios-fill"
-                  style={{ width: `${progress || 0}%` }}
-                />
-              </div>
-            </div>
-            <span
-              className="text-xs font-semibold px-2 py-1 rounded-full"
-              style={{ background: 'rgba(0, 122, 255, 0.12)', color: '#007AFF' }}
-            >
-              {progress || 0}%
-            </span>
-            {pending?.size > 0 && (
-              <span className="text-xs" style={{ color: 'rgba(60, 60, 67, 0.6)' }}>
-                {pending.size} remaining
-              </span>
-            )}
-          </div>
-        </div>
+      {/* Detailed progress card showing each subtool status */}
+      {polling && connectionStatus === 'connected' && pending?.size > 0 && (
+        <AnalysisProgressCard
+          pending={pending}
+          results={polledResults}
+          isConnected={connectionStatus === 'connected'}
+        />
       )}
 
       {/* Error state when not loading */}
@@ -616,6 +700,7 @@ const Dashboard = () => {
           stressTesting={analysis.stressTesting}
           riskDecomposition={analysis.riskDecomposition}
           viewTier={viewTier}
+          isLoading={sectionLoadingStates.risk}
         />
 
         {/* Insights Section - Key Insights & Recommendations */}
@@ -654,7 +739,7 @@ const Dashboard = () => {
           topRisk={topRisk}
           isExpanded={expandedSections['holdings']}
           onToggle={() => toggleSection('holdings')}
-          isLoading={polling}
+          isLoading={sectionLoadingStates.holdings}
           viewTier={viewTier}
         />
       </div>
@@ -844,6 +929,14 @@ const Dashboard = () => {
         open={selectorOpen}
         onClose={() => setSelectorOpen(false)}
         onSelectRun={handleRunChange}
+        onStartNewAnalysis={handleOpenNewAnalysis}
+      />
+
+      {/* New Analysis Modal */}
+      <NewAnalysisModal
+        isOpen={newAnalysisOpen}
+        onClose={() => setNewAnalysisOpen(false)}
+        onAnalysisStarted={handleAnalysisStarted}
       />
 
       {/* Command Palette (Cmd+K) */}

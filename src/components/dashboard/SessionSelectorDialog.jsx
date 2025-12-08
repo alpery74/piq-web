@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { X, Play, RefreshCw, Clock } from 'lucide-react';
+import { X, Play, RefreshCw, Clock, Plus } from 'lucide-react';
 import { DEFAULT_HOLDINGS, fetchPortfolioLibrary, startAnalysis } from '@/services/analysisService';
 import { formatDate } from '@/utils/formatters';
 
-const SessionSelectorDialog = ({ open, onClose, onSelectRun }) => {
+const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis }) => {
   const [portfolios, setPortfolios] = useState([]);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState('');
   const [selectedVersionId, setSelectedVersionId] = useState('');
@@ -124,7 +124,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun }) => {
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" aria-labelledby="selector-title">
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-3">
           <button
             onClick={() => selectRunAndClose(lastRunId)}
             disabled={!lastRunId}
@@ -134,24 +134,39 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun }) => {
             <Clock className="w-5 h-5 text-primary-600" />
             <div className="text-left">
               <p className="text-sm font-semibold text-gray-900">Continue last run</p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-gray-600 truncate max-w-[120px]">
                 {lastRunId ? lastRunId : 'No previous run found'}
               </p>
             </div>
           </button>
 
           <button
+            onClick={() => {
+              onClose();
+              onStartNewAnalysis?.();
+            }}
+            className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 shadow-sm hover:border-primary-300 hover:bg-primary-100 transition"
+            aria-label="Start new analysis with custom portfolio"
+          >
+            <Plus className="w-5 h-5 text-primary-700" />
+            <div className="text-left">
+              <p className="text-sm font-semibold text-gray-900">New analysis</p>
+              <p className="text-xs text-gray-600">Your custom portfolio</p>
+            </div>
+          </button>
+
+          <button
             onClick={handleStartNew}
             disabled={startingAnalysis}
-            className="flex items-center gap-3 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 shadow-sm hover:border-primary-300 hover:bg-primary-100 transition disabled:opacity-60"
-            aria-label={startingAnalysis ? 'Starting new analysis' : 'Start new analysis'}
+            className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm hover:border-primary-200 hover:shadow transition disabled:opacity-60"
+            aria-label={startingAnalysis ? 'Starting demo analysis' : 'Quick demo analysis'}
           >
-            <Play className="w-5 h-5 text-primary-700" />
+            <Play className="w-5 h-5 text-green-600" />
             <div className="text-left">
               <p className="text-sm font-semibold text-gray-900">
-                {startingAnalysis ? 'Starting…' : 'Start new analysis'}
+                {startingAnalysis ? 'Starting…' : 'Quick demo'}
               </p>
-              <p className="text-xs text-gray-600">Uses demo holdings if none saved</p>
+              <p className="text-xs text-gray-600">Sample portfolio</p>
             </div>
           </button>
         </div>

@@ -9,7 +9,8 @@ import {
   Calendar,
   BarChart3,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
 import { formatPercent, formatNumber } from '@/utils/formatters';
@@ -23,6 +24,7 @@ const RiskOverviewCard = ({
   stressTesting,
   correlation,
   viewTier = 'simple', // 'simple', 'analyst', 'quant'
+  isLoading = false,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -64,19 +66,29 @@ const RiskOverviewCard = ({
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${riskBg}`}>
-            <Activity className={`w-5 h-5 ${riskColor}`} />
+          <div className={`p-2 rounded-xl ${isLoading ? 'bg-gray-100 dark:bg-gray-700' : riskBg}`}>
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+            ) : (
+              <Activity className={`w-5 h-5 ${riskColor}`} />
+            )}
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">Risk Overview</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {simDays} days analyzed {limitedHistory && '(limited history)'}
+              {isLoading ? 'Analyzing risk metrics...' : `${simDays} days analyzed ${limitedHistory ? '(limited history)' : ''}`}
             </p>
           </div>
         </div>
-        <div className={`px-3 py-1 rounded-full text-sm font-semibold ${riskBg} ${riskColor}`}>
-          {riskLevel} Risk
-        </div>
+        {isLoading ? (
+          <div className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-500">
+            Loading...
+          </div>
+        ) : (
+          <div className={`px-3 py-1 rounded-full text-sm font-semibold ${riskBg} ${riskColor}`}>
+            {riskLevel} Risk
+          </div>
+        )}
       </div>
 
       {/* Simple Tier - Key Metrics */}
