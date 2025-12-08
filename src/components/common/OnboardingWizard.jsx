@@ -174,28 +174,58 @@ const Spotlight = ({ targetRect, padding = 12 }) => {
 const StepTooltip = ({ step, currentStep, totalSteps, onNext, onPrev, onSkip, targetRect }) => {
   const Icon = step.icon;
 
-  // Calculate position based on target and preference
+  // Tooltip dimensions (approximate)
+  const tooltipHeight = 280;
+  const tooltipWidth = 360;
+  const padding = 20;
+  const viewportHeight = window.innerHeight;
+  const viewportWidth = window.innerWidth;
+
+  // Calculate position based on target and preference, ensuring it stays in viewport
   let tooltipStyle = {};
   let arrowPosition = 'none';
 
   if (step.position === 'center' || !targetRect) {
+    // Center in viewport
     tooltipStyle = {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
     };
-  } else if (step.position === 'bottom') {
-    tooltipStyle = {
-      top: targetRect.bottom + 20,
-      left: Math.max(20, Math.min(targetRect.left + targetRect.width / 2 - 180, window.innerWidth - 380)),
-    };
-    arrowPosition = 'top';
-  } else if (step.position === 'top') {
-    tooltipStyle = {
-      bottom: window.innerHeight - targetRect.top + 20,
-      left: Math.max(20, Math.min(targetRect.left + targetRect.width / 2 - 180, window.innerWidth - 380)),
-    };
-    arrowPosition = 'bottom';
+  } else {
+    // Calculate horizontal position (same for both top and bottom)
+    const leftPos = Math.max(padding, Math.min(targetRect.left + targetRect.width / 2 - tooltipWidth / 2, viewportWidth - tooltipWidth - padding));
+
+    // Check if there's enough space below the target
+    const spaceBelow = viewportHeight - targetRect.bottom - padding;
+    const spaceAbove = targetRect.top - padding;
+
+    // Prefer the requested position, but fall back if not enough space
+    let useBottom = step.position === 'bottom';
+
+    if (useBottom && spaceBelow < tooltipHeight && spaceAbove > spaceBelow) {
+      useBottom = false; // Switch to top
+    } else if (!useBottom && spaceAbove < tooltipHeight && spaceBelow > spaceAbove) {
+      useBottom = true; // Switch to bottom
+    }
+
+    if (useBottom) {
+      // Position below target, but ensure it doesn't go off screen
+      const topPos = Math.min(targetRect.bottom + padding, viewportHeight - tooltipHeight - padding);
+      tooltipStyle = {
+        top: Math.max(padding, topPos),
+        left: leftPos,
+      };
+      arrowPosition = 'top';
+    } else {
+      // Position above target, but ensure it doesn't go off screen
+      const topPos = Math.max(padding, targetRect.top - tooltipHeight - padding);
+      tooltipStyle = {
+        top: topPos,
+        left: leftPos,
+      };
+      arrowPosition = 'bottom';
+    }
   }
 
   return (
