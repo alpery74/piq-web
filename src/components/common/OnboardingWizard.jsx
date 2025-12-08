@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 // Onboarding steps configuration
+// highlightHeader: true means only highlight the first ~100px of a section (the header)
 const ONBOARDING_STEPS = [
   {
     id: 'welcome',
@@ -38,14 +39,26 @@ const ONBOARDING_STEPS = [
     position: 'bottom',
   },
   {
+    id: 'nav-pills',
+    title: 'Section Navigation',
+    subtitle: 'Jump to Any Section',
+    description:
+      'Use these pills to quickly navigate between sections. They highlight automatically as you scroll, showing where you are on the page.',
+    icon: MousePointer,
+    color: 'ios-blue',
+    targetSelector: '.md\\:sticky',
+    position: 'bottom',
+  },
+  {
     id: 'view-tier-toggle',
     title: '3-Tier Detail System',
     subtitle: 'Control Information Depth',
     description:
-      'Use the dropdown in the toolbar to switch between Simple (quick metrics), Analyst (deeper context), and Quant (full data). This controls HOW MUCH detail you see in each section.',
+      'Use this dropdown to switch between Simple (quick metrics), Analyst (deeper context), and Quant (full data). This controls HOW MUCH detail you see in each section.',
     icon: Eye,
     color: 'ios-purple',
-    position: 'center',
+    targetSelector: '.group:has([title*="Current view"])',
+    position: 'bottom',
   },
   {
     id: 'overview-section',
@@ -57,6 +70,7 @@ const ONBOARDING_STEPS = [
     color: 'ios-green',
     targetSelector: '#overview-section',
     position: 'bottom',
+    highlightHeader: true,
   },
   {
     id: 'risk-section',
@@ -67,7 +81,8 @@ const ONBOARDING_STEPS = [
     icon: TrendingUp,
     color: 'ios-red',
     targetSelector: '#risk-section',
-    position: 'top',
+    position: 'bottom',
+    highlightHeader: true,
   },
   {
     id: 'holdings-section',
@@ -78,29 +93,8 @@ const ONBOARDING_STEPS = [
     icon: Layers,
     color: 'ios-blue',
     targetSelector: '#holdings-section',
-    position: 'top',
-  },
-  {
-    id: 'diversification-section',
-    title: 'Diversification',
-    subtitle: 'Correlation Clusters',
-    description:
-      'See which stocks move together and identify diversification opportunities. Groups of correlated assets are highlighted to help you understand your true risk exposure.',
-    icon: Activity,
-    color: 'ios-teal',
-    targetSelector: '#diversification-section',
-    position: 'top',
-  },
-  {
-    id: 'optimization-section',
-    title: 'Optimization',
-    subtitle: 'Strategies & What-If Scenarios',
-    description:
-      'Explore optimization strategies, set personal goals, and use the What-If Simulator to test changes before implementing them.',
-    icon: Target,
-    color: 'ios-purple',
-    targetSelector: '#optimization-section',
-    position: 'top',
+    position: 'bottom',
+    highlightHeader: true,
   },
   {
     id: 'tooltips',
@@ -349,9 +343,21 @@ const OnboardingWizard = ({ isOpen, onClose, onComplete }) => {
         const element = document.querySelector(step.targetSelector);
         if (element) {
           const rect = element.getBoundingClientRect();
-          setTargetRect(rect);
-          // Scroll element into view if needed
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // If highlightHeader is true, only highlight the top portion (header area)
+          if (step.highlightHeader) {
+            const headerHeight = Math.min(150, rect.height); // Max 150px for header
+            setTargetRect({
+              top: rect.top,
+              left: rect.left,
+              width: rect.width,
+              height: headerHeight,
+              bottom: rect.top + headerHeight,
+              right: rect.right,
+            });
+          } else {
+            setTargetRect(rect);
+          }
         } else {
           setTargetRect(null);
         }
@@ -360,15 +366,30 @@ const OnboardingWizard = ({ isOpen, onClose, onComplete }) => {
       }
     };
 
-    // Initial update
-    setTimeout(updateTargetRect, 300);
+    // Scroll element into view first, then update rect
+    const scrollAndUpdate = () => {
+      if (step.targetSelector) {
+        const element = document.querySelector(step.targetSelector);
+        if (element) {
+          // Scroll to start (top) of element, not center
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Wait for scroll to complete before measuring
+          setTimeout(updateTargetRect, 400);
+        } else {
+          setTargetRect(null);
+        }
+      } else {
+        setTargetRect(null);
+      }
+    };
 
-    // Update on scroll/resize
-    window.addEventListener('scroll', updateTargetRect);
+    // Initial scroll and update
+    setTimeout(scrollAndUpdate, 100);
+
+    // Update on resize only (not scroll, to avoid jumpiness)
     window.addEventListener('resize', updateTargetRect);
 
     return () => {
-      window.removeEventListener('scroll', updateTargetRect);
       window.removeEventListener('resize', updateTargetRect);
     };
   }, [isOpen, step, currentStep]);
