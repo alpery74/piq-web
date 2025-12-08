@@ -1,0 +1,1586 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles - iOS Design Language */
+:root {
+  /* iOS System Colors */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-orange: #FF9500;
+  --ios-red: #FF3B30;
+  --ios-purple: #AF52DE;
+  --ios-teal: #5AC8FA;
+
+  /* iOS Grays */
+  --ios-gray: #8E8E93;
+  --ios-gray-2: #AEAEB2;
+  --ios-gray-3: #C7C7CC;
+  --ios-gray-4: #D1D1D6;
+  --ios-gray-5: #E5E5EA;
+  --ios-gray-6: #F2F2F7;
+
+  /* Glass Materials */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-thick: rgba(255, 255, 255, 0.85);
+  --glass-bg-thin: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  /* Separator */
+  --separator: rgba(60, 60, 67, 0.29);
+  --separator-opaque: #C6C6C8;
+
+  /* Brand */
+  --color-primary: #6366F1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--ios-gray-6);
+  color: #1C1C1E;
+  letter-spacing: -0.01em;
+}
+
+/* iOS-style Scrollbar - More subtle */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* iOS Mesh Gradient Background */
+.background-aurora {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 40% 80%, rgba(59, 130, 246, 0.04) 0%, transparent 40%),
+    var(--ios-gray-6);
+  pointer-events: none;
+}
+
+@layer components {
+  /* ============================================
+     iOS GLASS CARD SYSTEM
+     ============================================ */
+
+  /* Base Glass Card - iOS Material Effect */
+  .card {
+    @apply relative rounded-ios-xl p-6 transition-all duration-300;
+    background: var(--glass-bg-thick);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 0.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
+  }
+
+  .card:hover {
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 12px 32px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Glass Card Variants */
+  .card-glass {
+    @apply card;
+    background: var(--glass-bg);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+  }
+
+  .card-glass-thin {
+    @apply card;
+    background: var(--glass-bg-thin);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  .card-solid {
+    @apply rounded-ios-xl p-6 bg-white shadow-ios transition-all duration-300;
+    border: 0.5px solid rgba(0, 0, 0, 0.04);
+  }
+
+  /* Colored Glass Cards */
+  .card-glass-blue {
+    @apply card;
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.12) 0%, rgba(88, 86, 214, 0.08) 100%);
+    border-color: rgba(0, 122, 255, 0.2);
+  }
+
+  .card-glass-green {
+    @apply card;
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.12) 0%, rgba(48, 209, 88, 0.08) 100%);
+    border-color: rgba(52, 199, 89, 0.2);
+  }
+
+  .card-glass-orange {
+    @apply card;
+    background: linear-gradient(135deg, rgba(255, 149, 0, 0.12) 0%, rgba(255, 159, 10, 0.08) 100%);
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+
+  .card-glass-red {
+    @apply card;
+    background: linear-gradient(135deg, rgba(255, 59, 48, 0.12) 0%, rgba(255, 69, 58, 0.08) 100%);
+    border-color: rgba(255, 59, 48, 0.2);
+  }
+
+  .card-glass-purple {
+    @apply card;
+    background: linear-gradient(135deg, rgba(175, 82, 222, 0.12) 0%, rgba(191, 90, 242, 0.08) 100%);
+    border-color: rgba(175, 82, 222, 0.2);
+  }
+
+  /* ============================================
+     iOS BADGES - Vibrancy Style
+     ============================================ */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .badge-low {
+    background: rgba(52, 199, 89, 0.16);
+    color: #248A3D;
+  }
+
+  .badge-moderate {
+    background: rgba(255, 149, 0, 0.16);
+    color: #C93400;
+  }
+
+  .badge-high {
+    background: rgba(255, 59, 48, 0.16);
+    color: #D70015;
+  }
+
+  .badge-info {
+    background: rgba(0, 122, 255, 0.12);
+    color: #0066CC;
+  }
+
+  /* iOS Pill Badge */
+  .badge-pill {
+    @apply px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide;
+    background: rgba(142, 142, 147, 0.12);
+    color: var(--ios-gray);
+  }
+
+  /* ============================================
+     iOS BUTTONS
+     ============================================ */
+  .btn {
+    @apply px-5 py-2.5 rounded-ios font-semibold transition-all duration-200;
+    @apply focus:outline-none active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply bg-ios-blue text-white;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  }
+
+  .btn-primary:hover {
+    @apply bg-blue-600;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(142, 142, 147, 0.12);
+    color: var(--ios-blue);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(142, 142, 147, 0.18);
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-ios-blue;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(0, 122, 255, 0.08);
+  }
+
+  /* iOS Glass Button */
+  .btn-glass {
+    @apply btn;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255, 255, 255, 0.3);
+    color: var(--ios-blue);
+  }
+
+  .btn-glass:hover {
+    background: var(--glass-bg-thick);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* ============================================
+     iOS TOOLTIP - Vibrancy Glass
+     ============================================ */
+  .tooltip {
+    @apply absolute z-50 px-4 py-2.5 text-sm rounded-ios-lg shadow-ios-lg max-w-xs;
+    background: rgba(28, 28, 30, 0.85);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    color: rgba(255, 255, 255, 0.95);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* ============================================
+     TYPOGRAPHY - iOS Style
+     ============================================ */
+  .section-header {
+    @apply text-2xl font-bold mb-4;
+    color: #1C1C1E;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subheader {
+    @apply text-lg font-semibold mb-3;
+    color: #3C3C43;
+    letter-spacing: -0.01em;
+  }
+
+  .text-secondary {
+    color: rgba(60, 60, 67, 0.6);
+  }
+
+  .text-tertiary {
+    color: rgba(60, 60, 67, 0.3);
+  }
+
+  /* ============================================
+     iOS STAT CARDS
+     ============================================ */
+  .stat-card {
+    @apply card flex flex-col;
+  }
+
+  .stat-label {
+    @apply text-sm font-medium mb-1;
+    color: rgba(60, 60, 67, 0.6);
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold;
+    color: #1C1C1E;
+    letter-spacing: -0.02em;
+  }
+
+  /* iOS Large Number Display */
+  .stat-value-xl {
+    @apply text-5xl font-bold;
+    color: #1C1C1E;
+    letter-spacing: -0.03em;
+  }
+
+  /* ============================================
+     iOS DATA TABLE - Clean Lines
+     ============================================ */
+  .data-table {
+    @apply w-full;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider;
+    color: rgba(60, 60, 67, 0.6);
+    background: transparent;
+    border-bottom: 0.5px solid var(--separator);
+  }
+
+  .data-table td {
+    @apply px-4 py-4 text-sm;
+    color: #1C1C1E;
+    border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+  }
+
+  .data-table tbody tr {
+    @apply transition-all duration-200;
+  }
+
+  .data-table tbody tr:hover {
+    background: rgba(0, 122, 255, 0.04);
+  }
+
+  .data-table tbody tr:active {
+    background: rgba(0, 122, 255, 0.08);
+  }
+
+  /* ============================================
+     iOS LOADING STATES
+     ============================================ */
+  .spinner {
+    @apply inline-block w-6 h-6 border-2 border-ios-gray-4 rounded-full animate-spin;
+    border-top-color: var(--ios-blue);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg,
+      rgba(142, 142, 147, 0.12) 25%,
+      rgba(142, 142, 147, 0.2) 50%,
+      rgba(142, 142, 147, 0.12) 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 8px;
+  }
+
+  /* ============================================
+     iOS ALERT BOXES
+     ============================================ */
+  .alert {
+    @apply p-4 rounded-ios-lg mb-4;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .alert-info {
+    background: rgba(0, 122, 255, 0.1);
+    border: 0.5px solid rgba(0, 122, 255, 0.2);
+    color: #0066CC;
+  }
+
+  .alert-warning {
+    background: rgba(255, 149, 0, 0.1);
+    border: 0.5px solid rgba(255, 149, 0, 0.2);
+    color: #C93400;
+  }
+
+  .alert-error {
+    background: rgba(255, 59, 48, 0.1);
+    border: 0.5px solid rgba(255, 59, 48, 0.2);
+    color: #D70015;
+  }
+
+  .alert-success {
+    background: rgba(52, 199, 89, 0.1);
+    border: 0.5px solid rgba(52, 199, 89, 0.2);
+    color: #248A3D;
+  }
+
+  /* ============================================
+     iOS SEPARATORS
+     ============================================ */
+  .separator {
+    height: 0.5px;
+    background: var(--separator);
+  }
+
+  .separator-inset {
+    height: 0.5px;
+    background: var(--separator);
+    margin-left: 16px;
+  }
+
+  /* ============================================
+     iOS SEGMENTED CONTROL
+     ============================================ */
+  .segmented-control {
+    @apply inline-flex p-1 rounded-ios;
+    background: rgba(142, 142, 147, 0.12);
+  }
+
+  .segmented-control-item {
+    @apply px-4 py-2 text-sm font-semibold rounded-ios transition-all duration-200;
+    color: var(--ios-gray);
+  }
+
+  .segmented-control-item.active {
+    @apply bg-white shadow-ios-sm;
+    color: #1C1C1E;
+  }
+
+  /* ============================================
+     iOS LIST STYLES
+     ============================================ */
+  .list-ios {
+    @apply rounded-ios-lg overflow-hidden;
+    background: var(--glass-bg-thick);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .list-ios-item {
+    @apply px-4 py-3 flex items-center justify-between;
+    border-bottom: 0.5px solid var(--separator);
+  }
+
+  .list-ios-item:last-child {
+    border-bottom: none;
+  }
+
+  .list-ios-item:active {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  /* ============================================
+     iOS PROGRESS INDICATORS
+     ============================================ */
+  .progress-ios {
+    @apply h-1 rounded-full overflow-hidden;
+    background: rgba(142, 142, 147, 0.2);
+  }
+
+  .progress-ios-fill {
+    @apply h-full rounded-full transition-all duration-500 ease-out;
+    background: var(--ios-blue);
+  }
+
+  /* Circular Progress */
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+
+  .progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease-out;
+  }
+}
+
+/* ============================================
+   iOS ANIMATIONS & MICRO-INTERACTIONS
+   ============================================ */
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+/* Pulse Glow for important elements */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 122, 255, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(0, 122, 255, 0.4); }
+}
+
+/* Float animation for cards */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Number counter animation */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger animation for lists */
+.stagger-item {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.05s; }
+.stagger-item:nth-child(2) { animation-delay: 0.1s; }
+.stagger-item:nth-child(3) { animation-delay: 0.15s; }
+.stagger-item:nth-child(4) { animation-delay: 0.2s; }
+.stagger-item:nth-child(5) { animation-delay: 0.25s; }
+.stagger-item:nth-child(6) { animation-delay: 0.3s; }
+.stagger-item:nth-child(7) { animation-delay: 0.35s; }
+.stagger-item:nth-child(8) { animation-delay: 0.4s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale on tap - iOS haptic feel */
+.tap-scale {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tap-scale:active {
+  transform: scale(0.97);
+}
+
+/* Smooth hover lift */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+/* Glow effect for interactive elements */
+.glow-on-hover {
+  transition: box-shadow 0.3s ease;
+}
+
+.glow-on-hover:hover {
+  box-shadow: 0 0 24px rgba(0, 122, 255, 0.25);
+}
+
+/* ============================================
+   iOS NAVIGATION BAR - Glass Header
+   ============================================ */
+.nav-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+}
+
+.nav-glass-thick {
+  background: var(--glass-bg-thick);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+}
+
+/* ============================================
+   iOS TAB BAR STYLES
+   ============================================ */
+.tab-bar-ios {
+  @apply flex items-center justify-around px-4 py-2;
+  background: var(--glass-bg-thick);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-top: 0.5px solid rgba(60, 60, 67, 0.12);
+}
+
+.tab-item-ios {
+  @apply flex flex-col items-center gap-1 py-1 px-3 transition-all duration-200;
+  color: var(--ios-gray);
+}
+
+.tab-item-ios.active {
+  color: var(--ios-blue);
+}
+
+.tab-item-ios .tab-icon {
+  @apply w-6 h-6;
+}
+
+.tab-item-ios .tab-label {
+  @apply text-xs font-medium;
+}
+
+/* ============================================
+   FINTECH-SPECIFIC COMPONENTS
+   ============================================ */
+
+/* Portfolio Value Display - Like Robinhood */
+.value-display {
+  @apply relative;
+}
+
+.value-display .value-main {
+  @apply text-4xl font-bold tracking-tight;
+  color: #1C1C1E;
+  letter-spacing: -0.03em;
+}
+
+.value-display .value-change {
+  @apply text-lg font-semibold;
+}
+
+.value-display .value-change.positive {
+  color: var(--ios-green);
+}
+
+.value-display .value-change.negative {
+  color: var(--ios-red);
+}
+
+/* Risk Gauge - Circular */
+.gauge-ring {
+  @apply relative inline-flex items-center justify-center;
+}
+
+.gauge-ring svg {
+  transform: rotate(-90deg);
+}
+
+.gauge-ring .gauge-bg {
+  stroke: rgba(142, 142, 147, 0.15);
+}
+
+.gauge-ring .gauge-fill {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gauge-ring .gauge-value {
+  @apply absolute text-2xl font-bold;
+  letter-spacing: -0.02em;
+}
+
+/* Sparkline Chart Container */
+.sparkline-container {
+  @apply relative h-12 w-full overflow-hidden rounded-lg;
+}
+
+/* Holdings Row - iOS List Style */
+.holding-row {
+  @apply flex items-center justify-between py-4 px-4 -mx-4;
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+  transition: background 0.15s ease;
+}
+
+.holding-row:hover {
+  background: rgba(0, 122, 255, 0.04);
+}
+
+.holding-row:active {
+  background: rgba(0, 122, 255, 0.08);
+}
+
+.holding-row:last-child {
+  border-bottom: none;
+}
+
+.holding-info {
+  @apply flex items-center gap-3;
+}
+
+.holding-icon {
+  @apply w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold;
+  background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1));
+  color: var(--ios-blue);
+}
+
+.holding-ticker {
+  @apply text-base font-semibold;
+  color: #1C1C1E;
+}
+
+.holding-name {
+  @apply text-sm;
+  color: rgba(60, 60, 67, 0.6);
+}
+
+.holding-values {
+  @apply text-right;
+}
+
+.holding-value {
+  @apply text-base font-semibold;
+  color: #1C1C1E;
+}
+
+.holding-change {
+  @apply text-sm font-medium;
+}
+
+/* ============================================
+   iOS MODAL / SHEET STYLES
+   ============================================ */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-sheet {
+  @apply fixed bottom-0 left-0 right-0 rounded-t-ios-2xl;
+  background: var(--glass-bg-thick);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-sheet .sheet-handle {
+  @apply w-9 h-1 rounded-full mx-auto mt-2 mb-4;
+  background: rgba(60, 60, 67, 0.3);
+}
+
+/* ============================================
+   iOS SEARCH BAR
+   ============================================ */
+.search-bar-ios {
+  @apply flex items-center gap-2 px-3 py-2 rounded-ios;
+  background: rgba(142, 142, 147, 0.12);
+}
+
+.search-bar-ios input {
+  @apply bg-transparent outline-none flex-1 text-base;
+  color: #1C1C1E;
+}
+
+.search-bar-ios input::placeholder {
+  color: rgba(60, 60, 67, 0.6);
+}
+
+.search-bar-ios .search-icon {
+  @apply w-5 h-5;
+  color: rgba(60, 60, 67, 0.6);
+}
+
+/* ============================================
+   TIER INDICATOR PILLS
+   ============================================ */
+.tier-pills {
+  @apply flex gap-2 p-1 rounded-ios-lg;
+  background: rgba(142, 142, 147, 0.08);
+}
+
+.tier-pill {
+  @apply px-4 py-2 rounded-ios text-sm font-semibold transition-all duration-200;
+  color: rgba(60, 60, 67, 0.6);
+}
+
+.tier-pill.active {
+  background: white;
+  color: #1C1C1E;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tier-pill:not(.active):hover {
+  color: #1C1C1E;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .card, .card-glass {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background: white !important;
+    border: 1px solid #E5E5EA !important;
+    page-break-inside: avoid;
+  }
+
+  .background-aurora {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - iOS ADAPTIVE LAYOUT
+   ============================================ */
+
+/* Mobile - Compact */
+@media (max-width: 640px) {
+  .card {
+    @apply p-4 rounded-ios-lg;
+  }
+
+  .section-header {
+    @apply text-xl;
+  }
+
+  .stat-value {
+    @apply text-2xl;
+  }
+
+  .stat-value-xl {
+    @apply text-4xl;
+  }
+
+  .data-table th,
+  .data-table td {
+    @apply px-3 py-3 text-xs;
+  }
+
+  .value-display .value-main {
+    @apply text-3xl;
+  }
+
+  /* Stack horizontal layouts */
+  .mobile-stack {
+    @apply flex-col;
+  }
+
+  /* Full width cards on mobile */
+  .mobile-full {
+    @apply -mx-4 rounded-none;
+  }
+
+  /* Compact badges */
+  .badge {
+    @apply px-2 py-0.5 text-xs;
+  }
+
+  /* Bottom safe area for iOS */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .card {
+    @apply p-5;
+  }
+
+  .tablet-2-col {
+    @apply grid grid-cols-2 gap-4;
+  }
+}
+
+/* Desktop - Full experience */
+@media (min-width: 1025px) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Enable hover effects only on desktop */
+  .desktop-hover:hover {
+    background: rgba(0, 122, 255, 0.04);
+  }
+}
+
+/* ============================================
+   DARK MODE SUPPORT - Fintech-Grade Implementation
+   Inspired by: Robinhood, Coinbase, Mercury, Revolut
+   ============================================ */
+
+/*
+ * Color Philosophy:
+ * - Primary Background: #0A0B0D (Coinbase Woodsmoke) - easier on eyes than pure black
+ * - Surface/Cards: #141417 - elevated surfaces
+ * - Elevated Surface: #1C1C21 - modals, popovers
+ * - Borders: Subtle white opacity for depth
+ * - Accent: Vibrant but not harsh colors
+ */
+
+/* Dark mode variables */
+.dark {
+  /* Backgrounds - Layered system for depth */
+  --dark-bg-base: #0A0B0D;        /* Coinbase-inspired base */
+  --dark-bg-surface: #141417;      /* Cards, panels */
+  --dark-bg-elevated: #1C1C21;     /* Modals, dropdowns */
+  --dark-bg-hover: #232328;        /* Hover states */
+
+  /* Glass materials - refined for dark */
+  --glass-bg: rgba(20, 20, 23, 0.85);
+  --glass-bg-thick: rgba(28, 28, 33, 0.92);
+  --glass-bg-thin: rgba(20, 20, 23, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.06);
+
+  /* Text hierarchy */
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #A1A1AA;   /* Zinc-400 equivalent */
+  --dark-text-tertiary: #71717A;    /* Zinc-500 equivalent */
+  --dark-text-muted: #52525B;       /* Zinc-600 equivalent */
+
+  /* Separators and borders */
+  --separator: rgba(255, 255, 255, 0.08);
+  --separator-opaque: #27272A;
+  --ios-gray-6: #0A0B0D;
+
+  /* Accent colors - Vibrant but refined (Robinhood/Coinbase inspired) */
+  --ios-blue: #3B82F6;       /* Brighter blue, better contrast */
+  --ios-green: #22C55E;      /* Softer green, less neon */
+  --ios-orange: #F59E0B;     /* Warm amber */
+  --ios-red: #EF4444;        /* Slightly muted red */
+  --ios-purple: #A855F7;     /* Refined purple */
+  --ios-teal: #06B6D4;       /* Cyan for variety */
+  --ios-pink: #EC4899;       /* For positive changes */
+
+  /* Status colors - Higher contrast for readability */
+  --status-positive: #22C55E;
+  --status-negative: #EF4444;
+  --status-warning: #F59E0B;
+  --status-info: #3B82F6;
+
+  /* Brand accent */
+  --color-primary: #6366F1;
+}
+
+.dark body {
+  background-color: var(--dark-bg-base);
+  color: var(--dark-text-primary);
+}
+
+/* Aurora background - subtle gradient mesh */
+.dark .background-aurora {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+    var(--dark-bg-base);
+}
+
+/* ============================================
+   Dark Mode Cards - Layered depth system
+   ============================================ */
+.dark .card {
+  background: var(--dark-bg-surface);
+  border: 1px solid var(--separator);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .card:hover {
+  background: var(--dark-bg-hover);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.dark .card-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+.dark .card-solid {
+  background: var(--dark-bg-surface);
+  border-color: var(--separator);
+}
+
+/* Colored glass cards with refined gradients */
+.dark .card-glass-blue {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark .card-glass-green {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.dark .card-glass-orange {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(234, 179, 8, 0.08) 100%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.dark .card-glass-purple {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.dark .card-glass-red {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(220, 38, 38, 0.08) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ============================================
+   Dark Mode Typography
+   ============================================ */
+.dark .section-header {
+  color: var(--dark-text-primary);
+}
+
+.dark .section-subheader {
+  color: var(--dark-text-secondary);
+}
+
+.dark .text-secondary {
+  color: var(--dark-text-secondary);
+}
+
+.dark .text-tertiary {
+  color: var(--dark-text-tertiary);
+}
+
+/* Stats */
+.dark .stat-label {
+  color: var(--dark-text-secondary);
+}
+
+.dark .stat-value,
+.dark .stat-value-xl {
+  color: var(--dark-text-primary);
+}
+
+/* ============================================
+   Dark Mode Data Tables
+   ============================================ */
+.dark .data-table th {
+  color: var(--dark-text-secondary);
+  border-bottom-color: var(--separator);
+  background: var(--dark-bg-surface);
+}
+
+.dark .data-table td {
+  color: var(--dark-text-primary);
+  border-bottom-color: var(--separator);
+}
+
+.dark .data-table tbody tr:hover {
+  background: var(--dark-bg-hover);
+}
+
+/* ============================================
+   Dark Mode Badges - High contrast
+   ============================================ */
+.dark .badge-low {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;  /* Lighter green for dark bg */
+}
+
+.dark .badge-moderate {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FBBF24;  /* Lighter amber */
+}
+
+.dark .badge-high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;  /* Lighter red */
+}
+
+.dark .badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;  /* Lighter blue */
+}
+
+.dark .badge-pill {
+  background: rgba(113, 113, 122, 0.2);
+  color: var(--dark-text-secondary);
+}
+
+/* ============================================
+   Dark Mode Alerts
+   ============================================ */
+.dark .alert-info {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.25);
+  color: #93C5FD;
+}
+
+.dark .alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #FCD34D;
+}
+
+.dark .alert-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #FCA5A5;
+}
+
+.dark .alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #86EFAC;
+}
+
+/* ============================================
+   Dark Mode Navigation
+   ============================================ */
+.dark .nav-glass {
+  background: rgba(10, 11, 13, 0.9);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-bottom-color: var(--separator);
+}
+
+.dark .nav-glass-thick {
+  background: rgba(20, 20, 23, 0.95);
+}
+
+/* ============================================
+   Dark Mode Form Elements
+   ============================================ */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--dark-bg-surface);
+  border-color: var(--separator);
+  color: var(--dark-text-primary);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--ios-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--dark-text-tertiary);
+}
+
+/* ============================================
+   Dark Mode Scrollbar
+   ============================================ */
+.dark ::-webkit-scrollbar-track {
+  background: var(--dark-bg-base);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================
+   Dark Mode Value Displays (Fintech style)
+   ============================================ */
+.dark .value-display .value-main {
+  color: var(--dark-text-primary);
+}
+
+.dark .value-display .value-change.positive {
+  color: var(--status-positive);
+}
+
+.dark .value-display .value-change.negative {
+  color: var(--status-negative);
+}
+
+/* Holdings */
+.dark .holding-row {
+  border-bottom-color: var(--separator);
+}
+
+.dark .holding-row:hover {
+  background: var(--dark-bg-hover);
+}
+
+.dark .holding-ticker {
+  color: var(--dark-text-primary);
+}
+
+.dark .holding-name {
+  color: var(--dark-text-secondary);
+}
+
+.dark .holding-value {
+  color: var(--dark-text-primary);
+}
+
+.dark .holding-icon {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
+  color: #818CF8;
+}
+
+/* ============================================
+   Dark Mode Tooltip
+   ============================================ */
+.dark .tooltip {
+  background: var(--dark-bg-elevated);
+  border-color: var(--separator);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   Dark Mode Buttons
+   ============================================ */
+.dark .btn-primary {
+  background: var(--ios-blue);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.dark .btn-primary:hover {
+  background: #2563EB;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.dark .btn-secondary {
+  background: var(--dark-bg-elevated);
+  color: var(--ios-blue);
+  border: 1px solid var(--separator);
+}
+
+.dark .btn-secondary:hover {
+  background: var(--dark-bg-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark .btn-ghost {
+  color: var(--ios-blue);
+}
+
+.dark .btn-ghost:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.dark .btn-glass {
+  background: var(--glass-bg);
+  border-color: var(--separator);
+  color: var(--dark-text-primary);
+}
+
+/* ============================================
+   Dark Mode Segmented Control
+   ============================================ */
+.dark .segmented-control {
+  background: var(--dark-bg-surface);
+}
+
+.dark .segmented-control-item {
+  color: var(--dark-text-secondary);
+}
+
+.dark .segmented-control-item.active {
+  background: var(--dark-bg-elevated);
+  color: var(--dark-text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   Dark Mode Lists
+   ============================================ */
+.dark .list-ios {
+  background: var(--dark-bg-surface);
+}
+
+.dark .list-ios-item {
+  border-bottom-color: var(--separator);
+}
+
+.dark .list-ios-item:active {
+  background: var(--dark-bg-hover);
+}
+
+/* ============================================
+   Dark Mode Progress
+   ============================================ */
+.dark .progress-ios {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dark .progress-ios-fill {
+  background: var(--ios-blue);
+}
+
+/* ============================================
+   Dark Mode Skeleton Loading
+   ============================================ */
+.dark .skeleton {
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%);
+  background-size: 1000px 100%;
+}
+
+/* ============================================
+   Dark Mode Modal/Sheet
+   ============================================ */
+.dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.dark .modal-sheet {
+  background: var(--dark-bg-elevated);
+  border-top: 1px solid var(--separator);
+}
+
+.dark .modal-sheet .sheet-handle {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   Dark Mode Search
+   ============================================ */
+.dark .search-bar-ios {
+  background: var(--dark-bg-surface);
+  border: 1px solid var(--separator);
+}
+
+.dark .search-bar-ios input {
+  color: var(--dark-text-primary);
+}
+
+.dark .search-bar-ios input::placeholder {
+  color: var(--dark-text-tertiary);
+}
+
+.dark .search-bar-ios .search-icon {
+  color: var(--dark-text-tertiary);
+}
+
+/* ============================================
+   Dark Mode Tier Pills
+   ============================================ */
+.dark .tier-pills {
+  background: var(--dark-bg-surface);
+}
+
+.dark .tier-pill {
+  color: var(--dark-text-secondary);
+}
+
+.dark .tier-pill.active {
+  background: var(--dark-bg-elevated);
+  color: var(--dark-text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .tier-pill:not(.active):hover {
+  color: var(--dark-text-primary);
+  background: var(--dark-bg-hover);
+}
+
+/* ============================================
+   Dark Mode Tab Bar
+   ============================================ */
+.dark .tab-bar-ios {
+  background: rgba(10, 11, 13, 0.95);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-top-color: var(--separator);
+}
+
+.dark .tab-item-ios {
+  color: var(--dark-text-tertiary);
+}
+
+.dark .tab-item-ios.active {
+  color: var(--ios-blue);
+}
+
+/* ============================================
+   Dark Mode Gauge
+   ============================================ */
+.dark .gauge-ring .gauge-bg {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.dark .gauge-ring .gauge-value {
+  color: var(--dark-text-primary);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus states for keyboard navigation */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.4);
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid #1C1C1E;
+  }
+
+  .badge {
+    border: 1px solid currentColor;
+  }
+}
+
+/* ============================================
+   ADDITIONAL ANIMATIONS
+   ============================================ */
+
+/* Slide in from right - for toasts */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scale in - for modals */
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide up - for bottom sheets */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Pulse slow - for spotlight */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Shimmer for skeleton loading */
+@keyframes shimmer-move {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer-move 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   HERO CARD - Premium Glass Effect
+   ============================================ */
+.card-glass-hero {
+  @apply relative rounded-ios-2xl p-6 sm:p-8 transition-all duration-300;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(255, 255, 255, 0.85) 100%
+  );
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 16px 48px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.dark .card-glass-hero {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 23, 0.95) 0%,
+    rgba(28, 28, 33, 0.9) 50%,
+    rgba(20, 20, 23, 0.95) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* ============================================
+   MOBILE SAFE AREAS
+   ============================================ */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-inset {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Bottom navigation spacer */
+@media (max-width: 767px) {
+  .mobile-nav-spacer {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ============================================
+   TOUCH IMPROVEMENTS
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets on mobile */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .card:hover {
+    transform: none;
+  }
+
+  /* Faster transitions for touch */
+  .tap-scale:active {
+    transform: scale(0.98);
+    transition-duration: 0.1s;
+  }
+}
+
+/* ============================================
+   IOS COLOR UTILITIES (for Tailwind)
+   ============================================ */
+.bg-ios-blue { background-color: var(--ios-blue); }
+.bg-ios-green { background-color: var(--ios-green); }
+.bg-ios-orange { background-color: var(--ios-orange); }
+.bg-ios-red { background-color: var(--ios-red); }
+.bg-ios-purple { background-color: var(--ios-purple); }
+.bg-ios-teal { background-color: var(--ios-teal); }
+
+.text-ios-blue { color: var(--ios-blue); }
+.text-ios-green { color: var(--ios-green); }
+.text-ios-orange { color: var(--ios-orange); }
+.text-ios-red { color: var(--ios-red); }
+.text-ios-purple { color: var(--ios-purple); }
+.text-ios-teal { color: var(--ios-teal); }
+
+.border-ios-blue { border-color: var(--ios-blue); }
+.border-ios-green { border-color: var(--ios-green); }
+.border-ios-orange { border-color: var(--ios-orange); }
+.border-ios-red { border-color: var(--ios-red); }
+.border-ios-purple { border-color: var(--ios-purple); }
+.border-ios-teal { border-color: var(--ios-teal); }
