@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Command, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
+import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import HoldingsSection from '@/components/dashboard/HoldingsSection';
@@ -591,16 +591,6 @@ const Dashboard = () => {
           </div>
 
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-            {/* Command Palette trigger */}
-            <button
-              onClick={commandPalette.open}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-all bg-white/70 dark:bg-gray-800/70 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-200 hover:text-primary-700 shadow-sm"
-              title="Open command palette (⌘K)"
-            >
-              <Command className="w-3.5 h-3.5" />
-              <span className="text-xs">⌘K</span>
-            </button>
-
             {/* Dark mode toggle */}
             <button
               onClick={toggleTheme}
