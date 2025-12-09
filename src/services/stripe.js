@@ -1,7 +1,8 @@
 import { loadStripe } from '@stripe/stripe-js';
 
-// Stripe publishable key from environment
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+// Stripe publishable key (safe to expose - this is the public key)
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51ScT1nFD3f8NvjWpppXvvB4d1xnzrWM8IvQA9UNdFKIKbaUefpwxYcf5R3YdQr4gE2DxKIwvVPQYmyhQEn4oBFPE00620huDsM';
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 // Use the same API base URL as the rest of the app (strip /api suffix for endpoints)
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api').replace(/\/api$/, '');
