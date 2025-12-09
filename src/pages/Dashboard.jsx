@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
+import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import HoldingsSection from '@/components/dashboard/HoldingsSection';
@@ -662,14 +662,6 @@ const Dashboard = () => {
               <span className="text-xs">Learn</span>
             </button>
 
-            {/* Help button */}
-            <button
-              onClick={onboarding.startTour}
-              className="p-2 rounded-full border transition-all bg-white/70 dark:bg-gray-800/70 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary-200 hover:text-primary-700 shadow-sm"
-              title="Start guided tour"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </div>
@@ -934,15 +926,6 @@ const Dashboard = () => {
       <CommandPalette
         isOpen={commandPalette.isOpen}
         onClose={commandPalette.close}
-      />
-
-      {/* Onboarding Wizard */}
-      <OnboardingWizard
-        isOpen={onboarding.isOpen}
-        onClose={onboarding.endTour}
-        onComplete={() => {
-          toast.success('Welcome!', 'You\'re all set to explore your portfolio');
-        }}
       />
 
       {/* Learn More Modal */}

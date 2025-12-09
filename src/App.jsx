@@ -11,6 +11,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import CommandPalette from './components/common/CommandPalette';
 import SettingsModal from './components/common/SettingsModal';
+import OnboardingWizard, { useOnboarding, OnboardingProvider } from './components/common/OnboardingWizard';
 import './index.css';
 
 const PrivateRoute = ({ children }) => {
@@ -26,11 +27,13 @@ const AppContent = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const toast = useToast();
+  const onboarding = useOnboarding();
 
   const handleOpenSearch = () => setSearchOpen(true);
   const handleCloseSearch = () => setSearchOpen(false);
   const handleOpenSettings = () => setSettingsOpen(true);
   const handleCloseSettings = () => setSettingsOpen(false);
+  const handleStartTour = () => onboarding.startTour();
 
   return (
     <>
@@ -39,7 +42,7 @@ const AppContent = () => {
         <Route
           path="/"
           element={
-            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings}>
+            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings} onStartTour={handleStartTour}>
               <PrivateRoute>
                 <Dashboard />
               </PrivateRoute>
@@ -49,7 +52,7 @@ const AppContent = () => {
         <Route
           path="/legal"
           element={
-            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings}>
+            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings} onStartTour={handleStartTour}>
               <Legal />
             </Layout>
           }
@@ -57,7 +60,7 @@ const AppContent = () => {
         <Route
           path="/privacy"
           element={
-            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings}>
+            <Layout onOpenSearch={handleOpenSearch} onOpenSettings={handleOpenSettings} onStartTour={handleStartTour}>
               <Privacy />
             </Layout>
           }
@@ -70,6 +73,15 @@ const AppContent = () => {
 
       {/* Global Settings Modal */}
       <SettingsModal isOpen={settingsOpen} onClose={handleCloseSettings} />
+
+      {/* Global Onboarding Wizard */}
+      <OnboardingWizard
+        isOpen={onboarding.isOpen}
+        onClose={onboarding.endTour}
+        onComplete={() => {
+          toast.success('Welcome!', "You're all set to explore your portfolio");
+        }}
+      />
     </>
   );
 };
@@ -78,9 +90,11 @@ function App() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <OnboardingProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </OnboardingProvider>
       </ToastProvider>
     </ThemeProvider>
   );

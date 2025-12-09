@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Settings, LogOut, ChevronDown, Bell, Shield, Lock, BarChart3, GraduationCap, ShieldCheck } from 'lucide-react';
+import { Menu, X, Search, Settings, LogOut, ChevronDown, Bell, Shield, Lock, BarChart3, GraduationCap, ShieldCheck, HelpCircle } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-const Layout = ({ children, onOpenSearch, onOpenSettings, notificationCount = 0 }) => {
+const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificationCount = 0 }) => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -231,6 +231,16 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, notificationCount = 0 
                         >
                           <Settings className="w-4 h-4" />
                           Settings
+                        </button>
+                        <button
+                          onClick={() => {
+                            setProfileOpen(false);
+                            onStartTour?.();
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <HelpCircle className="w-4 h-4" />
+                          Guided Tour
                         </button>
                         <button
                           onClick={handleLogout}

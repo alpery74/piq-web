@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Activity,
@@ -13,6 +13,9 @@ import {
   MousePointer,
   Zap,
 } from 'lucide-react';
+
+// Context for sharing onboarding state across the app
+const OnboardingContext = createContext(null);
 
 // Onboarding steps configuration
 // highlightHeader: true means only highlight the first ~100px of a section (the header)
@@ -446,8 +449,8 @@ const OnboardingWizard = ({ isOpen, onClose, onComplete }) => {
   );
 };
 
-// Hook to manage onboarding state
-export const useOnboarding = () => {
+// Provider component to wrap the app
+export const OnboardingProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(() => {
     return localStorage.getItem('onboardingComplete') === 'true';
@@ -475,13 +478,28 @@ export const useOnboarding = () => {
     setIsOpen(true);
   };
 
-  return {
-    isOpen,
-    hasCompleted,
-    startTour,
-    endTour,
-    resetTour,
-  };
+  return (
+    <OnboardingContext.Provider value={{ isOpen, hasCompleted, startTour, endTour, resetTour }}>
+      {children}
+    </OnboardingContext.Provider>
+  );
+};
+
+// Hook to access onboarding state from context
+export const useOnboarding = () => {
+  const context = useContext(OnboardingContext);
+  // Fallback for when context is not available (shouldn't happen in normal usage)
+  if (!context) {
+    console.warn('useOnboarding must be used within OnboardingProvider');
+    return {
+      isOpen: false,
+      hasCompleted: true,
+      startTour: () => {},
+      endTour: () => {},
+      resetTour: () => {},
+    };
+  }
+  return context;
 };
 
 export default OnboardingWizard;
