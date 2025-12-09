@@ -13,7 +13,7 @@ import StrategyComparisonCard from '@/components/dashboard/StrategyComparisonCar
 import BackendStatus from '@/components/common/BackendStatus';
 import HeroCard from '@/components/common/HeroCard';
 import CommandPalette, { useCommandPalette } from '@/components/common/CommandPalette';
-import OnboardingWizard, { useOnboarding } from '@/components/common/OnboardingWizard';
+import { useOnboarding } from '@/components/common/OnboardingWizard';
 import MobileBottomNav from '@/components/common/MobileBottomNav';
 import LearnMoreModal, { useLearnMore } from '@/components/common/LearnMoreModal';
 import { SkeletonHeroCard } from '@/components/common/Skeleton';
@@ -79,7 +79,6 @@ const Dashboard = () => {
     results: polledResults,
     loading: polling,
     error: pollingError,
-    progress,
     pending,
     connectionStatus,
     loadingStartTime,
