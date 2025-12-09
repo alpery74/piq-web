@@ -22,6 +22,7 @@ import { formatPercent, formatNumber } from '@/utils/formatters';
 const RiskOverviewCard = ({
   volatility,
   stressTesting,
+  riskDecomposition,
   correlation,
   viewTier = 'simple', // 'simple', 'analyst', 'quant'
   isLoading = false,
