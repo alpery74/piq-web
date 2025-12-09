@@ -4,18 +4,16 @@ import {
   Clock,
   DollarSign,
   TrendingDown,
-  TrendingUp,
   AlertTriangle,
   CheckCircle2,
   ArrowRight,
   Percent,
   Layers,
-  BarChart3,
   Shield,
   Zap
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
-import { formatCurrency, formatPercent } from '@/utils/formatters';
+import { formatCurrency } from '@/utils/formatters';
 
 /**
  * ImplementationSection - Shows liquidity, costs, tax efficiency, and execution planning
@@ -31,13 +29,12 @@ const ImplementationSection = ({
     return null;
   }
 
-  const {
-    liquidity_analysis,
-    transaction_cost_model,
-    tax_efficiency_considerations,
-    implementation_sequence,
-    minimum_trade_thresholds,
-  } = implementation;
+  // Support both camelCase (after snakeToCamel transform) and snake_case (original API)
+  const liquidityAnalysis = implementation.liquidityAnalysis || implementation.liquidity_analysis;
+  const transactionCostModel = implementation.transactionCostModel || implementation.transaction_cost_model;
+  const taxEfficiencyConsiderations = implementation.taxEfficiencyConsiderations || implementation.tax_efficiency_considerations;
+  const implementationSequence = implementation.implementationSequence || implementation.implementation_sequence;
+  const minimumTradeThresholds = implementation.minimumTradeThresholds || implementation.minimum_trade_thresholds;
 
   const tabs = [
     { id: 'liquidity', label: 'Liquidity', icon: Activity },
@@ -80,23 +77,23 @@ const ImplementationSection = ({
       </div>
 
       {/* Liquidity Tab */}
-      {activeTab === 'liquidity' && liquidity_analysis && (
-        <LiquidityPanel data={liquidity_analysis} showAdvanced={showAdvanced} />
+      {activeTab === 'liquidity' && liquidityAnalysis && (
+        <LiquidityPanel data={liquidityAnalysis} />
       )}
 
       {/* Costs Tab */}
-      {activeTab === 'costs' && transaction_cost_model && (
-        <CostsPanel data={transaction_cost_model} showAdvanced={showAdvanced} />
+      {activeTab === 'costs' && transactionCostModel && (
+        <CostsPanel data={transactionCostModel} />
       )}
 
       {/* Tax Tab */}
-      {activeTab === 'tax' && tax_efficiency_considerations && (
-        <TaxPanel data={tax_efficiency_considerations} showAdvanced={showAdvanced} />
+      {activeTab === 'tax' && taxEfficiencyConsiderations && (
+        <TaxPanel data={taxEfficiencyConsiderations} />
       )}
 
       {/* Execution Tab */}
-      {activeTab === 'execution' && implementation_sequence && (
-        <ExecutionPanel data={implementation_sequence} thresholds={minimum_trade_thresholds} showAdvanced={showAdvanced} />
+      {activeTab === 'execution' && implementationSequence && (
+        <ExecutionPanel data={implementationSequence} thresholds={minimumTradeThresholds} showAdvanced={showAdvanced} />
       )}
     </section>
   );
@@ -105,8 +102,13 @@ const ImplementationSection = ({
 /**
  * Liquidity Panel - Position liquidity analysis
  */
-const LiquidityPanel = ({ data, showAdvanced }) => {
-  const { position_liquidity_scores, portfolio_weighted_liquidity, liquidity_level, illiquid_positions, liquidity_distribution } = data;
+const LiquidityPanel = ({ data }) => {
+  // Support both camelCase and snake_case
+  const positionLiquidityScores = data.positionLiquidityScores || data.position_liquidity_scores || [];
+  const portfolioWeightedLiquidity = data.portfolioWeightedLiquidity ?? data.portfolio_weighted_liquidity ?? 0;
+  const liquidityLevel = data.liquidityLevel || data.liquidity_level || 'MEDIUM';
+  const illiquidPositions = data.illiquidPositions || data.illiquid_positions || [];
+  const liquidityDistribution = data.liquidityDistribution || data.liquidity_distribution || {};
 
   const liquidityColor = {
     HIGH: 'text-ios-green',
@@ -132,23 +134,23 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
             </EducationalTooltip>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className={`text-3xl font-bold ${liquidityColor[liquidity_level] || 'text-gray-900'}`}>
-              {portfolio_weighted_liquidity?.toFixed(0) || 0}
+            <span className={`text-3xl font-bold ${liquidityColor[liquidityLevel] || 'text-gray-900'}`}>
+              {portfolioWeightedLiquidity?.toFixed(0) || 0}
             </span>
             <span className="text-sm text-gray-500">/100</span>
           </div>
-          <div className={`text-sm font-semibold mt-1 ${liquidityColor[liquidity_level]}`}>
-            {liquidity_level}
+          <div className={`text-sm font-semibold mt-1 ${liquidityColor[liquidityLevel]}`}>
+            {liquidityLevel}
           </div>
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Illiquid Positions</div>
           <div className="text-3xl font-bold text-gray-900 dark:text-white">
-            {illiquid_positions?.length || 0}
+            {illiquidPositions?.length || 0}
           </div>
           <div className="text-sm text-gray-500 mt-1">
-            {illiquid_positions?.length > 0 ? 'Require careful execution' : 'All positions tradeable'}
+            {illiquidPositions?.length > 0 ? 'Require careful execution' : 'All positions tradeable'}
           </div>
         </div>
 
@@ -157,15 +159,15 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Large/Mega Cap</span>
-              <span className="font-semibold text-green-600">{liquidity_distribution?.mega_large_cap_pct?.toFixed(1)}%</span>
+              <span className="font-semibold text-green-600">{(liquidityDistribution?.megaLargeCapPct ?? liquidityDistribution?.mega_large_cap_pct ?? 0).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Mid Cap</span>
-              <span className="font-semibold text-blue-600">{liquidity_distribution?.mid_cap_pct?.toFixed(1)}%</span>
+              <span className="font-semibold text-blue-600">{(liquidityDistribution?.midCapPct ?? liquidityDistribution?.mid_cap_pct ?? 0).toFixed(1)}%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">Small/Micro</span>
-              <span className="font-semibold text-orange-600">{liquidity_distribution?.small_micro_cap_pct?.toFixed(1)}%</span>
+              <span className="font-semibold text-orange-600">{(liquidityDistribution?.smallMicroCapPct ?? liquidityDistribution?.small_micro_cap_pct ?? 0).toFixed(1)}%</span>
             </div>
           </div>
         </div>
@@ -188,7 +190,7 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
               </tr>
             </thead>
             <tbody>
-              {position_liquidity_scores?.map((pos) => {
+              {positionLiquidityScores?.map((pos) => {
                 const tierStyle = tierColors[pos.liquidity_tier] || tierColors.MODERATELY_LIQUID;
                 return (
                   <tr key={pos.ticker} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
@@ -238,7 +240,7 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
       </div>
 
       {/* Illiquid Warnings */}
-      {illiquid_positions?.length > 0 && (
+      {illiquidPositions?.length > 0 && (
         <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-5 h-5 text-red-600" />
@@ -248,9 +250,9 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
             The following positions may be difficult to trade without significant market impact:
           </p>
           <div className="flex flex-wrap gap-2">
-            {illiquid_positions.map((pos) => (
+            {illiquidPositions.map((pos) => (
               <span key={pos.ticker} className="px-3 py-1 bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200 rounded-full text-sm font-semibold">
-                {pos.ticker} ({formatCurrency(pos.market_cap / 1e6, 1)}M cap)
+                {pos.ticker} ({formatCurrency((pos.marketCap || pos.market_cap || 0) / 1e6, 1)}M cap)
               </span>
             ))}
           </div>
@@ -263,8 +265,12 @@ const LiquidityPanel = ({ data, showAdvanced }) => {
 /**
  * Costs Panel - Transaction cost estimates
  */
-const CostsPanel = ({ data, showAdvanced }) => {
-  const { portfolio_value_estimate, position_specific_costs, average_cost_bps, cost_optimization_opportunities } = data;
+const CostsPanel = ({ data }) => {
+  // Support both camelCase and snake_case
+  const portfolioValueEstimate = data.portfolioValueEstimate ?? data.portfolio_value_estimate ?? 0;
+  const positionSpecificCosts = data.positionSpecificCosts || data.position_specific_costs || [];
+  const averageCostBps = data.averageCostBps ?? data.average_cost_bps ?? 0;
+  const costOptimizationOpportunities = data.costOptimizationOpportunities || data.cost_optimization_opportunities || [];
 
   return (
     <div className="space-y-6">
@@ -273,7 +279,7 @@ const CostsPanel = ({ data, showAdvanced }) => {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Portfolio Value</div>
           <div className="text-3xl font-bold text-gray-900 dark:text-white">
-            {formatCurrency(portfolio_value_estimate, 0)}
+            {formatCurrency(portfolioValueEstimate, 0)}
           </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
@@ -283,10 +289,10 @@ const CostsPanel = ({ data, showAdvanced }) => {
             </EducationalTooltip>
           </div>
           <div className="text-3xl font-bold text-gray-900 dark:text-white">
-            {average_cost_bps?.toFixed(1)} <span className="text-lg font-normal">bps</span>
+            {averageCostBps?.toFixed(1)} <span className="text-lg font-normal">bps</span>
           </div>
           <div className="text-sm text-gray-500 mt-1">
-            ~{formatCurrency((portfolio_value_estimate * average_cost_bps) / 10000, 2)} per full turnover
+            ~{formatCurrency((portfolioValueEstimate * averageCostBps) / 10000, 2)} per full turnover
           </div>
         </div>
       </div>
@@ -308,7 +314,7 @@ const CostsPanel = ({ data, showAdvanced }) => {
               </tr>
             </thead>
             <tbody>
-              {position_specific_costs?.map((pos) => (
+              {positionSpecificCosts?.map((pos) => (
                 <tr key={pos.ticker} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">{pos.ticker}</td>
                   <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">{formatCurrency(pos.position_value, 0)}</td>
@@ -327,14 +333,14 @@ const CostsPanel = ({ data, showAdvanced }) => {
       </div>
 
       {/* Optimization Tips */}
-      {cost_optimization_opportunities?.length > 0 && (
+      {costOptimizationOpportunities?.length > 0 && (
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
             <Layers className="w-5 h-5 text-blue-600" />
             <span className="font-semibold text-blue-900 dark:text-blue-200">Cost Optimization Tips</span>
           </div>
           <ul className="space-y-2">
-            {cost_optimization_opportunities.map((tip, i) => (
+            {costOptimizationOpportunities.map((tip, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-blue-800 dark:text-blue-300">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 {tip}
@@ -350,8 +356,12 @@ const CostsPanel = ({ data, showAdvanced }) => {
 /**
  * Tax Panel - Tax efficiency analysis
  */
-const TaxPanel = ({ data, showAdvanced }) => {
-  const { tax_rate_assumptions, position_tax_analysis, tax_loss_harvesting_candidates, tax_efficiency_recommendations } = data;
+const TaxPanel = ({ data }) => {
+  // Support both camelCase and snake_case
+  const taxRateAssumptions = data.taxRateAssumptions || data.tax_rate_assumptions || {};
+  const positionTaxAnalysis = data.positionTaxAnalysis || data.position_tax_analysis || [];
+  const taxLossHarvestingCandidates = data.taxLossHarvestingCandidates || data.tax_loss_harvesting_candidates || [];
+  const taxEfficiencyRecommendations = data.taxEfficiencyRecommendations || data.tax_efficiency_recommendations || [];
 
   return (
     <div className="space-y-6">
@@ -359,13 +369,13 @@ const TaxPanel = ({ data, showAdvanced }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Long-Term Positions</div>
-          <div className="text-3xl font-bold text-green-600">{tax_rate_assumptions?.long_term_positions || 0}</div>
-          <div className="text-xs text-gray-500 mt-1">Tax rate: ~{(tax_rate_assumptions?.estimated_long_term_rate * 100)?.toFixed(0)}%</div>
+          <div className="text-3xl font-bold text-green-600">{taxRateAssumptions?.longTermPositions ?? taxRateAssumptions?.long_term_positions ?? 0}</div>
+          <div className="text-xs text-gray-500 mt-1">Tax rate: ~{((taxRateAssumptions?.estimatedLongTermRate ?? taxRateAssumptions?.estimated_long_term_rate ?? 0) * 100).toFixed(0)}%</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Short-Term Positions</div>
-          <div className="text-3xl font-bold text-orange-600">{tax_rate_assumptions?.short_term_positions || 0}</div>
-          <div className="text-xs text-gray-500 mt-1">Tax rate: ~{(tax_rate_assumptions?.estimated_short_term_rate * 100)?.toFixed(0)}%</div>
+          <div className="text-3xl font-bold text-orange-600">{taxRateAssumptions?.shortTermPositions ?? taxRateAssumptions?.short_term_positions ?? 0}</div>
+          <div className="text-xs text-gray-500 mt-1">Tax rate: ~{((taxRateAssumptions?.estimatedShortTermRate ?? taxRateAssumptions?.estimated_short_term_rate ?? 0) * 100).toFixed(0)}%</div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">
@@ -373,20 +383,20 @@ const TaxPanel = ({ data, showAdvanced }) => {
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Harvest Candidates</span>
             </EducationalTooltip>
           </div>
-          <div className="text-3xl font-bold text-ios-blue">{tax_loss_harvesting_candidates?.length || 0}</div>
+          <div className="text-3xl font-bold text-ios-blue">{taxLossHarvestingCandidates?.length || 0}</div>
           <div className="text-xs text-gray-500 mt-1">Positions with unrealized losses</div>
         </div>
       </div>
 
       {/* Tax-Loss Harvesting Candidates */}
-      {tax_loss_harvesting_candidates?.length > 0 && (
+      {taxLossHarvestingCandidates?.length > 0 && (
         <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
           <div className="flex items-center gap-2 mb-3">
             <TrendingDown className="w-5 h-5 text-green-600" />
             <span className="font-semibold text-green-900 dark:text-green-200">Tax-Loss Harvesting Opportunities</span>
           </div>
           <div className="space-y-2">
-            {tax_loss_harvesting_candidates.map((pos) => (
+            {taxLossHarvestingCandidates.map((pos) => (
               <div key={pos.ticker} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg">
                 <div>
                   <span className="font-semibold text-gray-900 dark:text-white">{pos.ticker}</span>
@@ -426,7 +436,7 @@ const TaxPanel = ({ data, showAdvanced }) => {
               </tr>
             </thead>
             <tbody>
-              {position_tax_analysis?.map((pos) => (
+              {positionTaxAnalysis?.map((pos) => (
                 <tr key={pos.ticker} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                   <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">{pos.ticker}</td>
                   <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">{pos.current_weight?.toFixed(1)}%</td>
@@ -460,14 +470,14 @@ const TaxPanel = ({ data, showAdvanced }) => {
       </div>
 
       {/* Recommendations */}
-      {tax_efficiency_recommendations?.length > 0 && (
+      {taxEfficiencyRecommendations?.length > 0 && (
         <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-amber-600" />
             <span className="font-semibold text-amber-900 dark:text-amber-200">Tax Recommendations</span>
           </div>
           <ul className="space-y-2">
-            {tax_efficiency_recommendations.map((tip, i) => (
+            {taxEfficiencyRecommendations.map((tip, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-300">
                 <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 {tip}
@@ -487,7 +497,11 @@ const TaxPanel = ({ data, showAdvanced }) => {
  * Execution Panel - Implementation sequence and phasing
  */
 const ExecutionPanel = ({ data, thresholds, showAdvanced }) => {
-  const { implementation_phases, phase_distribution, sequencing_rationale, recommended_approach } = data;
+  // Support both camelCase and snake_case
+  const implementationPhases = data.implementationPhases || data.implementation_phases || {};
+  const phaseDistribution = data.phaseDistribution || data.phase_distribution || {};
+  const sequencingRationale = data.sequencingRationale || data.sequencing_rationale || '';
+  const recommendedApproach = data.recommendedApproach || data.recommended_approach || '';
 
   const phaseColors = {
     phase_one_immediate: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', border: 'border-green-300' },
@@ -504,25 +518,25 @@ const ExecutionPanel = ({ data, thresholds, showAdvanced }) => {
             <span className="font-semibold text-gray-900 dark:text-white">Implementation Strategy</span>
           </EducationalTooltip>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{recommended_approach}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{recommendedApproach}</p>
         <div className="flex gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{phase_distribution?.immediate || 0}</div>
+            <div className="text-2xl font-bold text-green-600">{phaseDistribution?.immediate || 0}</div>
             <div className="text-xs text-gray-500">Immediate</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">{phase_distribution?.careful || 0}</div>
+            <div className="text-2xl font-bold text-yellow-600">{phaseDistribution?.careful || 0}</div>
             <div className="text-xs text-gray-500">3-7 Days</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-red-600">{phase_distribution?.gradual || 0}</div>
+            <div className="text-2xl font-bold text-red-600">{phaseDistribution?.gradual || 0}</div>
             <div className="text-xs text-gray-500">1-2 Weeks</div>
           </div>
         </div>
       </div>
 
       {/* Phase Details */}
-      {Object.entries(implementation_phases || {}).map(([phaseKey, phase]) => {
+      {Object.entries(implementationPhases || {}).map(([phaseKey, phase]) => {
         const style = phaseColors[phaseKey] || phaseColors.phase_two_careful;
         return (
           <div key={phaseKey} className={`rounded-xl border ${style.border} overflow-hidden`}>
@@ -573,7 +587,7 @@ const ExecutionPanel = ({ data, thresholds, showAdvanced }) => {
 
       {/* Rationale */}
       <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs text-gray-600 dark:text-gray-400">
-        <strong>Methodology:</strong> {sequencing_rationale}
+        <strong>Methodology:</strong> {sequencingRationale}
       </div>
     </div>
   );

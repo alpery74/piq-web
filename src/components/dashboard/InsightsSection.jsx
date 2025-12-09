@@ -21,14 +21,27 @@ const InsightsSection = ({
   showAdvanced,
   isExpanded,
   onToggle,
-  viewTier = 'simple',
 }) => {
   const correlationTableRows = useMemo(() => correlationRows, [correlationRows]);
+
+  // Safe access to nested analysis properties
+  const safeVolatility = analysis?.volatility || {};
+  const safeRiskDecomposition = analysis?.riskDecomposition || {};
+  const safeStrategies = analysis?.strategies || { expectedVol: {}, turnoverCosts: {}, recommended: '' };
+  const safeCorrelation = analysis?.correlation || { tickers: [] };
+  const safeTopHolding = analysis?.riskMetrics?.topHolding || { ticker: 'N/A', weightPct: 0 };
+  const safeExpectedVol = safeStrategies.expectedVol || {};
+  const safeTurnoverCosts = safeStrategies.turnoverCosts || {};
+  const safeStressTesting = analysis?.stressTesting || {};
+  const safeProbabilities = safeStressTesting.probabilities || {};
+  const safeMaxDrawdowns = safeStressTesting.maxDrawdowns || {};
+  const safeTailRisk = safeStressTesting.tail_risk_assessment || {};
+  const safePositionLimits = safeRiskDecomposition.dynamicPositionLimits?.positionLimits || [];
   const recommendedLimit =
-    analysis.riskDecomposition?.dynamicPositionLimits?.find(
-      (limit) => limit.ticker === analysis.riskMetrics.topHolding.ticker
+    safePositionLimits.find(
+      (limit) => limit.ticker === safeTopHolding.ticker
     )?.recommendedMax ?? 16;
-  const reductionNeeded = Math.max(0, analysis.riskMetrics.topHolding.weightPct - recommendedLimit);
+  const reductionNeeded = Math.max(0, (safeTopHolding.weightPct ?? 0) - recommendedLimit);
 
   return (
     <section
@@ -62,14 +75,14 @@ const InsightsSection = ({
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-lg font-bold text-gray-900">
-                      High Concentration Risk in {analysis.riskMetrics.topHolding.ticker}
+                      High Concentration Risk in {safeTopHolding.ticker}
                     </h3>
                     <span className="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full">ACTION NEEDED</span>
                   </div>
                   <p className="text-gray-700 mb-3">
-                    {analysis.riskMetrics.topHolding.ticker} drives{' '}
-                    <span className="font-bold text-red-700">{topRisk.contribution.toFixed(1)}% of portfolio risk</span> while
-                    being {concentrationWeight.toFixed(1)}% of holdings.
+                    {safeTopHolding.ticker} drives{' '}
+                    <span className="font-bold text-red-700">{(topRisk?.contribution ?? 0).toFixed(1)}% of portfolio risk</span> while
+                    being {(concentrationWeight ?? 0).toFixed(1)}% of holdings.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3">
                     <span className="px-3 py-1 bg-white border border-red-300 rounded-full text-sm">
@@ -81,7 +94,7 @@ const InsightsSection = ({
                   </div>
                   <div className="bg-white/70 rounded-lg p-3 text-sm">
                     <span className="font-semibold">💡 Recommended Action:</span> Adjust{' '}
-                    {analysis.riskMetrics.topHolding.ticker} by{' '}
+                    {safeTopHolding.ticker} by{' '}
                     {reductionNeeded.toFixed(1)} percentage points to align with recommended limits.
                   </div>
                 </div>
@@ -163,7 +176,7 @@ const InsightsSection = ({
                       </button>
                       {showOptimizationStrategies && (
                         <div className="space-y-3">
-                          {Object.entries(analysis.strategies.expectedVol).map(([key, vol]) => (
+                          {Object.entries(safeExpectedVol).map(([key, vol]) => (
                             <div
                               key={key}
                               className="flex items-center justify-between bg-white/80 border border-amber-200 rounded-lg p-3 shadow-sm"
@@ -171,19 +184,19 @@ const InsightsSection = ({
                               <div>
                                 <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
                                   {strategyLabels[key] || key}
-                                  {analysis.strategies.recommended === key && (
+                                  {safeStrategies.recommended === key && (
                                     <span className="text-[11px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
                                       Recommended
                                     </span>
                                   )}
                                 </div>
                                 <div className="text-xs text-gray-600">
-                                  Turnover cost: {analysis.strategies.turnoverCosts[key]?.toFixed(2)}%
+                                  Turnover cost: {(safeTurnoverCosts[key] ?? 0).toFixed(2)}%
                                 </div>
                               </div>
                               <div className="text-right">
                                 <div className="text-sm text-gray-600">Est. volatility</div>
-                                <div className="text-lg font-bold text-amber-700">{(vol * 100).toFixed(1)}%</div>
+                                <div className="text-lg font-bold text-amber-700">{((vol ?? 0) * 100).toFixed(1)}%</div>
                               </div>
                             </div>
                           ))}
@@ -203,14 +216,14 @@ const InsightsSection = ({
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h4 className="text-base font-bold text-gray-900">Correlation Snapshot</h4>
-                  <p className="text-xs text-gray-600">Benchmark: SPY · {analysis.correlation.tickers.length} assets analyzed</p>
+                  <p className="text-xs text-gray-600">Benchmark: SPY · {safeCorrelation.tickers?.length ?? 0} assets analyzed</p>
                 </div>
                 <div className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-semibold">β {portfolioBeta.toFixed(2)}</div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
                   <div className="text-xs text-gray-600">Weighted R²</div>
-                  <div className="font-bold text-blue-900">{analysis.correlation.portfolioRSquaredWeighted.toFixed(3)}</div>
+                  <div className="font-bold text-blue-900">{(safeCorrelation.portfolioRSquaredWeighted ?? 0).toFixed(3)}</div>
                 </div>
                 <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
                   <div className="text-xs text-gray-600">Explained Risk</div>
@@ -222,7 +235,7 @@ const InsightsSection = ({
                 </div>
                 <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
                   <div className="text-xs text-gray-600">Assets Regressed</div>
-                  <div className="font-bold text-blue-900">{analysis.correlation.tickers.length}</div>
+                  <div className="font-bold text-blue-900">{safeCorrelation.tickers?.length ?? 0}</div>
                 </div>
               </div>
             </div>
@@ -240,7 +253,7 @@ const InsightsSection = ({
                   <thead>
                     <tr className="bg-purple-100">
                       <th className="p-2 border border-purple-200 font-mono">Ticker</th>
-                      {analysis.correlation.tickers.map((ticker) => (
+                      {(safeCorrelation.tickers || []).map((ticker) => (
                         <th key={ticker} className="p-2 border border-purple-200 font-mono">
                           {ticker}
                         </th>
@@ -288,63 +301,63 @@ const InsightsSection = ({
                   <p className="text-xs text-gray-600">Monte Carlo + stress tests</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                  analysis.stressTesting?.tail_risk_assessment?.tail_risk_level === 'HIGH'
+                  safeTailRisk.tail_risk_level === 'HIGH'
                     ? 'bg-red-100 text-red-800'
-                    : analysis.stressTesting?.tail_risk_assessment?.tail_risk_level === 'MODERATE'
+                    : safeTailRisk.tail_risk_level === 'MODERATE'
                     ? 'bg-amber-100 text-amber-800'
                     : 'bg-green-100 text-green-800'
                 }`}>
-                  Tail risk: {analysis.stressTesting?.tail_risk_assessment?.tail_risk_level || 'Unknown'}
+                  Tail risk: {safeTailRisk.tail_risk_level || 'Unknown'}
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">1-day VaR 95%</div>
-                  <div className="font-bold text-amber-900">{analysis.volatility.var95DailyPct.toFixed(2)}%</div>
+                  <div className="font-bold text-amber-900">{(safeVolatility.var95DailyPct ?? 0).toFixed(2)}%</div>
                 </div>
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">1-day CVaR 95%</div>
-                  <div className="font-bold text-amber-900">{analysis.volatility.cvar95DailyPct.toFixed(2)}%</div>
+                  <div className="font-bold text-amber-900">{(safeVolatility.cvar95DailyPct ?? 0).toFixed(2)}%</div>
                 </div>
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">Prob. of Loss</div>
                   <div className="font-bold text-amber-900">
-                    {(analysis.stressTesting?.probabilities?.loss * 100 || 0).toFixed(1)}%
+                    {((safeProbabilities.loss ?? 0) * 100).toFixed(1)}%
                   </div>
                 </div>
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">Prob. Large Loss</div>
                   <div className="font-bold text-amber-900">
-                    {(analysis.stressTesting?.probabilities?.bigLoss * 100 || 0).toFixed(1)}%
+                    {((safeProbabilities.bigLoss ?? 0) * 100).toFixed(1)}%
                   </div>
                 </div>
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">Factor Shock</div>
                   <div className="font-bold text-amber-900">
-                    {(analysis.stressTesting?.factorShock || 0).toFixed(1)}%
+                    {(safeStressTesting.factorShock ?? 0).toFixed(1)}%
                   </div>
                 </div>
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                   <div className="text-xs text-gray-600">Best / Worst Day</div>
                   <div className="font-bold text-amber-900">
-                    {(analysis.volatility.simulationBestDayPct || 0).toFixed(2)}% / {(analysis.volatility.simulationWorstDayPct || 0).toFixed(2)}%
+                    {(safeVolatility.simulationBestDayPct ?? 0).toFixed(2)}% / {(safeVolatility.simulationWorstDayPct ?? 0).toFixed(2)}%
                   </div>
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div className="p-3 rounded-lg bg-white border border-amber-100">
                   <div className="font-semibold text-gray-800 mb-1">Normal</div>
-                  <div className="text-gray-700">Max drawdown: {(analysis.stressTesting?.maxDrawdowns?.normal * 100 || 0).toFixed(1)}%</div>
+                  <div className="text-gray-700">Max drawdown: {((safeMaxDrawdowns.normal ?? 0) * 100).toFixed(1)}%</div>
                   <div className="text-gray-500">Prob: 70%</div>
                 </div>
                 <div className="p-3 rounded-lg bg-white border border-amber-100">
                   <div className="font-semibold text-gray-800 mb-1">Stress</div>
-                  <div className="text-gray-700">Max drawdown: {(analysis.stressTesting?.maxDrawdowns?.stress * 100 || 0).toFixed(1)}%</div>
+                  <div className="text-gray-700">Max drawdown: {((safeMaxDrawdowns.stress ?? 0) * 100).toFixed(1)}%</div>
                   <div className="text-gray-500">Prob: 25%</div>
                 </div>
                 <div className="p-3 rounded-lg bg-white border border-amber-100">
                   <div className="font-semibold text-gray-800 mb-1">Crisis</div>
-                  <div className="text-gray-700">Max drawdown: {(analysis.stressTesting?.maxDrawdowns?.crisis * 100 || 0).toFixed(1)}%</div>
+                  <div className="text-gray-700">Max drawdown: {((safeMaxDrawdowns.crisis ?? 0) * 100).toFixed(1)}%</div>
                   <div className="text-gray-500">Prob: 5%</div>
                 </div>
               </div>
@@ -420,16 +433,16 @@ const InsightsSection = ({
                   <div className="flex justify-between">
                     <span>Systematic Risk Contribution</span>
                     <span className="font-bold">
-                      {analysis.riskDecomposition.systematicRiskContributionPct.toFixed(2)}%
+                      {(safeRiskDecomposition.systematicRiskContributionPct ?? 0).toFixed(2)}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Idiosyncratic Risk</span>
-                    <span className="font-bold">{analysis.riskDecomposition.idiosyncraticRiskScorePct.toFixed(2)}%</span>
+                    <span className="font-bold">{(safeRiskDecomposition.idiosyncraticRiskScorePct ?? 0).toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Simulation Days</span>
-                    <span className="font-bold">{analysis.volatility.simulation_days_count}</span>
+                    <span className="font-bold">{safeVolatility.simulationDaysCount ?? safeVolatility.simulation_days_count ?? 0}</span>
                   </div>
                 </div>
                 <div className="mt-3 text-xs text-purple-700 bg-purple-50 p-3 rounded">

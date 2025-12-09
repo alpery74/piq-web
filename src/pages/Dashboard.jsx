@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { AlertCircle, TrendingUp, Activity, Layers, Eye, EyeOff, RefreshCw, Command, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog, Plus } from 'lucide-react';
+import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Command, Moon, Sun, HelpCircle, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import HoldingsSection from '@/components/dashboard/HoldingsSection';
@@ -18,6 +18,7 @@ import MobileBottomNav from '@/components/common/MobileBottomNav';
 import LearnMoreModal, { useLearnMore } from '@/components/common/LearnMoreModal';
 import { SkeletonHeroCard } from '@/components/common/Skeleton';
 import AnalysisProgressCard from '@/components/dashboard/AnalysisProgressCard';
+import EmptyDashboard from '@/components/dashboard/EmptyDashboard';
 import { calculateHealthScore } from '@/utils/formatters';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -31,6 +32,20 @@ const VIEW_TIERS = {
   simple: { label: 'Simple', description: 'Key metrics at a glance', icon: Eye },
   analyst: { label: 'Analyst', description: 'Deeper insights & context', icon: TrendingUp },
   quant: { label: 'Quant', description: 'Full data transparency', icon: Layers },
+};
+
+// Reusable view tier badge component
+const ViewTierBadge = ({ viewTier }) => {
+  if (viewTier === 'simple') return null;
+  return (
+    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+      viewTier === 'quant'
+        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+    }`}>
+      {VIEW_TIERS[viewTier].label} View
+    </span>
+  );
 };
 
 const Dashboard = () => {
@@ -175,12 +190,29 @@ const Dashboard = () => {
     };
   };
 
+  const normalizeRiskDecomposition = (rd) => {
+    if (!rd) return null;
+    const systematic = rd.systematicRiskAnalysis || {};
+    const idiosyncratic = rd.idiosyncraticRiskAnalysis || {};
+    return {
+      ...rd,
+      // Map API field names to what Dashboard expects
+      systematicRiskContributionPct: systematic.systematicRiskContributionPct ?? rd.systematicRiskContributionPct ?? 0,
+      idiosyncraticRiskScorePct: idiosyncratic.idiosyncraticRiskScorePct ?? rd.idiosyncraticRiskScorePct ?? 0,
+      idiosyncraticDetails: idiosyncratic,
+      // Normalize marginal contributions field name
+      marginalContributions: rd.marginalRiskContributions ?? rd.marginalContributions ?? [],
+      // Keep dynamicPositionLimits as-is (it's an object with positionLimits array inside)
+      dynamicPositionLimits: rd.dynamicPositionLimits ?? {},
+    };
+  };
+
   const liveAnalysis = useMemo(() => ({
     correlation: normalizeCorrelation(polledResults.math_correlation),
     riskMetrics: normalizeRiskMetrics(polledResults.math_risk_metrics),
     performance: polledResults.math_performance,
     volatility: normalizeVolatility(polledResults.math_volatility),
-    riskDecomposition: polledResults.optimization_risk_decomposition,
+    riskDecomposition: normalizeRiskDecomposition(polledResults.optimization_risk_decomposition),
     strategies: normalizeStrategies(polledResults.optimization_strategy_generation),
     stressTesting: normalizeStressTesting(polledResults.optimization_stress_testing),
     implementation: polledResults.optimization_implementation,
@@ -217,7 +249,7 @@ const Dashboard = () => {
       sharpe: 0,
       var95DailyPct: 0,
       cvar95DailyPct: 0,
-      simulation_days_count: 0,
+      simulationDaysCount: 0,
       simulationBestDayPct: 0,
       simulationWorstDayPct: 0,
     }, ['annualizedPct']),
@@ -231,9 +263,9 @@ const Dashboard = () => {
         stockSpecificRisks: [],
       },
       marginalContributions: [],
-      dynamicPositionLimits: [],
+      dynamicPositionLimits: { positionLimits: [] },
       correlationClusters: [],
-    }, ['marginalContributions', 'dynamicPositionLimits']),
+    }, ['marginalContributions']),
     strategies: pickLive(liveAnalysis.strategies, {
       recommended: 'N/A',
       expectedVol: { minimumVariance: 0, riskParity: 0, maximumDiversification: 0 },
@@ -254,7 +286,7 @@ const Dashboard = () => {
     implementation: liveAnalysis.implementation || {},
   }), [liveAnalysis]);
 
-  const totalPortfolioValue = analysis.riskMetrics.alphaBookTotalValue + analysis.performance.betaBookTotalValue;
+  const totalPortfolioValue = (analysis.riskMetrics?.alphaBookTotalValue ?? 0) + (analysis.performance?.betaBookTotalValue ?? 0);
   const hasHealthData =
     liveAnalysis?.riskMetrics?.effectiveHoldings !== undefined &&
     liveAnalysis?.volatility?.annualizedPct !== undefined &&
@@ -262,16 +294,16 @@ const Dashboard = () => {
 
   const healthScore = hasHealthData
     ? calculateHealthScore({
-        riskMetrics: { alpha_book_hhi_score: analysis.riskMetrics.alphaBookHHI, alpha_book_effective_holdings: analysis.riskMetrics.effectiveHoldings },
-        volatility: { predictive_volatility_annualized_pct: analysis.volatility.annualizedPct / 100 },
-        stressTesting: { tail_risk_assessment: { tail_risk_level: analysis.stressTesting.tail_risk_assessment.tail_risk_level } },
+        riskMetrics: { alpha_book_hhi_score: analysis.riskMetrics?.alphaBookHHI ?? 0, alpha_book_effective_holdings: analysis.riskMetrics?.effectiveHoldings ?? 0 },
+        volatility: { predictive_volatility_annualized_pct: (analysis.volatility?.annualizedPct ?? 0) / 100 },
+        stressTesting: { tail_risk_assessment: { tail_risk_level: analysis.stressTesting?.tail_risk_assessment?.tail_risk_level ?? 'UNKNOWN' } },
       })
     : null;
 
-  const concentrationPenalty = analysis.riskMetrics.alphaBookHHI > 0.15 ? 15 : 10;
-  const volatilityPenalty = analysis.volatility.annualizedPct > 20 ? 15 : analysis.volatility.annualizedPct > 15 ? 10 : 0;
-  const tailPenalty = analysis.stressTesting.tail_risk_assessment.tail_risk_level === 'HIGH' ? 10 : 0;
-  const diversificationPenalty = analysis.riskMetrics.effectiveHoldings < 10 ? 5 : 0;
+  const concentrationPenalty = (analysis.riskMetrics?.alphaBookHHI ?? 0) > 0.15 ? 15 : 10;
+  const volatilityPenalty = (analysis.volatility?.annualizedPct ?? 0) > 20 ? 15 : (analysis.volatility?.annualizedPct ?? 0) > 15 ? 10 : 0;
+  const tailPenalty = analysis.stressTesting?.tail_risk_assessment?.tail_risk_level === 'HIGH' ? 10 : 0;
+  const diversificationPenalty = (analysis.riskMetrics?.effectiveHoldings ?? 0) < 10 ? 5 : 0;
 
   // Backend returns nested structure: dynamicPositionLimits.positionLimits
   const positionLimits = analysis.riskDecomposition?.dynamicPositionLimits?.positionLimits || [];
@@ -308,16 +340,6 @@ const Dashboard = () => {
     contribution: item.marginalRiskContribution || item.contribution,
   }));
 
-  // Debug: Log what data is coming through for holdings
-  useEffect(() => {
-    console.log('[Dashboard] Raw polledResults:', polledResults);
-    console.log('[Dashboard] optimization_risk_decomposition:', polledResults.optimization_risk_decomposition);
-    console.log('[Dashboard] dynamicPositionLimits:', polledResults.optimization_risk_decomposition?.dynamicPositionLimits);
-    console.log('[Dashboard] positionLimits (nested):', polledResults.optimization_risk_decomposition?.dynamicPositionLimits?.positionLimits);
-    console.log('[Dashboard] Extracted positionLimits:', positionLimits.length, positionLimits);
-    console.log('[Dashboard] Extracted holdings:', holdings.length, holdings);
-  }, [polledResults, positionLimits, holdings]);
-
   // Section navigation - these are page sections, NOT view tiers
   // Pills = WHERE on page (scroll spy navigation)
   // Dropdown = HOW MUCH detail (Simple/Analyst/Quant depth)
@@ -333,7 +355,7 @@ const Dashboard = () => {
 
   const correlationRows = (analysis.correlation?.tickers || []).map((ticker, i) => ({
     ticker,
-    values: analysis.correlation.correlationMatrix[i] || [],
+    values: analysis.correlation?.correlationMatrix?.[i] || [],
   }));
 
   const strategyLabels = {
@@ -345,8 +367,8 @@ const Dashboard = () => {
   const pieWeights = holdings.map((h) => ({ name: h.ticker, value: h.weight, risk: h.riskContribution || 0 }));
   const portfolioData = pieWeights;
 
-  const currentVol = analysis.volatility.annualizedPct;
-  const expectedMinVarVol = analysis.strategies.expectedVol.minimumVariance * 100;
+  const currentVol = analysis.volatility?.annualizedPct ?? 0;
+  const expectedMinVarVol = (analysis.strategies?.expectedVol?.minimumVariance ?? 0) * 100;
   const healthLabel = healthScore === null
     ? 'Waiting for data'
     : healthScore >= 80
@@ -358,18 +380,17 @@ const Dashboard = () => {
           : 'Poor';
   const riskLevelLabel = currentVol < 10 ? 'Low' : currentVol < 20 ? 'Moderate' : 'High';
   const riskEmoji = riskLevelLabel === 'Low' ? '🟢' : riskLevelLabel === 'Moderate' ? '🟡' : '🔴';
-  const concentrationWeight = analysis.riskMetrics.topHolding.weightPct;
+  const concentrationWeight = analysis.riskMetrics?.topHolding?.weightPct ?? 0;
   const optimizationReductionPct = currentVol > 0
     ? (((currentVol - expectedMinVarVol) / currentVol) * 100).toFixed(0)
     : '0';
-  const portfolioBeta = analysis.correlation.portfolioMarketBeta;
-  const explainedRiskPct = analysis.correlation.explainedRiskPct;
-  const unexplainedRiskPct = analysis.correlation.unexplainedRiskPct;
-  const highestBeta = analysis.correlation.highestBeta;
-  const lowestBeta = analysis.correlation.lowestBeta;
-  const topRisk = marginalContributions[0] || { ticker: '—', contribution: 0 };
+  const portfolioBeta = analysis.correlation?.portfolioMarketBeta ?? 0;
+  const explainedRiskPct = analysis.correlation?.explainedRiskPct ?? 0;
+  const unexplainedRiskPct = analysis.correlation?.unexplainedRiskPct ?? 0;
+  const highestBeta = analysis.correlation?.highestBeta ?? { ticker: 'N/A', value: 0 };
+  const lowestBeta = analysis.correlation?.lowestBeta ?? { ticker: 'N/A', value: 0 };
+  const topRisk = marginalContributions[0] || { ticker: '—', marginalRiskContribution: 0, contribution: 0 };
   const positionsOverLimit = positionLimits.filter((p) => p.adjustmentNeeded);
-  const simulationDays = analysis.volatility.simulation_days_count;
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -402,7 +423,7 @@ const Dashboard = () => {
     setError(null);
   };
 
-  const handleAnalysisStarted = (runId, enrichedHoldings) => {
+  const handleAnalysisStarted = (runId) => {
     localStorage.setItem('analysisRunId', runId);
     setAnalysisRunId(runId);
     setNewAnalysisOpen(false);
@@ -418,17 +439,6 @@ const Dashboard = () => {
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
-  };
-
-  const handleClearError = () => setError(null);
-
-  // Colors for consistent theming
-  const COLORS = {
-    primary: '#6366F1',
-    success: '#10B981',
-    warning: '#F59E0B',
-    danger: '#EF4444',
-    info: '#3B82F6'
   };
 
   const [activeSection, setActiveSection] = useState(sectionLinks[0].id);
@@ -459,18 +469,42 @@ const Dashboard = () => {
   }, [activeSection, sectionLinks]);
 
   // Chart colors
-  const PIE_COLORS = ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#6366F1', '#8B5CF6'];
+  const PIE_COLORS = ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#14B8A6', '#F97316', '#8B5CF6', '#06B6D4', '#D946EF'];
+
+  // Show empty state for new users without any analysis
+  if (!analysisRunId && !polling) {
+    return (
+      <>
+        <EmptyDashboard onStartAnalysis={() => setNewAnalysisOpen(true)} />
+        <NewAnalysisModal
+          isOpen={newAnalysisOpen}
+          onClose={() => setNewAnalysisOpen(false)}
+          onAnalysisStarted={handleAnalysisStarted}
+        />
+        <SessionSelectorDialog
+          open={selectorOpen}
+          onClose={() => setSelectorOpen(false)}
+          onSelect={(runId) => {
+            handleRunChange(runId);
+            localStorage.setItem('analysisRunId', runId);
+            setSelectorOpen(false);
+          }}
+          onStartNew={handleOpenNewAnalysis}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-12">
-      {(!analysisRunId || error) && (
+      {error && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 shadow-sm">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5" />
             <div>
-              <p className="font-semibold">No analysis selected</p>
+              <p className="font-semibold">Analysis Error</p>
               <p className="text-sm">
-                {error || 'Tap change run to pick a portfolio/version or start a new analysis.'}
+                {error}
               </p>
             </div>
             <button
@@ -517,11 +551,12 @@ const Dashboard = () => {
       ) : (
         <HeroCard
           portfolioValue={totalPortfolioValue}
-          dailyChange={totalPortfolioValue * 0.024} // Mock daily change - would come from real data
-          dailyChangePercent={2.4} // Mock - would come from real data
+          dailyChange={analysis.performance?.dailyChangeDollars ?? 0}
+          dailyChangePercent={analysis.performance?.dailyChangePct ?? 0}
           healthScore={healthScore}
           riskLevel={riskLevelLabel}
           volatility={currentVol}
+          holdingsCount={holdings.length}
           onOptimize={() => {
             setShowOptimizationStrategies(true);
             document.getElementById('optimization-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -536,7 +571,7 @@ const Dashboard = () => {
       )}
 
       {/* In-page anchor bar (single sticky element for this page) */}
-      <div className="md:sticky md:top-16 z-30 -mx-4 px-4 py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="md:sticky md:top-20 z-30 -mx-4 px-4 py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {sectionLinks.map((link) => (
@@ -674,7 +709,6 @@ const Dashboard = () => {
           setActiveTooltip={setActiveTooltip}
           isExpanded={expandedSections['health-score']}
           onToggle={() => toggleSection('health-score')}
-          viewTier={viewTier}
         />
       </div>
 
@@ -683,15 +717,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-6 h-6 text-red-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Risk Analysis</h2>
-          {viewTier !== 'simple' && (
-            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-              viewTier === 'quant'
-                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-            }`}>
-              {VIEW_TIERS[viewTier].label} View
-            </span>
-          )}
+          <ViewTierBadge viewTier={viewTier} />
         </div>
 
         {/* Risk Overview Card - Volatility, VaR, CVaR, Monte Carlo */}
@@ -740,7 +766,6 @@ const Dashboard = () => {
           isExpanded={expandedSections['holdings']}
           onToggle={() => toggleSection('holdings')}
           isLoading={sectionLoadingStates.holdings}
-          viewTier={viewTier}
         />
       </div>
 
@@ -749,15 +774,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-3 mb-2">
           <GitBranch className="w-6 h-6 text-cyan-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Diversification</h2>
-          {viewTier !== 'simple' && (
-            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-              viewTier === 'quant'
-                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-            }`}>
-              {VIEW_TIERS[viewTier].label} View
-            </span>
-          )}
+          <ViewTierBadge viewTier={viewTier} />
         </div>
 
         {/* Correlation Clusters - Group visualization */}
@@ -772,15 +789,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-3 mb-2">
           <BarChart3 className="w-6 h-6 text-emerald-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Fundamentals</h2>
-          {viewTier !== 'simple' && (
-            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-              viewTier === 'quant'
-                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-            }`}>
-              {VIEW_TIERS[viewTier].label} View
-            </span>
-          )}
+          <ViewTierBadge viewTier={viewTier} />
         </div>
 
         <FundamentalsCard
@@ -794,15 +803,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-3 mb-2">
           <Target className="w-6 h-6 text-purple-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Optimization</h2>
-          {viewTier !== 'simple' && (
-            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-              viewTier === 'quant'
-                ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-            }`}>
-              {VIEW_TIERS[viewTier].label} View
-            </span>
-          )}
+          <ViewTierBadge viewTier={viewTier} />
         </div>
 
         {/* Strategy Comparison - Full optimization strategies */}
@@ -827,7 +828,7 @@ const Dashboard = () => {
           holdings={holdings}
           currentVolatility={currentVol}
           currentBeta={portfolioBeta}
-          currentConcentration={analysis.riskMetrics.alphaBookHHI}
+          currentConcentration={analysis.riskMetrics?.alphaBookHHI ?? 0}
         />
       </div>
 

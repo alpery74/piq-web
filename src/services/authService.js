@@ -33,6 +33,22 @@ export const loginUser = async (email, password) => {
   };
 };
 
+export const registerUser = async (email, password, firstName, lastName) => {
+  const response = await client.post('/auth/register', {
+    email,
+    password,
+    first_name: firstName,
+    last_name: lastName,
+  });
+  const payload = response.data || {};
+
+  return {
+    success: payload.success !== false,
+    user: normalizeUser(payload?.data?.user || payload.user || payload),
+    raw: payload,
+  };
+};
+
 export const logoutUser = () => {
   clearToken();
 };

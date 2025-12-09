@@ -21,6 +21,7 @@ import {
   Check,
 } from 'lucide-react';
 import api from '@/services/client';
+import { formatLargeNumber } from '@/utils/formatters';
 
 // Debounce hook for search
 const useDebounce = (value, delay) => {
@@ -35,15 +36,6 @@ const useDebounce = (value, delay) => {
   }, [value, delay]);
 
   return debouncedValue;
-};
-
-// Format currency
-const formatCurrency = (value) => {
-  if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
-  if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
-  if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
-  if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`;
-  return `$${value.toFixed(2)}`;
 };
 
 // Step indicator component
@@ -92,7 +84,7 @@ const SearchResultItem = ({ result, onSelect }) => (
         {result.marketCap && (
           <>
             <span>•</span>
-            <span>{formatCurrency(result.marketCap)}</span>
+            <span>{formatLargeNumber(result.marketCap)}</span>
           </>
         )}
       </div>
@@ -102,8 +94,17 @@ const SearchResultItem = ({ result, onSelect }) => (
 );
 
 // Selected stock row
-const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight }) => {
+const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight, sharesInputRef, isLatest }) => {
   const [sharesInput, setSharesInput] = useState(stock.shares?.toString() || '');
+  const inputRef = useRef(null);
+
+  // Auto-focus when this is the latest added stock
+  useEffect(() => {
+    if (isLatest && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isLatest]);
 
   const handleSharesChange = (e) => {
     const value = e.target.value;
@@ -117,7 +118,11 @@ const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight }) => {
   const value = (stock.currentPrice || 0) * (stock.shares || 0);
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+    <div className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+      isLatest
+        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 ring-2 ring-blue-200 dark:ring-blue-800'
+        : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+    }`}>
       <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
         <span className="text-white font-bold text-xs">{stock.ticker}</span>
       </div>
@@ -134,20 +139,23 @@ const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight }) => {
       <div className="flex items-center gap-2">
         <div className="text-right">
           <input
+            ref={inputRef}
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
             value={sharesInput}
             onChange={handleSharesChange}
             placeholder="0"
-            className="w-20 px-3 py-2 text-right font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className={`w-20 px-3 py-2 text-right font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${
+              isLatest ? 'border-blue-400 dark:border-blue-500' : 'border-gray-300 dark:border-gray-600'
+            }`}
           />
           <div className="text-xs text-gray-500 mt-1">shares</div>
         </div>
 
         <div className="text-right w-24">
           <div className="font-semibold text-gray-900 dark:text-white text-sm">
-            {formatCurrency(value)}
+            {formatLargeNumber(value)}
           </div>
           <div className="text-xs text-gray-500">{weight.toFixed(1)}%</div>
         </div>
@@ -216,6 +224,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedStocks, setSelectedStocks] = useState([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [latestAddedTicker, setLatestAddedTicker] = useState(null);
 
   const searchInputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -256,14 +265,11 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
   const fetchPortfolioLibrary = async () => {
     try {
       const response = await api.get('/portfolio-library');
-      console.log('[NewAnalysisModal] Portfolio library response:', response.data);
       if (response.data.success) {
         const portfolios = response.data.data || [];
-        console.log('[NewAnalysisModal] Portfolios loaded:', portfolios.length, portfolios);
         setPortfolioLibrary(portfolios);
       }
-    } catch (err) {
-      console.error('[NewAnalysisModal] Failed to fetch portfolio library:', err);
+    } catch {
       // Don't show error - just default to new portfolio mode
     }
   };
@@ -271,12 +277,10 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
   const fetchUserLimits = async () => {
     try {
       const response = await api.get('/user-limits');
-      console.log('[NewAnalysisModal] User limits response:', response.data);
       if (response.data.success) {
         setUserLimits(response.data.data);
       }
-    } catch (err) {
-      console.error('[NewAnalysisModal] Failed to fetch user limits:', err);
+    } catch {
       // Set default limits as fallback
       setUserLimits({ tier_name: 'Free', tier_limits: { max_holdings: 5 } });
     }
@@ -286,31 +290,24 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
     if (query.length < 1) return;
 
     setIsSearching(true);
-    console.log('[NewAnalysisModal] Searching companies for:', query);
     try {
       const response = await api.get('/companies/search', {
         params: { q: query }
       });
 
-      console.log('[NewAnalysisModal] Search response:', response.data);
-
       if (response.data.success) {
         // Filter out already selected stocks
         const selectedTickers = selectedStocks.map(s => s.ticker);
         const results = response.data.data || [];
-        console.log('[NewAnalysisModal] Raw search results:', results.length, results);
         const filteredResults = results.filter(
           r => !selectedTickers.includes(r.ticker)
         );
-        console.log('[NewAnalysisModal] Filtered results:', filteredResults.length);
         setSearchResults(filteredResults);
         setShowSearchDropdown(filteredResults.length > 0);
       } else {
-        console.warn('[NewAnalysisModal] Search API returned success=false:', response.data.error);
         setSearchResults([]);
       }
-    } catch (err) {
-      console.error('[NewAnalysisModal] Search failed:', err.response?.data || err.message || err);
+    } catch {
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -326,6 +323,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
     }
 
     setSelectedStocks(prev => [...prev, { ...stock, shares: 0 }]);
+    setLatestAddedTicker(stock.ticker); // Track which stock was just added
     setSearchQuery('');
     setSearchResults([]);
     setShowSearchDropdown(false);
@@ -365,7 +363,8 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
   };
 
   const canProceedFromStocks = () => {
-    return selectedStocks.length > 0 && selectedStocks.every(s => s.shares > 0);
+    // Require at least 2 stocks for a diversified portfolio
+    return selectedStocks.length >= 2 && selectedStocks.every(s => s.shares > 0);
   };
 
   const handleNext = () => {
@@ -423,6 +422,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
     setSelectedStocks([]);
     setSearchQuery('');
     setSearchResults([]);
+    setLatestAddedTicker(null);
     setError(null);
     onClose();
   };
@@ -668,21 +668,57 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                       Selected Stocks ({selectedStocks.length})
                     </h3>
                     <div className="text-sm text-gray-500">
-                      Total: <span className="font-semibold text-gray-900 dark:text-white">{formatCurrency(totalValue)}</span>
+                      Total: <span className="font-semibold text-gray-900 dark:text-white">{formatLargeNumber(totalValue)}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {selectedStocks.map((stock) => (
+                    {selectedStocks.map((stock, index) => (
                       <SelectedStockRow
                         key={stock.ticker}
                         stock={stock}
                         onUpdateShares={handleUpdateShares}
                         onRemove={handleRemoveStock}
                         weight={getStockWeight(stock)}
+                        isLatest={stock.ticker === latestAddedTicker}
                       />
                     ))}
                   </div>
+
+                  {/* Hint when only 1 stock is selected */}
+                  {selectedStocks.length === 1 && (
+                    <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+                      <Info className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                          Add at least one more stock
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-300 mt-1">
+                          A diversified portfolio requires at least 2 stocks. Use the search bar above to add more holdings.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Ready indicator when requirements are met */}
+                  {selectedStocks.length >= 2 && selectedStocks.every(s => s.shares > 0) && (
+                    <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                      <Check className="w-5 h-5 text-green-500" />
+                      <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                        Ready to proceed! You can add more stocks or continue to review.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Reminder about entering shares */}
+                  {selectedStocks.length >= 2 && selectedStocks.some(s => s.shares === 0) && (
+                    <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                      <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Enter the number of shares for each stock to continue.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -730,7 +766,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-gray-900 dark:text-white">
-                          {formatCurrency((stock.currentPrice || 0) * stock.shares)}
+                          {formatLargeNumber((stock.currentPrice || 0) * stock.shares)}
                         </span>
                         <span className="text-gray-500 w-12 text-right">
                           {getStockWeight(stock).toFixed(1)}%
@@ -740,7 +776,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                   ))}
                   <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between font-semibold">
                     <span className="text-gray-900 dark:text-white">Total Portfolio Value</span>
-                    <span className="text-blue-600 dark:text-blue-400">{formatCurrency(totalValue)}</span>
+                    <span className="text-blue-600 dark:text-blue-400">{formatLargeNumber(totalValue)}</span>
                   </div>
                 </div>
               </div>

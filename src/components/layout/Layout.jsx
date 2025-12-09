@@ -1,8 +1,15 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Search, Settings, LogOut, ChevronDown, Bell, Shield, Lock, BarChart3, GraduationCap, ShieldCheck } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, onOpenSearch, onOpenSettings, notificationCount = 0 }) => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -18,6 +25,44 @@ const Layout = ({ children }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close dropdowns on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Keyboard shortcut for search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        onOpenSearch?.();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onOpenSearch]);
+
+  const handleLogout = () => {
+    logout();
+    setProfileOpen(false);
+    navigate('/login');
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user?.email) return 'U';
+    return user.email.charAt(0).toUpperCase();
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* iOS Mesh Gradient Background */}
@@ -25,11 +70,10 @@ const Layout = ({ children }) => {
 
       {/* iOS Glass Header */}
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          scrolled
-            ? 'nav-glass-thick shadow-ios-sm'
-            : 'nav-glass'
-        }`}
+        className={`sticky top-0 z-40 transition-all duration-300 ${scrolled
+          ? 'nav-glass-thick shadow-ios-sm'
+          : 'nav-glass'
+          }`}
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -40,14 +84,14 @@ const Layout = ({ children }) => {
             >
               <div className="relative">
                 <img
-                  src="/images/logo.svg"
+                  src="/images/logo.png"
                   alt="PIQ Labs"
-                  className="w-9 h-9 rounded-ios object-contain"
+                  className="w-14 h-14 rounded-ios object-contain"
                 />
                 {/* Subtle glow effect */}
                 <div className="absolute inset-0 rounded-ios bg-gradient-to-br from-primary-400/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
               </div>
-              <span className="text-lg font-semibold tracking-tight hidden sm:block" style={{ color: '#1C1C1E' }}>
+              <span className="text-lg font-semibold tracking-tight hidden sm:block text-gray-900 dark:text-white">
                 PIQ Labs
               </span>
             </Link>
@@ -58,23 +102,156 @@ const Layout = ({ children }) => {
                 <Link
                   to="/"
                   className={`segmented-control-item ${isActive('/') ? 'active' : ''}`}
+                  aria-current={isActive('/') ? 'page' : undefined}
                 >
                   Dashboard
                 </Link>
                 <Link
                   to="/legal"
                   className={`segmented-control-item ${isActive('/legal') ? 'active' : ''}`}
+                  aria-current={isActive('/legal') ? 'page' : undefined}
                 >
                   Legal
                 </Link>
                 <Link
                   to="/privacy"
                   className={`segmented-control-item ${isActive('/privacy') ? 'active' : ''}`}
+                  aria-current={isActive('/privacy') ? 'page' : undefined}
                 >
                   Privacy
                 </Link>
               </div>
             </nav>
+
+            {/* Header Actions - Search, Settings, Profile */}
+            <div className="hidden md:flex items-center gap-2">
+              {/* Search Button */}
+              <button
+                onClick={onOpenSearch}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-white/10"
+                title="Search (⌘K)"
+              >
+                <Search className="w-4 h-4" />
+                <span className="text-xs text-gray-400">⌘K</span>
+              </button>
+
+              {/* Settings Button */}
+              <button
+                onClick={onOpenSettings}
+                className="p-2 rounded-xl transition-all bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-white/10"
+                title="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+
+              {/* Notifications Bell */}
+              {isAuthenticated && (
+                <div className="relative" ref={notificationsRef}>
+                  <button
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="relative p-2 rounded-xl transition-all bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-white/10"
+                    title="Notifications"
+                  >
+                    <Bell className="w-4 h-4" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-ios-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {notificationCount > 9 ? '9+' : notificationCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notifications Dropdown */}
+                  {notificationsOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden z-50">
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                          Notifications
+                        </p>
+                        {notificationCount > 0 && (
+                          <span className="text-xs text-ios-blue font-medium cursor-pointer hover:underline">
+                            Mark all read
+                          </span>
+                        )}
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        {notificationCount === 0 ? (
+                          <div className="py-8 text-center">
+                            <Bell className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500 dark:text-gray-400">No notifications yet</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              You'll see alerts here when analysis completes
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="py-2">
+                            <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">Analysis Complete</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Your portfolio analysis has finished processing</p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Just now</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* User Profile Dropdown */}
+              {isAuthenticated ? (
+                <div className="relative" ref={profileRef}>
+                  <button
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 border border-gray-200/50 dark:border-white/10"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-ios-blue to-ios-purple flex items-center justify-center text-white text-sm font-semibold">
+                      {getUserInitials()}
+                    </div>
+                    <ChevronDown className={`w-3 h-3 text-gray-500 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Profile Dropdown Menu */}
+                  {profileOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden z-50">
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          {user?.email || 'User'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          PIQ Labs Account
+                        </p>
+                      </div>
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setProfileOpen(false);
+                            onOpenSettings?.();
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <Settings className="w-4 h-4" />
+                          Settings
+                        </button>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-ios-blue text-white hover:bg-ios-blue/90"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
 
             {/* Mobile Menu Button - iOS Style */}
             <button
@@ -96,9 +273,8 @@ const Layout = ({ children }) => {
 
           {/* Mobile Navigation - iOS Sheet Style */}
           <div
-            className={`md:hidden overflow-hidden transition-all duration-300 ease-ios ${
-              mobileMenuOpen ? 'max-h-48 opacity-100 mt-3' : 'max-h-0 opacity-0'
-            }`}
+            className={`md:hidden overflow-hidden transition-all duration-300 ease-ios ${mobileMenuOpen ? 'max-h-48 opacity-100 mt-3' : 'max-h-0 opacity-0'
+              }`}
           >
             <nav className="py-2 space-y-1">
               {[
@@ -110,11 +286,10 @@ const Layout = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block py-3 px-4 rounded-ios text-base font-medium transition-all duration-200 tap-scale ${
-                    isActive(item.path)
-                      ? 'text-ios-blue bg-ios-blue/8'
-                      : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
-                  }`}
+                  className={`block py-3 px-4 rounded-ios text-base font-medium transition-all duration-200 tap-scale ${isActive(item.path)
+                    ? 'text-ios-blue bg-ios-blue/10'
+                    : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+                    }`}
                 >
                   {item.label}
                 </Link>
@@ -131,34 +306,61 @@ const Layout = ({ children }) => {
 
       {/* iOS Style Footer - Glass */}
       <footer className="mt-auto">
-        <div
-          className="border-t"
-          style={{
-            background: 'var(--glass-bg-thick)',
-            backdropFilter: 'blur(20px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-            borderColor: 'rgba(60, 60, 67, 0.12)'
-          }}
-        >
+        {/* Social Proof Stats Bar */}
+        <div className="border-t border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-gray-50/80 via-white/80 to-gray-50/80 dark:from-gray-800/80 dark:via-gray-900/80 dark:to-gray-800/80 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-ios-blue" />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">1K+ Analyses Run</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-600" />
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-ios-green" />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Bank-Level Security</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-600" />
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Data Never Sold</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-600" />
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-ios-orange" />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Built by PhDs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Footer */}
+        <div className="border-t border-gray-200/50 dark:border-gray-700/50 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl">
           <div className="container mx-auto px-4 py-5">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              {/* Left: Copyright & Links */}
               <div className="flex items-center gap-4">
-                <p className="text-sm" style={{ color: 'rgba(60, 60, 67, 0.6)' }}>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   © 2025 PIQ Labs
                 </p>
-                <span className="hidden md:block w-1 h-1 rounded-full" style={{ background: 'rgba(60, 60, 67, 0.3)' }} />
+                <span className="hidden md:block w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
                 <Link
                   to="/legal"
-                  className="text-sm font-medium transition-colors hover:text-ios-blue"
-                  style={{ color: 'rgba(60, 60, 67, 0.6)' }}
+                  className="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors hover:text-ios-blue"
                 >
                   Privacy & Terms
                 </Link>
               </div>
-              <p
-                className="text-xs text-center md:text-right max-w-md"
-                style={{ color: 'rgba(60, 60, 67, 0.4)' }}
-              >
+
+              {/* Center: Trust Badges */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-100/80 dark:bg-gray-800/80">
+                  <Shield className="w-3.5 h-3.5 text-ios-green" />
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">256-bit SSL</span>
+                </div>
+              </div>
+
+              {/* Right: Disclaimer */}
+              <p className="text-xs text-center md:text-right max-w-md text-gray-400 dark:text-gray-500">
                 PIQ Labs provides financial data and analysis for informational purposes only.
                 Not investment advice.
               </p>

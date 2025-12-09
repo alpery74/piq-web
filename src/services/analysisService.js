@@ -30,20 +30,9 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
   const response = await client.get(`/session/${analysisRunId}/results`, { params });
   const data = response.data || {};
 
-  console.log('[pollUnifiedResults] Raw API response keys:', Object.keys(data));
-  console.log('[pollUnifiedResults] Has results?', !!data.results, 'Results keys:', data.results ? Object.keys(data.results) : []);
-
   if (data.results) {
     const parsed = {};
     Object.entries(data.results).forEach(([subtool, result]) => {
-      console.log(`[pollUnifiedResults] Subtool "${subtool}":`, {
-        type: typeof result,
-        hasStatus: result && 'status' in result,
-        status: result?.status,
-        hasResultField: result && 'result' in result,
-        resultFieldType: typeof result?.result,
-      });
-
       // Handle format: {status: 'ready', result: '...JSON string...'}
       if (result?.status === 'ready' && result.result) {
         try {
@@ -51,19 +40,14 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
             ? JSON.parse(result.result)
             : result.result;
           parsed[subtool] = snakeToCamel(resultData);
-          console.log(`[pollUnifiedResults] ✅ Parsed ${subtool}, keys:`, Object.keys(parsed[subtool]).slice(0, 5));
-        } catch (err) {
-          console.error(`[pollUnifiedResults] ❌ Failed to parse ${subtool}:`, err.message);
+        } catch {
+          // Skip unparseable results
         }
-      } else if (result?.status && result.status !== 'ready') {
-        console.log(`[pollUnifiedResults] ⏳ ${subtool} status: ${result.status}`);
       } else if (result && typeof result === 'object' && !('status' in result)) {
-        // Direct object format - no wrapper (unlikely based on iOS code)
+        // Direct object format - no wrapper
         parsed[subtool] = snakeToCamel(result);
-        console.log(`[pollUnifiedResults] ✅ Direct parsed ${subtool}`);
       }
     });
-    console.log('[pollUnifiedResults] Final parsed results:', Object.keys(parsed));
     return {
       ...data,
       parsedResults: parsed,

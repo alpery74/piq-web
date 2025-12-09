@@ -54,7 +54,6 @@ const HoldingsSection = ({
   isExpanded,
   onToggle,
   isLoading = false,
-  viewTier = 'simple',
 }) => {
   // Check if we have valid data
   const hasHoldingsData = holdings && holdings.length > 0;
@@ -99,7 +98,7 @@ const HoldingsSection = ({
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+                      label={({ name, value }) => `${name}: ${(value ?? 0).toFixed(1)}%`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
@@ -148,7 +147,7 @@ const HoldingsSection = ({
                       <tr key={holding.ticker} className="hover:bg-gray-50 transition-colors">
                         <td className="font-mono font-bold text-base">{holding.ticker}</td>
                         <td className="font-medium">{holding.name}</td>
-                        <td className="text-right font-semibold">{holding.weight.toFixed(1)}%</td>
+                        <td className="text-right font-semibold">{(holding.weight ?? 0).toFixed(1)}%</td>
                         <td className="text-right">{formatCurrency(holding.value, 0)}</td>
                         <td
                           className={`text-right font-bold ${
@@ -161,7 +160,7 @@ const HoldingsSection = ({
                               : 'text-gray-700'
                           }`}
                         >
-                          {holding.riskContribution !== undefined ? `${holding.riskContribution.toFixed(1)}%` : '—'}
+                          {holding.riskContribution !== undefined ? `${(holding.riskContribution ?? 0).toFixed(1)}%` : '—'}
                         </td>
                         <td className="text-center">
                           <ActionBadge action={holding.action} size="sm" />
@@ -193,8 +192,8 @@ const HoldingsSection = ({
               <div className="bg-white/60 p-4 rounded-lg">
                 <h4 className="font-bold mb-2">📊 Weight vs. Risk</h4>
                 <p className="text-sm">
-                  Notice how {analysis.riskMetrics.topHolding.ticker} is {concentrationWeight.toFixed(1)}% of your portfolio
-                  but creates {topRisk.contribution.toFixed(1)}% of risk. This disproportionate risk contribution signals
+                  Notice how {analysis?.riskMetrics?.topHolding?.ticker ?? 'top holding'} is {(concentrationWeight ?? 0).toFixed(1)}% of your portfolio
+                  but creates {(topRisk?.contribution ?? 0).toFixed(1)}% of risk. This disproportionate risk contribution signals
                   over-concentration.
                 </p>
               </div>
@@ -274,14 +273,18 @@ const HoldingsSection = ({
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div className="font-semibold text-gray-800 mb-2">Position Limits Check</div>
             <ul className="space-y-2">
-              {positionsOverLimit.slice(0, 5).map((p) => (
-                <li key={p.ticker} className="flex items-center justify-between">
-                  <span className="font-mono font-bold">{p.ticker}</span>
-                  <span className="text-xs text-gray-600">
-                    {p.currentWeight.toFixed(1)}% → Max {p.recommendedMax.toFixed(1)}%
-                  </span>
-                </li>
-              ))}
+              {positionsOverLimit.slice(0, 5).map((p) => {
+                const currentWt = p.currentWeight ?? p.currentWeightPct ?? p.weight ?? 0;
+                const maxWt = p.recommendedMax ?? p.recommendedMaxPct ?? p.maxWeight ?? 0;
+                return (
+                  <li key={p.ticker || 'unknown'} className="flex items-center justify-between">
+                    <span className="font-mono font-bold">{p.ticker || '—'}</span>
+                    <span className="text-xs text-gray-600">
+                      {currentWt.toFixed(1)}% → Max {maxWt.toFixed(1)}%
+                    </span>
+                  </li>
+                );
+              })}
               {positionsOverLimit.length > 5 && (
                 <li className="text-xs text-gray-500">+{positionsOverLimit.length - 5} more over limits</li>
               )}

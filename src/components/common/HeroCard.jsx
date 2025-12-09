@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TrendingDown, Activity, Target, Zap, ChevronRight } from 'lucide-react';
 
 // Animated number component with formatting
 const AnimatedValue = ({ value, prefix = '', suffix = '', decimals = 2, duration = 1000 }) => {
   const [displayValue, setDisplayValue] = useState(0);
+  const startValueRef = useRef(0);
 
   useEffect(() => {
     if (value === null || value === undefined) return;
 
     const startTime = Date.now();
-    const startValue = displayValue;
+    startValueRef.current = displayValue;
     const endValue = typeof value === 'number' ? value : parseFloat(value) || 0;
 
     const animate = () => {
@@ -17,7 +18,7 @@ const AnimatedValue = ({ value, prefix = '', suffix = '', decimals = 2, duration
       const progress = Math.min((now - startTime) / duration, 1);
       // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
-      const current = startValue + (endValue - startValue) * eased;
+      const current = startValueRef.current + (endValue - startValueRef.current) * eased;
 
       setDisplayValue(current);
 
@@ -27,6 +28,7 @@ const AnimatedValue = ({ value, prefix = '', suffix = '', decimals = 2, duration
     };
 
     requestAnimationFrame(animate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration]);
 
   const formatted = displayValue.toLocaleString('en-US', {
@@ -132,6 +134,7 @@ const HeroCard = ({
   healthScore,
   riskLevel,
   volatility,
+  holdingsCount = 0,
   onOptimize,
   onExport,
   onCompare,
@@ -217,8 +220,7 @@ const HeroCard = ({
               <div className="bg-white/50 dark:bg-white/5 rounded-xl p-3 backdrop-blur-sm border border-white/30 dark:border-white/10">
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Holdings</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-white">
-                  {/* This will be passed as prop */}
-                  9 assets
+                  {holdingsCount} {holdingsCount === 1 ? 'asset' : 'assets'}
                 </p>
               </div>
             </div>
