@@ -4,8 +4,8 @@ import { loadStripe } from '@stripe/stripe-js';
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51ScT1nFD3f8NvjWpppXvvB4d1xnzrWM8IvQA9UNdFKIKbaUefpwxYcf5R3YdQr4gE2DxKIwvVPQYmyhQEn4oBFPE00620huDsM';
 const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
-// Use the same API base URL as the rest of the app (strip /api suffix for endpoints)
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api').replace(/\/api$/, '');
+// Use the same API base URL as the rest of the app
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'https://piq-2025-8fc430488343.herokuapp.com/api').replace(/\/api$/, '');
 
 /**
  * Create a Stripe Checkout session and redirect to checkout
