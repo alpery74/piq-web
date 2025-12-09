@@ -6,7 +6,11 @@ const snakeToCamel = (value) => {
   }
   if (value && typeof value === 'object') {
     return Object.entries(value).reduce((acc, [key, val]) => {
-      const camelKey = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+      // Convert snake_case to camelCase, handling underscores before letters AND numbers
+      // e.g., "historical_var_95_daily_pct" -> "historicalVar95DailyPct"
+      const camelKey = key
+        .replace(/_([a-z])/g, (_, c) => c.toUpperCase())
+        .replace(/_(\d)/g, (_, d) => d); // Remove underscores before numbers
       acc[camelKey] = snakeToCamel(val);
       return acc;
     }, {});
