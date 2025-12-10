@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
@@ -18,7 +18,6 @@ import MobileBottomNav from '@/components/common/MobileBottomNav';
 import LearnMoreModal, { useLearnMore } from '@/components/common/LearnMoreModal';
 import { SkeletonHeroCard } from '@/components/common/Skeleton';
 import AnalysisProgressCard from '@/components/dashboard/AnalysisProgressCard';
-import EmptyDashboard from '@/components/dashboard/EmptyDashboard';
 import { calculateHealthScore } from '@/utils/formatters';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -58,9 +57,7 @@ const Dashboard = () => {
   const showAdvanced = viewTier === 'analyst' || viewTier === 'quant';
   const [showOptimizationStrategies, setShowOptimizationStrategies] = useState(false);
   const [analysisRunId, setAnalysisRunId] = useState(localStorage.getItem('analysisRunId') || '');
-  const [selectorOpen, setSelectorOpen] = useState(false);
   const [newAnalysisOpen, setNewAnalysisOpen] = useState(false);
-  const selectorOpenedRef = useRef(false);
   const [expandedSections, setExpandedSections] = useState({
     'health-score': true,
     'key-insights': true,
@@ -68,7 +65,7 @@ const Dashboard = () => {
     'holdings': true
   });
   const [activeTooltip, setActiveTooltip] = useState(null);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const toast = useToast();
   const commandPalette = useCommandPalette();
@@ -410,15 +407,14 @@ const Dashboard = () => {
     localStorage.setItem('viewTier', viewTier);
   }, [viewTier]);
 
-  useEffect(() => {
-    if (isAuthenticated && !analysisRunId && !selectorOpenedRef.current) {
-      setSelectorOpen(true);
-      selectorOpenedRef.current = true;
-    }
-  }, [analysisRunId, isAuthenticated]);
-
   const handleRunChange = (runId) => {
     setAnalysisRunId(runId);
+    setError(null);
+  };
+
+  const goToPortfolioSelector = () => {
+    localStorage.removeItem('analysisRunId');
+    setAnalysisRunId('');
     setError(null);
   };
 
@@ -470,25 +466,20 @@ const Dashboard = () => {
   // Chart colors
   const PIE_COLORS = ['#6366F1', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#14B8A6', '#F97316', '#8B5CF6', '#06B6D4', '#D946EF'];
 
-  // Show empty state for new users without any analysis
+  // Show unified welcome/portfolio selector when no analysis is selected
   if (!analysisRunId && !polling) {
     return (
       <>
-        <EmptyDashboard onStartAnalysis={() => setNewAnalysisOpen(true)} />
+        <SessionSelectorDialog
+          embedded={true}
+          onSelectRun={handleRunChange}
+          onStartNewAnalysis={handleOpenNewAnalysis}
+          userName={user?.firstName}
+        />
         <NewAnalysisModal
           isOpen={newAnalysisOpen}
           onClose={() => setNewAnalysisOpen(false)}
           onAnalysisStarted={handleAnalysisStarted}
-        />
-        <SessionSelectorDialog
-          open={selectorOpen}
-          onClose={() => setSelectorOpen(false)}
-          onSelect={(runId) => {
-            handleRunChange(runId);
-            localStorage.setItem('analysisRunId', runId);
-            setSelectorOpen(false);
-          }}
-          onStartNew={handleOpenNewAnalysis}
         />
       </>
     );
@@ -507,7 +498,7 @@ const Dashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => setSelectorOpen(true)}
+              onClick={goToPortfolioSelector}
               className="ml-auto text-sm font-semibold text-primary-700 hover:text-primary-800 underline"
             >
               Change run
@@ -600,7 +591,7 @@ const Dashboard = () => {
             </button>
 
             <button
-              onClick={() => setSelectorOpen(true)}
+              onClick={goToPortfolioSelector}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-semibold transition-all bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-primary-200 hover:text-primary-700 shadow-sm"
               title="Change analysis run"
             >
@@ -907,12 +898,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <SessionSelectorDialog
-        open={selectorOpen}
-        onClose={() => setSelectorOpen(false)}
-        onSelectRun={handleRunChange}
-        onStartNewAnalysis={handleOpenNewAnalysis}
-      />
 
       {/* New Analysis Modal */}
       <NewAnalysisModal

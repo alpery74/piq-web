@@ -28,28 +28,28 @@ const Card = ({
     <div className={`card animate-slide-up ${className}`}>
       {/* Card Header */}
       {(title || subtitle || actions) && (
-        <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-100">
+        <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex-1">
             {title && (
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 {title}
                 {collapsible && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
                     aria-label={isExpanded ? 'Collapse' : 'Expand'}
                   >
                     {isExpanded ? (
-                      <ChevronUp className="w-4 h-4 text-gray-500" />
+                      <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-500" />
+                      <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     )}
                   </button>
                 )}
               </h3>
             )}
             {subtitle && (
-              <p className="text-sm text-gray-600 mt-1">{subtitle}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>
             )}
           </div>
           {actions && (
@@ -74,19 +74,19 @@ const Card = ({
  * StatCard Component
  * Specialized card for displaying key metrics
  */
-export const StatCard = ({ 
-  label, 
-  value, 
-  change, 
+export const StatCard = ({
+  label,
+  value,
+  change,
   changeType = 'neutral',
   icon,
   subtitle,
-  className = '' 
+  className = ''
 }) => {
   const changeColors = {
-    positive: 'text-green-600',
-    negative: 'text-red-600',
-    neutral: 'text-gray-600',
+    positive: 'text-green-600 dark:text-green-400',
+    negative: 'text-red-600 dark:text-red-400',
+    neutral: 'text-gray-600 dark:text-gray-400',
   };
 
   return (
@@ -94,12 +94,12 @@ export const StatCard = ({
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            {icon && <div className="text-gray-400">{icon}</div>}
-            <p className="text-sm font-medium text-gray-600">{label}</p>
+            {icon && <div className="text-gray-400 dark:text-gray-500">{icon}</div>}
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</p>
           {subtitle && (
-            <p className="text-sm text-gray-500">{subtitle}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
           )}
         </div>
         {change !== undefined && (

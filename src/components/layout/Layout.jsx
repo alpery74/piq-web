@@ -1,10 +1,31 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Settings, LogOut, ChevronDown, Bell, Shield, Lock, BarChart3, GraduationCap, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Menu, X, Search, LogOut, ChevronDown, Bell, Shield, Lock, BarChart3, GraduationCap, ShieldCheck, HelpCircle, CreditCard, Sun, Moon } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
+
+// Get logo based on subscription tier
+const getTierLogo = (tier) => {
+  switch (tier) {
+    case 'basic':
+      return '/images/logo_basic.png';
+    case 'plus':
+      return '/images/logo_plus.png';
+    default:
+      return '/images/logo.png';
+  }
+};
+
+// Plan limits for display
+const PLAN_LIMITS = {
+  free: { name: 'Free', holdings: 5, analyses: 5 },
+  basic: { name: 'Basic', holdings: 20, analyses: 10 },
+  plus: { name: 'Plus', holdings: 40, analyses: 20 },
+};
 
 const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificationCount = 0 }) => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, subscription, usage } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -80,20 +101,17 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
             {/* Logo */}
             <Link
               to="/"
-              className="flex items-center gap-2.5 tap-scale"
+              className="flex items-center tap-scale"
             >
               <div className="relative">
                 <img
-                  src="/images/logo.png"
+                  src={getTierLogo(subscription?.tier)}
                   alt="PIQ Labs"
-                  className="w-14 h-14 rounded-ios object-contain"
+                  className="w-10 h-10 rounded-lg object-contain"
                 />
                 {/* Subtle glow effect */}
-                <div className="absolute inset-0 rounded-ios bg-gradient-to-br from-primary-400/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary-400/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
               </div>
-              <span className="text-lg font-semibold tracking-tight hidden sm:block text-gray-900 dark:text-white">
-                PIQ Labs
-              </span>
             </Link>
 
             {/* Desktop Navigation - iOS Segmented Style */}
@@ -133,15 +151,6 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
               >
                 <Search className="w-4 h-4" />
                 <span className="text-xs text-gray-400">⌘K</span>
-              </button>
-
-              {/* Settings Button */}
-              <button
-                onClick={onOpenSettings}
-                className="p-2 rounded-xl transition-all bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 text-gray-600 dark:text-gray-300 border border-gray-200/50 dark:border-white/10"
-                title="Settings"
-              >
-                <Settings className="w-4 h-4" />
               </button>
 
               {/* Notifications Bell */}
@@ -213,14 +222,48 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
                   {/* Profile Dropdown Menu */}
                   {profileOpen && (
                     <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden z-50">
+                      {/* Email & Usage Summary */}
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {user?.email || 'User'}
+                          {user?.email}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          PIQ Labs Account
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {usage?.analysesUsed || 0} of {usage?.analysesLimit || 5} analyses • {PLAN_LIMITS[subscription?.tier]?.name || 'Free'}
                         </p>
                       </div>
+
+                      {/* Theme Toggle */}
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Theme</span>
+                          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
+                            <button
+                              onClick={() => { if (isDark) toggleTheme(); }}
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                !isDark
+                                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                              }`}
+                            >
+                              <Sun className="w-3.5 h-3.5" />
+                              Light
+                            </button>
+                            <button
+                              onClick={() => { if (!isDark) toggleTheme(); }}
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                isDark
+                                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                              }`}
+                            >
+                              <Moon className="w-3.5 h-3.5" />
+                              Dark
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
                       <div className="py-1">
                         <button
                           onClick={() => {
@@ -229,8 +272,8 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
                           }}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
-                          <Settings className="w-4 h-4" />
-                          Settings
+                          <CreditCard className="w-4 h-4 text-gray-400" />
+                          Subscription
                         </button>
                         <button
                           onClick={() => {
@@ -239,14 +282,18 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
                           }}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
-                          <HelpCircle className="w-4 h-4" />
-                          Guided Tour
+                          <HelpCircle className="w-4 h-4 text-gray-400" />
+                          Help
                         </button>
+                      </div>
+
+                      {/* Sign Out */}
+                      <div className="border-t border-gray-100 dark:border-gray-700 py-1">
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
-                          <LogOut className="w-4 h-4" />
+                          <LogOut className="w-4 h-4 text-gray-400" />
                           Sign Out
                         </button>
                       </div>
@@ -298,7 +345,7 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
                   onClick={() => setMobileMenuOpen(false)}
                   className={`block py-3 px-4 rounded-ios text-base font-medium transition-all duration-200 tap-scale ${isActive(item.path)
                     ? 'text-ios-blue bg-ios-blue/10'
-                    : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                     }`}
                 >
                   {item.label}

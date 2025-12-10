@@ -62,31 +62,31 @@ const HealthSection = ({
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4 text-xs">
-        <span className="px-3 py-1 rounded-full bg-white/70 border border-amber-200 text-amber-800 font-semibold inline-flex items-center gap-1">
+        <span className="px-3 py-1 rounded-full bg-white/70 dark:bg-gray-800/70 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-semibold inline-flex items-center gap-1">
           <EducationalTooltip term="beta" iconSize={12}>
             <span>Beta:</span>
           </EducationalTooltip>
           {safePortfolioBeta.toFixed(2)}
         </span>
-        <span className="px-3 py-1 rounded-full bg-white/70 border border-amber-200 text-amber-800 font-semibold inline-flex items-center gap-1">
+        <span className="px-3 py-1 rounded-full bg-white/70 dark:bg-gray-800/70 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-semibold inline-flex items-center gap-1">
           <EducationalTooltip term="rSquared" iconSize={12}>
             <span>Explained:</span>
           </EducationalTooltip>
           {safeExplained.toFixed(1)}%
         </span>
-        <span className="px-3 py-1 rounded-full bg-white/70 border border-amber-200 text-amber-800 font-semibold inline-flex items-center gap-1">
+        <span className="px-3 py-1 rounded-full bg-white/70 dark:bg-gray-800/70 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-semibold inline-flex items-center gap-1">
           <EducationalTooltip term="idiosyncraticRisk" iconSize={12}>
             <span>Unexplained:</span>
           </EducationalTooltip>
           {safeUnexplained.toFixed(1)}%
         </span>
-        <span className="px-3 py-1 rounded-full bg-white/70 border border-amber-200 text-amber-800 font-semibold inline-flex items-center gap-1">
+        <span className="px-3 py-1 rounded-full bg-white/70 dark:bg-gray-800/70 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-semibold inline-flex items-center gap-1">
           <EducationalTooltip term="beta" iconSize={12}>
             <span>High β:</span>
           </EducationalTooltip>
           {safeHighest.ticker} ({(safeHighest.value || 0).toFixed(2)})
         </span>
-        <span className="px-3 py-1 rounded-full bg-white/70 border border-amber-200 text-amber-800 font-semibold inline-flex items-center gap-1">
+        <span className="px-3 py-1 rounded-full bg-white/70 dark:bg-gray-800/70 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-semibold inline-flex items-center gap-1">
           <EducationalTooltip term="beta" iconSize={12}>
             <span>Low β:</span>
           </EducationalTooltip>
@@ -231,50 +231,50 @@ const HealthSection = ({
           </div>
         }
         tier2={
-          <div className="text-blue-900 space-y-4">
+          <div className="text-blue-900 dark:text-blue-100 space-y-4">
             <p className="leading-relaxed">
               Your health score evaluates four critical dimensions of portfolio construction. Think of it as a report card
               for your investments:
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-bold mb-2">🎯 Concentration (-15)</div>
-                <p className="text-sm">
+              <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+                <div className="font-bold mb-2 text-gray-900 dark:text-white">🎯 Concentration (-15)</div>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   Your largest position ({safeTopHolding.ticker}{' '}
                   {formatPercent((safeTopHolding.weightPct ?? 0) / 100, 1)}) exceeds the recommended 10-15%
                   maximum, creating unnecessary risk concentration.
                 </p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-bold mb-2">📊 Volatility (-10)</div>
-                <p className="text-sm">
+              <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+                <div className="font-bold mb-2 text-gray-900 dark:text-white">📊 Volatility (-10)</div>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   Annual swings of {formatPercent(currentVol / 100, 1)}. Most balanced portfolios target 12-15% volatility.
                 </p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-bold mb-2">⚠️ Tail Risk (-10)</div>
-                <p className="text-sm">
+              <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+                <div className="font-bold mb-2 text-gray-900 dark:text-white">⚠️ Tail Risk (-10)</div>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   In severe market crashes, crisis drawdown projects around{' '}
                   {formatPercent(analysis.stressTesting?.maxDrawdowns?.crisis ?? 0, 0)}, indicating high extreme-event
                   vulnerability.
                 </p>
               </div>
 
-              <div className="bg-white/50 p-4 rounded-lg">
-                <div className="font-bold mb-2">🔀 Diversification (-5)</div>
-                <p className="text-sm">
+              <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
+                <div className="font-bold mb-2 text-gray-900 dark:text-white">🔀 Diversification (-5)</div>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   With {formatNumber(analysis.riskMetrics?.effectiveHoldings ?? 0, 1)} effective holdings, you're slightly
                   under-diversified. Target 10+ for optimal risk spreading.
                 </p>
               </div>
             </div>
 
-            <div className="bg-blue-100 border border-blue-300 p-4 rounded-lg mt-4">
-              <div className="font-bold mb-2">✅ Path to 85+ Score:</div>
-              <ul className="list-disc list-inside space-y-1 text-sm">
+            <div className="bg-blue-100 dark:bg-blue-900/30 border border-blue-300 dark:border-blue-700 p-4 rounded-lg mt-4">
+              <div className="font-bold mb-2 text-blue-900 dark:text-blue-200">✅ Path to 85+ Score:</div>
+              <ul className="list-disc list-inside space-y-1 text-sm text-blue-800 dark:text-blue-300">
                 <li>Reduce LW position from 23% to 10-12% (+10 points)</li>
                 <li>Add 3-4 more positions for better diversification (+5 points)</li>
                 <li>Implement optimization strategies below (+5-8 points)</li>
@@ -283,11 +283,11 @@ const HealthSection = ({
           </div>
         }
         tier3={
-          <div className="text-purple-900 space-y-4">
+          <div className="text-purple-900 dark:text-purple-100 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h4 className="font-bold text-base mb-3 border-b border-purple-300 pb-2">Calculation Formula</h4>
-                <div className="font-mono text-sm space-y-2 bg-white/70 p-4 rounded">
+                <h4 className="font-bold text-base mb-3 border-b border-purple-300 dark:border-purple-700 pb-2 text-gray-900 dark:text-white">Calculation Formula</h4>
+                <div className="font-mono text-sm space-y-2 bg-white/70 dark:bg-gray-800/70 p-4 rounded">
                   <div>
                     Base Score: <span className="font-bold">100</span>
                   </div>
@@ -315,39 +315,39 @@ const HealthSection = ({
                 </div>
               </div>
               <div className="space-y-3">
-                <h4 className="font-bold text-base mb-3 border-b border-purple-300 pb-2">Risk Adjustments</h4>
-                <div className="bg-white/70 p-4 rounded space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
+                <h4 className="font-bold text-base mb-3 border-b border-purple-300 dark:border-purple-700 pb-2 text-gray-900 dark:text-white">Risk Adjustments</h4>
+                <div className="bg-white/70 dark:bg-gray-800/70 p-4 rounded space-y-2 text-sm">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Optimization Impact</span>
-                    <span className="font-bold text-green-700">-25% σ</span>
+                    <span className="font-bold text-green-700 dark:text-green-400">-25% σ</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Diversification Benefit</span>
-                    <span className="font-bold text-blue-700">
+                    <span className="font-bold text-blue-700 dark:text-blue-400">
                       {((safeIdiosyncraticDetails.diversificationBenefit ?? 0) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Systematic Risk</span>
-                    <span className="font-bold text-gray-700">
+                    <span className="font-bold text-gray-700 dark:text-gray-200">
                       {(safeRiskDecomposition.systematicRiskContributionPct ?? 0).toFixed(1)}%
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Idiosyncratic Risk</span>
-                    <span className="font-bold text-gray-700">
+                    <span className="font-bold text-gray-700 dark:text-gray-200">
                       {(safeRiskDecomposition.idiosyncraticRiskScorePct ?? 0).toFixed(1)}%
                     </span>
                   </div>
                 </div>
-                <div className="bg-white/70 p-4 rounded space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
+                <div className="bg-white/70 dark:bg-gray-800/70 p-4 rounded space-y-2 text-sm">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Portfolio Volatility</span>
-                    <span className="font-bold">{formatPercent(safeIdiosyncraticDetails.portfolioVolatility ?? 0, 2)}</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{formatPercent(safeIdiosyncraticDetails.portfolioVolatility ?? 0, 2)}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                     <span>Weighted Indiv. Vol</span>
-                    <span className="font-bold">
+                    <span className="font-bold text-gray-900 dark:text-white">
                       {formatPercent(safeIdiosyncraticDetails.weightedIndividualVolatility ?? 0, 2)}
                     </span>
                   </div>
@@ -355,13 +355,13 @@ const HealthSection = ({
               </div>
             </div>
 
-            <div className="bg-white/60 p-5 rounded-lg border-l-4 border-amber-400">
-              <h4 className="font-bold mb-2 text-amber-900">Concentration Impact</h4>
-              <p className="text-sm mb-2">
+            <div className="bg-white/60 dark:bg-gray-800/60 p-5 rounded-lg border-l-4 border-amber-400 dark:border-amber-500">
+              <h4 className="font-bold mb-2 text-amber-900 dark:text-amber-300">Concentration Impact</h4>
+              <p className="text-sm mb-2 text-gray-700 dark:text-gray-300">
                 Current weight: {safeConcentrationWeight.toFixed(1)}%. Each -1% reduction lowers risk contribution by{' '}
                 {(safeTopRisk.contribution ?? 0) > 0 && safeConcentrationWeight > 0 ? ((safeTopRisk.contribution ?? 0) / safeConcentrationWeight).toFixed(2) : '0.00'} percentage points.
               </p>
-              <div className="space-y-1 text-xs text-gray-700">
+              <div className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                 <div>
                   If reduced to 16%: risk ↓ to {safeConcentrationWeight > 0 ? ((safeTopRisk.contribution ?? 0) * (16 / safeConcentrationWeight)).toFixed(1) : '0.0'}%
                 </div>
@@ -395,38 +395,38 @@ const HealthSection = ({
           </div>
 
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-3xl font-bold text-gray-900">{riskLevelLabel}</span>
+          <span className="text-3xl font-bold text-gray-900 dark:text-white">{riskLevelLabel}</span>
           <span className="text-4xl">{riskEmoji}</span>
         </div>
-        <p className="text-sm text-gray-600 mb-4">{formatPercent(currentVol / 100, 1)} annual volatility</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{formatPercent(currentVol / 100, 1)} annual volatility</p>
 
-        <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
           <div className="bg-gradient-to-r from-green-500 via-amber-500 to-red-500 h-3 rounded-full relative">
-            <div className="absolute left-[53%] top-0 w-1 h-3 bg-white border-2 border-gray-800"></div>
+            <div className="absolute left-[53%] top-0 w-1 h-3 bg-white dark:bg-gray-900 border-2 border-gray-800 dark:border-gray-200"></div>
           </div>
         </div>
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>Low (0-10%)</span>
           <span>High (&gt;25%)</span>
         </div>
 
         {showAdvanced && (
-          <div className="mt-4 pt-4 border-t-2 border-purple-200 space-y-2 bg-purple-50/50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
+          <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2 bg-purple-50/50 dark:bg-purple-900/30 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Sharpe Ratio:</span>
-              <span className="font-mono font-bold">{(safeVolatility.sharpe ?? 0).toFixed(2)}</span>
+              <span className="text-gray-600 dark:text-gray-400">Sharpe Ratio:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">{(safeVolatility.sharpe ?? 0).toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Market Beta:</span>
-              <span className="font-mono font-bold">{safePortfolioBeta.toFixed(3)}</span>
+              <span className="text-gray-600 dark:text-gray-400">Market Beta:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">{safePortfolioBeta.toFixed(3)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">95% VaR:</span>
-              <span className="font-mono font-bold text-red-600">{(safeVolatility.var95DailyPct ?? 0).toFixed(2)}%</span>
+              <span className="text-gray-600 dark:text-gray-400">95% VaR:</span>
+              <span className="font-mono font-bold text-red-600 dark:text-red-400">{(safeVolatility.var95DailyPct ?? 0).toFixed(2)}%</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">CVaR:</span>
-              <span className="font-mono font-bold text-red-600">{(safeVolatility.cvar95DailyPct ?? 0).toFixed(2)}%</span>
+              <span className="text-gray-600 dark:text-gray-400">CVaR:</span>
+              <span className="font-mono font-bold text-red-600 dark:text-red-400">{(safeVolatility.cvar95DailyPct ?? 0).toFixed(2)}%</span>
             </div>
           </div>
         )}
@@ -452,42 +452,42 @@ const HealthSection = ({
         </div>
 
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-4xl font-bold text-gray-900">{(safeRiskMetrics.effectiveHoldings ?? 0).toFixed(1)}</span>
-          <span className="text-sm text-gray-600">effective holdings</span>
+          <span className="text-4xl font-bold text-gray-900 dark:text-white">{(safeRiskMetrics.effectiveHoldings ?? 0).toFixed(1)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">effective holdings</span>
         </div>
-        <p className="text-sm text-gray-600 mb-4">Target 10+ for stronger diversification.</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Target 10+ for stronger diversification.</p>
 
-        <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
           <div
             className="bg-gradient-to-r from-red-500 via-amber-500 to-green-500 h-3 rounded-full relative"
             style={{ width: '100%' }}
           >
             <div
-              className="absolute left-[20%] top-0 w-1 h-3 bg-gray-800"
+              className="absolute left-[20%] top-0 w-1 h-3 bg-gray-800 dark:bg-gray-200"
               style={{ left: `${Math.min(100, (safeRiskMetrics.effectiveHoldings ?? 0) * 10)}%` }}
             >
-              <div className="absolute -top-6 -left-1 text-xs font-bold text-gray-800 whitespace-nowrap">You</div>
+              <div className="absolute -top-6 -left-1 text-xs font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap">You</div>
             </div>
           </div>
         </div>
-        <div className="flex justify-between text-xs text-gray-500 mb-3">
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
           <span>Concentrated (&lt;5)</span>
           <span>Optimal (10+)</span>
         </div>
 
         {showAdvanced && (
-          <div className="mt-4 pt-4 border-t-2 border-purple-200 space-y-2 bg-purple-50/50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
+          <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2 bg-purple-50/50 dark:bg-purple-900/30 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">HHI Score:</span>
-              <span className="font-mono font-bold">{(safeRiskMetrics.alphaBookHHI ?? 0).toFixed(3)}</span>
+              <span className="text-gray-600 dark:text-gray-400">HHI Score:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">{(safeRiskMetrics.alphaBookHHI ?? 0).toFixed(3)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Gini Coefficient:</span>
-              <span className="font-mono font-bold">{(safeRiskMetrics.gini ?? 0).toFixed(3)}</span>
+              <span className="text-gray-600 dark:text-gray-400">Gini Coefficient:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">{(safeRiskMetrics.gini ?? 0).toFixed(3)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Sectors:</span>
-              <span className="font-mono font-bold">
+              <span className="text-gray-600 dark:text-gray-400">Sectors:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">
                 {safeRiskMetrics.largestSector ?? 'N/A'} ({(safeRiskMetrics.largestSectorPct ?? 0).toFixed(1)}%)
               </span>
             </div>
@@ -498,11 +498,11 @@ const HealthSection = ({
       <div className="card hover:shadow-xl transition-all duration-300 cursor-pointer group">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-red-100 rounded-xl group-hover:bg-red-200 transition-colors">
-              <Target className="w-6 h-6 text-red-600" />
+            <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-xl group-hover:bg-red-200 dark:group-hover:bg-red-900/50 transition-colors">
+              <Target className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">Concentration</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Concentration</p>
               <InfoTooltip
                 id="conc-tooltip"
                 title="Position Weight"
@@ -515,35 +515,35 @@ const HealthSection = ({
         </div>
 
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-4xl font-bold text-gray-900">{safeConcentrationWeight.toFixed(1)}%</span>
-          <span className="text-sm text-gray-600">Top holding weight</span>
+          <span className="text-4xl font-bold text-gray-900 dark:text-white">{safeConcentrationWeight.toFixed(1)}%</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Top holding weight</span>
         </div>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           {safeTopHolding.ticker} drives {(safeTopRisk.contribution ?? 0).toFixed(1)}% of portfolio risk.
         </p>
 
         <div className="space-y-2">
-          <div className="flex justify-between text-xs text-gray-600">
+          <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
             <span>Recommended max</span>
             <span className="font-semibold">10-15%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
             <div className="bg-gradient-to-r from-green-500 via-amber-500 to-red-500 h-3 rounded-full relative">
-              <div className="absolute right-[10%] top-0 w-1 h-3 bg-gray-800">
-                <div className="absolute -top-6 right-0 text-xs font-bold text-gray-800 whitespace-nowrap">You →</div>
+              <div className="absolute right-[10%] top-0 w-1 h-3 bg-gray-800 dark:bg-gray-200">
+                <div className="absolute -top-6 right-0 text-xs font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap">You →</div>
               </div>
-              <div className="absolute left-[15%] top-0 w-1 h-3 bg-white">
-                <div className="absolute -bottom-6 left-0 text-xs text-gray-500 whitespace-nowrap">← Max</div>
+              <div className="absolute left-[15%] top-0 w-1 h-3 bg-white dark:bg-gray-900">
+                <div className="absolute -bottom-6 left-0 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">← Max</div>
               </div>
             </div>
           </div>
         </div>
 
         {showAdvanced && (
-          <div className="mt-4 pt-4 border-t-2 border-purple-200 space-y-2 bg-purple-50/50 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
+          <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2 bg-purple-50/50 dark:bg-purple-900/30 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Risk Contribution:</span>
-              <span className="font-mono font-bold text-red-600">
+              <span className="text-gray-600 dark:text-gray-400">Risk Contribution:</span>
+              <span className="font-mono font-bold text-red-600 dark:text-red-400">
                 {(safeMarginalContributions
                   .find((m) => m.ticker === safeTopHolding.ticker)
                   ?.contribution ?? 0).toFixed(1)}
@@ -551,16 +551,16 @@ const HealthSection = ({
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Sector:</span>
-              <span className="font-mono font-bold">Consumer Defensive</span>
+              <span className="text-gray-600 dark:text-gray-400">Sector:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">Consumer Defensive</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Market Cap:</span>
-              <span className="font-mono font-bold">$8.8B</span>
+              <span className="text-gray-600 dark:text-gray-400">Market Cap:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">$8.8B</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Volatility:</span>
-              <span className="font-mono font-bold">46.1%</span>
+              <span className="text-gray-600 dark:text-gray-400">Volatility:</span>
+              <span className="font-mono font-bold text-gray-900 dark:text-white">46.1%</span>
             </div>
           </div>
         )}
