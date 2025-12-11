@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
+import client from '@/services/client';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
 import HoldingsSection from '@/components/dashboard/HoldingsSection';
@@ -80,6 +81,41 @@ const Dashboard = () => {
     connectionStatus,
     loadingStartTime,
   } = useAnalysisPolling(analysisRunId);
+
+  // Server warm-up state - shows "waking up" on initial page load
+  const [serverWarmup, setServerWarmup] = useState({
+    isWarming: true,
+    startTime: Date.now(),
+    error: null,
+  });
+  const warmupAttempted = useRef(false);
+
+  // Pre-warm the Heroku server on Dashboard mount
+  useEffect(() => {
+    if (warmupAttempted.current) return;
+    warmupAttempted.current = true;
+
+    const warmupServer = async () => {
+      try {
+        // Simple health check to wake up the server
+        await client.get('/health');
+        setServerWarmup({ isWarming: false, startTime: null, error: null });
+      } catch (err) {
+        // Even on error, stop showing warmup after timeout
+        // The actual API calls will handle errors properly
+        setServerWarmup({ isWarming: false, startTime: null, error: null });
+      }
+    };
+
+    warmupServer();
+
+    // Fallback: Stop showing warmup after 20 seconds regardless
+    const timeout = setTimeout(() => {
+      setServerWarmup((prev) => prev.isWarming ? { isWarming: false, startTime: null, error: null } : prev);
+    }, 20000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Track which sections are still loading based on pending subtools
   const sectionLoadingStates = useMemo(() => ({
@@ -508,11 +544,12 @@ const Dashboard = () => {
       )}
 
       {/* Backend Status - Shows "waking up" for Heroku cold starts */}
-      {(polling && connectionStatus !== 'connected') && (
+      {/* Show during initial server warmup OR during analysis polling before connected */}
+      {(serverWarmup.isWarming || (polling && connectionStatus !== 'connected')) && (
         <BackendStatus
-          isLoading={polling}
+          isLoading={serverWarmup.isWarming || polling}
           error={pollingError}
-          loadingStartTime={loadingStartTime}
+          loadingStartTime={serverWarmup.isWarming ? serverWarmup.startTime : loadingStartTime}
           onRetry={handleRetry}
         />
       )}
