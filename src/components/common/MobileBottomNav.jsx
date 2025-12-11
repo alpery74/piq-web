@@ -2,31 +2,36 @@ import { useState, useEffect } from 'react';
 import { Activity, TrendingUp, Layers, Target, Menu, X, Settings, Moon, Sun, HelpCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
-// Navigation items
+// Navigation items - IDs must match Dashboard.jsx section IDs
 const NAV_ITEMS = [
   {
-    id: 'health-section',
-    label: 'Coach',
+    id: 'overview-section',
+    label: 'Overview',
     icon: Activity,
-    color: 'ios-green',
+    // Use explicit classes to avoid Tailwind JIT purging
+    activeClass: 'text-ios-green',
+    dotClass: 'bg-ios-green',
   },
   {
-    id: 'insights-section',
-    label: 'Analyst',
+    id: 'risk-section',
+    label: 'Risk',
     icon: TrendingUp,
-    color: 'ios-blue',
+    activeClass: 'text-ios-blue',
+    dotClass: 'bg-ios-blue',
   },
   {
     id: 'holdings-section',
-    label: 'Quant',
+    label: 'Holdings',
     icon: Layers,
-    color: 'ios-purple',
+    activeClass: 'text-ios-purple',
+    dotClass: 'bg-ios-purple',
   },
   {
-    id: 'goals-section',
-    label: 'Goals',
+    id: 'optimization-section',
+    label: 'Optimize',
     icon: Target,
-    color: 'ios-orange',
+    activeClass: 'text-ios-orange',
+    dotClass: 'bg-ios-orange',
   },
 ];
 
@@ -169,7 +174,7 @@ const MobileBottomNav = ({ onStartTour }) => {
                 onClick={() => handleNavClick(item.id)}
                 className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
                   isActive
-                    ? `text-${item.color}`
+                    ? item.activeClass
                     : 'text-gray-400 dark:text-gray-500'
                 }`}
               >
@@ -181,7 +186,7 @@ const MobileBottomNav = ({ onStartTour }) => {
                 <span className="text-[10px] font-medium mt-1">{item.label}</span>
                 {isActive && (
                   <div
-                    className={`absolute bottom-1 w-1 h-1 rounded-full bg-${item.color}`}
+                    className={`absolute bottom-1 w-1 h-1 rounded-full ${item.dotClass}`}
                   />
                 )}
               </button>

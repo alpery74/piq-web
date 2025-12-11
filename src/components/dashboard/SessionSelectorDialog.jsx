@@ -10,11 +10,11 @@ const PortfolioCard = ({ portfolio, onSelectVersion, onNewRun, isExpanded, onTog
   const versionCount = versions.length;
 
   return (
-    <div className="rounded-2xl bg-white border-2 border-gray-100 shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary-200">
+    <div className="rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary-200 dark:hover:border-primary-700">
       {/* Card Header */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-4 p-4 text-left bg-gradient-to-r from-slate-50 to-white hover:from-primary-50 hover:to-white transition-colors"
+        className="w-full flex items-center gap-4 p-4 text-left bg-gradient-to-r from-slate-50 to-white dark:from-gray-800 dark:to-gray-800 hover:from-primary-50 hover:to-white dark:hover:from-primary-900/20 dark:hover:to-gray-800 transition-colors"
       >
         {/* Icon */}
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
@@ -23,8 +23,8 @@ const PortfolioCard = ({ portfolio, onSelectVersion, onNewRun, isExpanded, onTog
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-gray-900 truncate">{portfolio.name}</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{portfolio.name}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {versionCount} {versionCount === 1 ? 'run' : 'runs'}
             {latestVersion?.createdAt && ` · Last: ${formatDate(latestVersion.createdAt)}`}
           </p>
@@ -43,36 +43,36 @@ const PortfolioCard = ({ portfolio, onSelectVersion, onNewRun, isExpanded, onTog
         </button>
 
         <ChevronDown
-          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
         />
       </button>
 
       {/* Expanded Version List */}
       {isExpanded && versions.length > 0 && (
-        <div className="px-4 pb-4 bg-gray-50">
-          <div className="rounded-xl bg-white border border-gray-200 overflow-hidden divide-y divide-gray-100">
+        <div className="px-4 pb-4 bg-gray-50 dark:bg-gray-900/50">
+          <div className="rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden divide-y divide-gray-100 dark:divide-gray-700">
             {versions.map((version, idx) => (
               <button
                 key={version.versionId}
                 onClick={() => onSelectVersion(version.analysisRunId)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-50 transition-colors group"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors group"
               >
                 {/* Recent indicator */}
-                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${idx === 0 ? 'bg-green-500 ring-2 ring-green-200' : 'bg-gray-300'}`} />
+                <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${idx === 0 ? 'bg-green-500 ring-2 ring-green-200 dark:ring-green-800' : 'bg-gray-300 dark:bg-gray-600'}`} />
 
                 {/* Version info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                     {version.versionName || 'Analysis'}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {version.createdAt && formatDate(version.createdAt)}
                     {version.holdingsCount && ` · ${version.holdingsCount} holdings`}
                   </p>
                 </div>
 
                 {/* Resume button */}
-                <span className="px-3 py-1 text-xs font-medium text-primary-600 bg-primary-50 rounded-full group-hover:bg-primary-100 transition-colors flex items-center gap-1">
+                <span className="px-3 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 rounded-full group-hover:bg-primary-100 dark:group-hover:bg-primary-900/50 transition-colors flex items-center gap-1">
                   Resume
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </span>
@@ -99,10 +99,10 @@ const EmptyState = ({ onCreatePortfolio, onQuickDemo, startingDemo }) => (
     </div>
 
     {/* Heading */}
-    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
       Welcome to PIQ Labs
     </h2>
-    <p className="text-base text-gray-600 mb-8 max-w-sm mx-auto">
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">
       Create your first portfolio to unlock AI-powered investment insights and analysis.
     </p>
 
@@ -118,32 +118,32 @@ const EmptyState = ({ onCreatePortfolio, onQuickDemo, startingDemo }) => (
       <button
         onClick={onQuickDemo}
         disabled={startingDemo}
-        className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white hover:bg-gray-50 text-gray-800 font-semibold text-lg border-2 border-gray-200 hover:border-green-300 shadow-md transition-all active:scale-[0.98] disabled:opacity-60"
+        className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold text-lg border-2 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-600 shadow-md transition-all active:scale-[0.98] disabled:opacity-60"
       >
-        <Play className="w-5 h-5 text-green-600" />
+        <Play className="w-5 h-5 text-green-600 dark:text-green-400" />
         {startingDemo ? 'Starting...' : 'Try Quick Demo'}
       </button>
     </div>
 
     {/* Feature highlights */}
-    <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto">
-      <div className="p-4 rounded-xl bg-blue-50 border-2 border-blue-100">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-lg mx-auto">
+      <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-100 dark:border-blue-800">
         <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center mx-auto mb-3 shadow-md">
           <Shield className="w-5 h-5 text-white" />
         </div>
-        <p className="text-sm font-semibold text-gray-800">Risk Analysis</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Risk Analysis</p>
       </div>
-      <div className="p-4 rounded-xl bg-purple-50 border-2 border-purple-100">
+      <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-100 dark:border-purple-800">
         <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center mx-auto mb-3 shadow-md">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
-        <p className="text-sm font-semibold text-gray-800">AI Insights</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">AI Insights</p>
       </div>
-      <div className="p-4 rounded-xl bg-green-50 border-2 border-green-100">
+      <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border-2 border-green-100 dark:border-green-800">
         <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center mx-auto mb-3 shadow-md">
           <TrendingUp className="w-5 h-5 text-white" />
         </div>
-        <p className="text-sm font-semibold text-gray-800">Optimization</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Optimization</p>
       </div>
     </div>
   </div>
@@ -153,12 +153,12 @@ const EmptyState = ({ onCreatePortfolio, onQuickDemo, startingDemo }) => (
 const LoadingSkeleton = () => (
   <div className="space-y-3 py-4">
     {[1, 2].map((i) => (
-      <div key={i} className="rounded-2xl bg-white/50 p-4 animate-pulse">
+      <div key={i} className="rounded-2xl bg-white/50 dark:bg-gray-700/50 p-4 animate-pulse">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-gray-200" />
+          <div className="w-11 h-11 rounded-xl bg-gray-200 dark:bg-gray-600" />
           <div className="flex-1">
-            <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
-            <div className="h-3 bg-gray-100 rounded w-24" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32 mb-2" />
+            <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-24" />
           </div>
         </div>
       </div>
@@ -271,7 +271,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
             ) : (
               <div className="space-y-6">
                 {/* Quick Actions */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   {/* Continue Last */}
                   <button
                     onClick={() => selectRunAndClose(lastRunId)}
@@ -387,7 +387,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
         </div>
 
         {/* Feature highlights for embedded mode */}
-        <div className="grid grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-8">
           <div className="p-6 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 text-center">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
               <Shield className="w-7 h-7 text-white" />
@@ -454,7 +454,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
           ) : (
             <div className="space-y-4">
               {/* Quick Actions */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 {/* Continue Last */}
                 <button
                   onClick={() => selectRunAndClose(lastRunId)}

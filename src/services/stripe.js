@@ -95,4 +95,28 @@ export async function getSubscriptionStatus(authToken) {
   }
 }
 
+/**
+ * Get the user's usage limits and stats
+ * @param {string} authToken - User's auth token
+ */
+export async function getUserLimits(authToken) {
+  try {
+    const response = await fetch(`${API_BASE}/api/user-limits`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user limits');
+    }
+
+    const data = await response.json();
+    return data.data; // Returns the nested data object with usage_stats and tier_limits
+  } catch (error) {
+    console.error('User limits fetch error:', error);
+    throw error;
+  }
+}
+
 export { stripePromise };

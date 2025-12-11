@@ -52,3 +52,17 @@ export const registerUser = async (email, password, firstName, lastName) => {
 export const logoutUser = () => {
   clearToken();
 };
+
+export const deleteAccount = async (token) => {
+  const response = await client.delete('/auth/account', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const payload = response.data || {};
+
+  if (payload.success === false) {
+    throw new Error(payload.message || 'Failed to delete account');
+  }
+
+  clearToken();
+  return { success: true };
+};
