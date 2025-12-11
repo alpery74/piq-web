@@ -490,7 +490,6 @@ export const useOnboarding = () => {
   const context = useContext(OnboardingContext);
   // Fallback for when context is not available (shouldn't happen in normal usage)
   if (!context) {
-    console.warn('useOnboarding must be used within OnboardingProvider');
     return {
       isOpen: false,
       hasCompleted: true,

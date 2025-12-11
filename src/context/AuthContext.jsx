@@ -30,13 +30,46 @@ export const AuthProvider = ({ children }) => {
 
   // Fetch subscription and usage when token changes
   useEffect(() => {
-    if (token) {
-      fetchSubscription();
-      fetchUsage();
-    } else {
+    if (!token) {
       setSubscription({ tier: 'free', status: 'active' });
       setUsage({ analysesUsed: 0, analysesLimit: 5 });
+      return;
     }
+
+    let cancelled = false;
+
+    const fetchData = async () => {
+      try {
+        const subData = await getSubscriptionStatus(token);
+        if (!cancelled) {
+          setSubscription({
+            tier: subData.tier || 'free',
+            status: subData.status || 'active',
+            expiresAt: subData.expiresAt,
+          });
+        }
+      } catch {
+        // Keep default free tier on error
+      }
+
+      try {
+        const usageData = await getUserLimits(token);
+        if (!cancelled) {
+          setUsage({
+            analysesUsed: usageData?.usage_stats?.analyses_used || 0,
+            analysesLimit: usageData?.tier_limits?.max_analyses_per_month || 5,
+          });
+        }
+      } catch {
+        // Keep default on error
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   const fetchSubscription = async () => {
@@ -48,8 +81,7 @@ export const AuthProvider = ({ children }) => {
         status: data.status || 'active',
         expiresAt: data.expiresAt,
       });
-    } catch (err) {
-      console.error('Failed to fetch subscription:', err);
+    } catch {
       // Keep default free tier on error
     }
   };
@@ -62,8 +94,7 @@ export const AuthProvider = ({ children }) => {
         analysesUsed: data?.usage_stats?.analyses_used || 0,
         analysesLimit: data?.tier_limits?.max_analyses_per_month || 5,
       });
-    } catch (err) {
-      console.error('Failed to fetch usage:', err);
+    } catch {
       // Keep default on error
     }
   };

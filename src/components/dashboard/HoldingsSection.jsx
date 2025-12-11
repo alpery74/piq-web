@@ -61,7 +61,7 @@ const HoldingsSection = ({
   const hasRiskData = riskContributionData && riskContributionData.length > 0;
   return (
     <section
-      className="rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 sm:p-6 lg:p-8 shadow-md scroll-mt-44"
+      className="rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 sm:p-4 lg:p-6 shadow-md scroll-mt-32 sm:scroll-mt-44"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-gray-800 dark:text-gray-200">

@@ -635,15 +635,9 @@ const EducationalTooltip = ({
 
   const termData = FINANCIAL_TERMS[term];
 
-  if (!termData) {
-    console.warn(`EducationalTooltip: Unknown term "${term}"`);
-    return children;
-  }
-
-  const Icon = termData.icon || HelpCircle;
-
   // Calculate tooltip position
   useEffect(() => {
+    if (!termData) return;
     if (isOpen && triggerRef.current && tooltipRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
@@ -683,11 +677,11 @@ const EducationalTooltip = ({
 
       setPosition({ top, left });
     }
-  }, [isOpen, placement]);
+  }, [isOpen, placement, termData]);
 
   // Close on scroll or click outside
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !termData) return;
 
     const handleClose = () => setIsOpen(false);
     window.addEventListener('scroll', handleClose, { passive: true });
@@ -695,7 +689,12 @@ const EducationalTooltip = ({
     return () => {
       window.removeEventListener('scroll', handleClose);
     };
-  }, [isOpen]);
+  }, [isOpen, termData]);
+
+  // Early return if no term data (after hooks)
+  if (!termData) {
+    return children;
+  }
 
   const handleToggle = (e) => {
     e.stopPropagation();
@@ -720,7 +719,6 @@ const EducationalTooltip = ({
             ref={tooltipRef}
             termData={termData}
             position={position}
-            onClose={() => setIsOpen(false)}
           />
         )}
       </span>
@@ -747,7 +745,6 @@ const EducationalTooltip = ({
           ref={tooltipRef}
           termData={termData}
           position={position}
-          onClose={() => setIsOpen(false)}
         />
       )}
     </span>
@@ -757,7 +754,7 @@ const EducationalTooltip = ({
 /**
  * Tooltip Content Component
  */
-const TooltipContent = ({ termData, position, onClose, ref }) => {
+const TooltipContent = ({ termData, position, ref }) => {
   const Icon = termData.icon || BookOpen;
 
   return (
@@ -848,51 +845,6 @@ const TooltipContent = ({ termData, position, onClose, ref }) => {
           </span>
         </div>
       </div>
-    </div>
-  );
-};
-
-/**
- * Simple inline term with underline
- */
-export const Term = ({ id, children }) => {
-  return (
-    <EducationalTooltip term={id} variant="inline">
-      {children}
-    </EducationalTooltip>
-  );
-};
-
-/**
- * Metric display with built-in tooltip
- */
-export const MetricWithTooltip = ({
-  term,
-  label,
-  value,
-  unit = '',
-  valueColor,
-  size = 'default',
-}) => {
-  const sizeClasses = {
-    sm: 'text-lg',
-    default: 'text-2xl',
-    lg: 'text-3xl',
-  };
-
-  return (
-    <div>
-      <EducationalTooltip term={term}>
-        <span className="text-sm font-medium" style={{ color: 'rgba(60, 60, 67, 0.6)' }}>
-          {label || FINANCIAL_TERMS[term]?.term || term}
-        </span>
-      </EducationalTooltip>
-      <p
-        className={`font-bold tabular-nums ${sizeClasses[size]}`}
-        style={{ color: valueColor || '#1C1C1E', letterSpacing: '-0.02em' }}
-      >
-        {value}{unit}
-      </p>
     </div>
   );
 };

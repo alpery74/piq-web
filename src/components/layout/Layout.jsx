@@ -357,7 +357,7 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
       </header>
 
       {/* Main Content */}
-      <main className={`flex-1 container mx-auto px-4 ${isDashboard ? 'pt-2 pb-8' : 'py-8'}`}>
+      <main className={`flex-1 container mx-auto px-4 ${isDashboard ? 'pt-2 pb-4 sm:pb-8' : 'py-6 sm:py-8'}`}>
         {children}
       </main>
 
@@ -365,7 +365,7 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
       <footer className="mt-auto">
         {/* Social Proof Stats Bar */}
         <div className="border-t border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-gray-50/80 via-white/80 to-gray-50/80 dark:from-gray-800/80 dark:via-gray-900/80 dark:to-gray-800/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-4 py-3 sm:py-4">
             <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-ios-blue" />
@@ -392,7 +392,7 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
 
         {/* Main Footer */}
         <div className="border-t border-gray-200/50 dark:border-gray-700/50 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl">
-          <div className="container mx-auto px-4 py-5">
+          <div className="container mx-auto px-4 py-3 sm:py-5">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               {/* Left: Copyright & Links */}
               <div className="flex items-center gap-4">

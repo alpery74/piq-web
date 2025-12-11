@@ -87,9 +87,9 @@ const PortfolioCard = ({ portfolio, onSelectVersion, onNewRun, isExpanded, onTog
 
 // Empty State Component
 const EmptyState = ({ onCreatePortfolio, onQuickDemo, startingDemo }) => (
-  <div className="text-center py-8 px-4">
+  <div className="text-center py-5 sm:py-8 px-4">
     {/* Decorative Icon */}
-    <div className="relative inline-flex mb-6">
+    <div className="relative inline-flex mb-4 sm:mb-6">
       <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
         <BarChart3 className="w-12 h-12 text-white" />
       </div>
@@ -102,12 +102,12 @@ const EmptyState = ({ onCreatePortfolio, onQuickDemo, startingDemo }) => (
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
       Welcome to PIQ Labs
     </h2>
-    <p className="text-base text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-5 sm:mb-8 max-w-sm mx-auto">
       Create your first portfolio to unlock AI-powered investment insights and analysis.
     </p>
 
     {/* CTA Buttons */}
-    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-10">
       <button
         onClick={onCreatePortfolio}
         className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/40 transition-all active:scale-[0.98]"
@@ -194,8 +194,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
         if (library?.[0]?.portfolioId) {
           setExpandedPortfolioId(library[0].portfolioId);
         }
-      } catch (err) {
-        console.error('Failed to load portfolios', err);
+      } catch {
         if (active) setError('Unable to load portfolios.');
       } finally {
         if (active) setLoading(false);
@@ -223,8 +222,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
       } else {
         setError('Unable to start demo. Please try again.');
       }
-    } catch (err) {
-      console.error('Failed to start demo', err);
+    } catch {
       setError('Unable to start demo. Please try again.');
     } finally {
       setStartingDemo(false);
@@ -256,10 +254,10 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
   // Embedded mode: render directly in page
   if (embedded) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6">
         {/* Content Card */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl border-2 border-gray-100 dark:border-gray-700 shadow-xl overflow-hidden">
-          <div className="p-6 sm:p-8">
+          <div className="p-4 sm:p-6 lg:p-8">
             {loading ? (
               <LoadingSkeleton />
             ) : !hasPortfolios ? (

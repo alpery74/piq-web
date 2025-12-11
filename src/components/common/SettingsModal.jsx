@@ -77,8 +77,8 @@ const SettingsModal = ({ isOpen, onClose }) => {
         status: data.status || 'active',
         expiresAt: data.expiresAt,
       });
-    } catch (err) {
-      console.error('Failed to fetch subscription:', err);
+    } catch {
+      // Failed to fetch subscription - keep loading state
     } finally {
       setLoadingSubscription(false);
     }

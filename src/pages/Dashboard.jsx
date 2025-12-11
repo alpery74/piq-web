@@ -296,7 +296,7 @@ const Dashboard = () => {
       })
     : null;
 
-  const concentrationPenalty = (analysis.riskMetrics?.alphaBookHHI ?? 0) > 0.15 ? 15 : 10;
+  const concentrationPenalty = (analysis.riskMetrics?.alphaBookHHI ?? 0) > 0.15 ? 15 : 0;
   const volatilityPenalty = (analysis.volatility?.annualizedPct ?? 0) > 20 ? 15 : (analysis.volatility?.annualizedPct ?? 0) > 15 ? 10 : 0;
   const tailPenalty = analysis.stressTesting?.tail_risk_assessment?.tail_risk_level === 'HIGH' ? 10 : 0;
   const diversificationPenalty = (analysis.riskMetrics?.effectiveHoldings ?? 0) < 10 ? 5 : 0;
@@ -339,7 +339,7 @@ const Dashboard = () => {
   // Section navigation - these are page sections, NOT view tiers
   // Pills = WHERE on page (scroll spy navigation)
   // Dropdown = HOW MUCH detail (Simple/Analyst/Quant depth)
-  const sectionLinks = [
+  const sectionLinks = useMemo(() => [
     { id: 'overview-section', label: 'Overview', icon: Activity },
     { id: 'risk-section', label: 'Risk', icon: Shield },
     { id: 'holdings-section', label: 'Holdings', icon: PieChart },
@@ -347,7 +347,7 @@ const Dashboard = () => {
     { id: 'fundamentals-section', label: 'Fundamentals', icon: BarChart3 },
     { id: 'optimization-section', label: 'Optimization', icon: Target },
     { id: 'implementation-section', label: 'Implementation', icon: Cog },
-  ];
+  ], []);
 
   const correlationRows = (analysis.correlation?.tickers || []).map((ticker, i) => ({
     ticker,
@@ -486,7 +486,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-5 sm:space-y-8 pb-4 sm:pb-12">
       {error && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 shadow-sm">
           <div className="flex items-center gap-2">
@@ -561,7 +561,7 @@ const Dashboard = () => {
       )}
 
       {/* In-page anchor bar (single sticky element for this page) */}
-      <div className="md:sticky md:top-20 z-30 -mx-4 px-4 py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="md:sticky md:top-20 z-30 -mx-4 px-4 py-1.5 sm:py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {sectionLinks.map((link) => (
@@ -685,7 +685,7 @@ const Dashboard = () => {
       </div>
 
       {/* Risk Section - VaR, Volatility, Stress Testing */}
-      <div id="risk-section" className="scroll-mt-32 space-y-6">
+      <div id="risk-section" className="scroll-mt-32 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-6 h-6 text-red-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Risk Analysis</h2>
@@ -742,7 +742,7 @@ const Dashboard = () => {
       </div>
 
       {/* Diversification Section - Correlation Clusters & Balance */}
-      <div id="diversification-section" className="scroll-mt-32 space-y-6">
+      <div id="diversification-section" className="scroll-mt-32 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <GitBranch className="w-6 h-6 text-cyan-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Diversification</h2>
@@ -757,7 +757,7 @@ const Dashboard = () => {
       </div>
 
       {/* Fundamentals Section - P/E, Dividends, Beta */}
-      <div id="fundamentals-section" className="scroll-mt-32 space-y-6">
+      <div id="fundamentals-section" className="scroll-mt-32 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <BarChart3 className="w-6 h-6 text-emerald-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Fundamentals</h2>
@@ -771,7 +771,7 @@ const Dashboard = () => {
       </div>
 
       {/* Optimization Section - Strategy Comparison, Goals, What-If */}
-      <div id="optimization-section" className="scroll-mt-32 space-y-6">
+      <div id="optimization-section" className="scroll-mt-32 space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 mb-2">
           <Target className="w-6 h-6 text-purple-500" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Optimization</h2>

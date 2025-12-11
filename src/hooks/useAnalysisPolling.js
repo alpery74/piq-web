@@ -100,9 +100,9 @@ export const useAnalysisPolling = (analysisRunId) => {
       try {
         const finalResponse = await pollUnifiedResults(analysisRunId, lastSinceRef.current);
         lastSinceRef.current = finalResponse.timestamp || lastSinceRef.current;
-        processParsedResults(finalResponse.parsedResults);
+        processParsedResults(finalResponse?.parsedResults || {});
       } catch (err) {
-        console.error('Final polling check failed', err);
+        // Final polling check failed - continue with cleanup
       }
       // When the backend tells us to stop, treat the session as complete for UI purposes.
       setPending(new Set());
@@ -124,7 +124,7 @@ export const useAnalysisPolling = (analysisRunId) => {
 
         lastSinceRef.current = response.timestamp || lastSinceRef.current;
 
-        const hasNew = processParsedResults(response.parsedResults);
+        const hasNew = processParsedResults(response?.parsedResults || {});
         emptyPollsRef.current = hasNew ? 0 : emptyPollsRef.current + 1;
 
         // If the backend shares total/completed counts, align our progress to it.
@@ -147,7 +147,7 @@ export const useAnalysisPolling = (analysisRunId) => {
         const delay = getDelayMs(response.metadata?.pollingRecommendation, emptyPollsRef.current);
         timeoutRef.current = setTimeout(poll, delay);
       } catch (err) {
-        console.error('Polling error', err);
+        // Polling error occurred
         setError(err);
         setConnectionStatus('error');
         finalize();

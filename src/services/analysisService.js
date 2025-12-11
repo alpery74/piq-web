@@ -44,8 +44,10 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
             ? JSON.parse(result.result)
             : result.result;
           parsed[subtool] = snakeToCamel(resultData);
-        } catch {
-          // Skip unparseable results
+        } catch (e) {
+          if (import.meta.env.DEV) {
+            console.warn(`Failed to parse result for ${subtool}:`, e.message);
+          }
         }
       } else if (result && typeof result === 'object' && !('status' in result)) {
         // Direct object format - no wrapper

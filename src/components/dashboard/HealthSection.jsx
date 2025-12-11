@@ -49,7 +49,7 @@ const HealthSection = ({
 
   return (
     <section
-      className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-100/70 dark:bg-amber-900/20 p-4 sm:p-6 lg:p-8 shadow-md scroll-mt-44"
+      className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-100/70 dark:bg-amber-900/20 p-3 sm:p-4 lg:p-6 shadow-md scroll-mt-32 sm:scroll-mt-44"
     >
       <div className="flex items-center gap-3 mb-3">
         <div className="p-2 bg-amber-200 dark:bg-amber-800 rounded-lg text-amber-800 dark:text-amber-200">

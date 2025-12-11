@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Loader2, CloudOff, Zap, Coffee } from 'lucide-react';
+import { Loader2, CloudOff, Coffee } from 'lucide-react';
 
 /**
  * Backend Status Indicator
@@ -161,53 +161,6 @@ const BackendStatus = ({
           </p>
         </div>
       </div>
-    </div>
-  );
-};
-
-/**
- * Inline status badge for header/compact areas
- */
-export const BackendStatusBadge = ({ status = 'connected' }) => {
-  const statusConfig = {
-    connected: {
-      color: '#34C759',
-      bg: 'rgba(52, 199, 89, 0.12)',
-      icon: Zap,
-      label: 'Connected',
-    },
-    connecting: {
-      color: '#FF9500',
-      bg: 'rgba(255, 149, 0, 0.12)',
-      icon: Loader2,
-      label: 'Connecting',
-      animate: true,
-    },
-    waking: {
-      color: '#007AFF',
-      bg: 'rgba(0, 122, 255, 0.12)',
-      icon: Coffee,
-      label: 'Waking up',
-      animate: true,
-    },
-    error: {
-      color: '#FF3B30',
-      bg: 'rgba(255, 59, 48, 0.12)',
-      icon: CloudOff,
-      label: 'Offline',
-    },
-  };
-
-  const config = statusConfig[status] || statusConfig.connected;
-  const Icon = config.icon;
-
-  return (
-    <div
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-      style={{ background: config.bg, color: config.color }}
-    >
-      <Icon className={`w-3 h-3 ${config.animate ? 'animate-spin' : ''}`} />
-      <span>{config.label}</span>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 /**
  * Card Component
  * Reusable card container with optional expand/collapse functionality
- * 
+ *
  * @param {string} title - Card title
  * @param {string} subtitle - Optional subtitle
  * @param {boolean} collapsible - Whether card can be collapsed
@@ -67,48 +67,6 @@ const Card = ({
         </div>
       )}
     </div>
-  );
-};
-
-/**
- * StatCard Component
- * Specialized card for displaying key metrics
- */
-export const StatCard = ({
-  label,
-  value,
-  change,
-  changeType = 'neutral',
-  icon,
-  subtitle,
-  className = ''
-}) => {
-  const changeColors = {
-    positive: 'text-green-600 dark:text-green-400',
-    negative: 'text-red-600 dark:text-red-400',
-    neutral: 'text-gray-600 dark:text-gray-400',
-  };
-
-  return (
-    <Card className={`${className}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            {icon && <div className="text-gray-400 dark:text-gray-500">{icon}</div>}
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
-          </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{value}</p>
-          {subtitle && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
-          )}
-        </div>
-        {change !== undefined && (
-          <div className={`text-sm font-medium ${changeColors[changeType]}`}>
-            {change > 0 ? '+' : ''}{change}
-          </div>
-        )}
-      </div>
-    </Card>
   );
 };
 

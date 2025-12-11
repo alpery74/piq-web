@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://piq-2025-8fc430488343.herokuapp.com/api';
+const API_BASE_URL = 'https://piq-2025-8fc430488343.herokuapp.com/api';
 const AUTH_TOKEN_KEY = 'authToken';
 
 const client = axios.create({

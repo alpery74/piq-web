@@ -8,7 +8,6 @@ const Logout = () => {
 
   useEffect(() => {
     logout();
-    localStorage.removeItem('analysisRunId');
     navigate('/login', { replace: true });
   }, [logout, navigate]);
 

@@ -134,9 +134,9 @@ const Login = () => {
           </div>
 
           {/* Main Content */}
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             <div>
-              <h1 className="text-4xl font-bold leading-tight mb-4">
+              <h1 className="text-3xl lg:text-4xl font-bold leading-tight mb-3 lg:mb-4">
                 AI-Powered Portfolio Intelligence
               </h1>
               <p className="text-lg text-slate-300 leading-relaxed">
@@ -294,7 +294,7 @@ const Login = () => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Password
                   </label>
-                  <button type="button" className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                  <button type="button" disabled className="text-sm text-gray-400 cursor-not-allowed font-medium">
                     Forgot password?
                   </button>
                 </div>

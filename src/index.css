@@ -632,155 +632,7 @@ body {
   color: var(--ios-red);
 }
 
-/* Risk Gauge - Circular */
-.gauge-ring {
-  @apply relative inline-flex items-center justify-center;
-}
 
-.gauge-ring svg {
-  transform: rotate(-90deg);
-}
-
-.gauge-ring .gauge-bg {
-  stroke: rgba(142, 142, 147, 0.15);
-}
-
-.gauge-ring .gauge-fill {
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.gauge-ring .gauge-value {
-  @apply absolute text-2xl font-bold;
-  letter-spacing: -0.02em;
-}
-
-/* Sparkline Chart Container */
-.sparkline-container {
-  @apply relative h-12 w-full overflow-hidden rounded-lg;
-}
-
-/* Holdings Row - iOS List Style */
-.holding-row {
-  @apply flex items-center justify-between py-4 px-4 -mx-4;
-  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
-  transition: background 0.15s ease;
-}
-
-.holding-row:hover {
-  background: rgba(0, 122, 255, 0.04);
-}
-
-.holding-row:active {
-  background: rgba(0, 122, 255, 0.08);
-}
-
-.holding-row:last-child {
-  border-bottom: none;
-}
-
-.holding-info {
-  @apply flex items-center gap-3;
-}
-
-.holding-icon {
-  @apply w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold;
-  background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1));
-  color: var(--ios-blue);
-}
-
-.holding-ticker {
-  @apply text-base font-semibold;
-  color: #1C1C1E;
-}
-
-.holding-name {
-  @apply text-sm;
-  color: rgba(60, 60, 67, 0.6);
-}
-
-.holding-values {
-  @apply text-right;
-}
-
-.holding-value {
-  @apply text-base font-semibold;
-  color: #1C1C1E;
-}
-
-.holding-change {
-  @apply text-sm font-medium;
-}
-
-/* ============================================
-   iOS MODAL / SHEET STYLES
-   ============================================ */
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.modal-sheet {
-  @apply fixed bottom-0 left-0 right-0 rounded-t-ios-2xl;
-  background: var(--glass-bg-thick);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
-  max-height: 90vh;
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modal-sheet .sheet-handle {
-  @apply w-9 h-1 rounded-full mx-auto mt-2 mb-4;
-  background: rgba(60, 60, 67, 0.3);
-}
-
-/* ============================================
-   iOS SEARCH BAR
-   ============================================ */
-.search-bar-ios {
-  @apply flex items-center gap-2 px-3 py-2 rounded-ios;
-  background: rgba(142, 142, 147, 0.12);
-}
-
-.search-bar-ios input {
-  @apply bg-transparent outline-none flex-1 text-base;
-  color: #1C1C1E;
-}
-
-.search-bar-ios input::placeholder {
-  color: rgba(60, 60, 67, 0.6);
-}
-
-.search-bar-ios .search-icon {
-  @apply w-5 h-5;
-  color: rgba(60, 60, 67, 0.6);
-}
-
-/* ============================================
-   TIER INDICATOR PILLS
-   ============================================ */
-.tier-pills {
-  @apply flex gap-2 p-1 rounded-ios-lg;
-  background: rgba(142, 142, 147, 0.08);
-}
-
-.tier-pill {
-  @apply px-4 py-2 rounded-ios text-sm font-semibold transition-all duration-200;
-  color: rgba(60, 60, 67, 0.6);
-}
-
-.tier-pill.active {
-  background: white;
-  color: #1C1C1E;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.tier-pill:not(.active):hover {
-  color: #1C1C1E;
-  background: rgba(255, 255, 255, 0.5);
-}
 
 /* ============================================
    PRINT STYLES
@@ -1180,31 +1032,6 @@ body {
   color: var(--status-negative);
 }
 
-/* Holdings */
-.dark .holding-row {
-  border-bottom-color: var(--separator);
-}
-
-.dark .holding-row:hover {
-  background: var(--dark-bg-hover);
-}
-
-.dark .holding-ticker {
-  color: var(--dark-text-primary);
-}
-
-.dark .holding-name {
-  color: var(--dark-text-secondary);
-}
-
-.dark .holding-value {
-  color: var(--dark-text-primary);
-}
-
-.dark .holding-icon {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
-  color: #818CF8;
-}
 
 /* ============================================
    Dark Mode Tooltip
@@ -1307,63 +1134,6 @@ body {
   background-size: 1000px 100%;
 }
 
-/* ============================================
-   Dark Mode Modal/Sheet
-   ============================================ */
-.dark .modal-overlay {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.dark .modal-sheet {
-  background: var(--dark-bg-elevated);
-  border-top: 1px solid var(--separator);
-}
-
-.dark .modal-sheet .sheet-handle {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ============================================
-   Dark Mode Search
-   ============================================ */
-.dark .search-bar-ios {
-  background: var(--dark-bg-surface);
-  border: 1px solid var(--separator);
-}
-
-.dark .search-bar-ios input {
-  color: var(--dark-text-primary);
-}
-
-.dark .search-bar-ios input::placeholder {
-  color: var(--dark-text-tertiary);
-}
-
-.dark .search-bar-ios .search-icon {
-  color: var(--dark-text-tertiary);
-}
-
-/* ============================================
-   Dark Mode Tier Pills
-   ============================================ */
-.dark .tier-pills {
-  background: var(--dark-bg-surface);
-}
-
-.dark .tier-pill {
-  color: var(--dark-text-secondary);
-}
-
-.dark .tier-pill.active {
-  background: var(--dark-bg-elevated);
-  color: var(--dark-text-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.dark .tier-pill:not(.active):hover {
-  color: var(--dark-text-primary);
-  background: var(--dark-bg-hover);
-}
 
 /* ============================================
    Dark Mode Tab Bar
@@ -1383,16 +1153,6 @@ body {
   color: var(--ios-blue);
 }
 
-/* ============================================
-   Dark Mode Gauge
-   ============================================ */
-.dark .gauge-ring .gauge-bg {
-  stroke: rgba(255, 255, 255, 0.08);
-}
-
-.dark .gauge-ring .gauge-value {
-  color: var(--dark-text-primary);
-}
 
 /* ============================================
    ACCESSIBILITY
@@ -1500,7 +1260,7 @@ body {
    HERO CARD - Premium Glass Effect
    ============================================ */
 .card-glass-hero {
-  @apply relative rounded-ios-2xl p-6 sm:p-8 transition-all duration-300;
+  @apply relative rounded-ios-2xl p-4 sm:p-6 lg:p-8 transition-all duration-300;
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.9) 0%,

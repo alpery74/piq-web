@@ -405,7 +405,6 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
         throw new Error(response.data.error || 'Failed to start analysis');
       }
     } catch (err) {
-      console.error('Analysis start failed:', err);
       setError(err.response?.data?.error || err.message || 'Failed to start analysis');
     } finally {
       setIsLoading(false);
