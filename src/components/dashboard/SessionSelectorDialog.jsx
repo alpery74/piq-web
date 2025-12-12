@@ -54,7 +54,10 @@ const PortfolioCard = ({ portfolio, onSelectVersion, onNewRun, isExpanded, onTog
             {versions.map((version, idx) => (
               <button
                 key={version.versionId}
-                onClick={() => onSelectVersion(version.analysisRunId)}
+                onClick={() => onSelectVersion(version.analysisRunId, {
+                  portfolioName: portfolio.name,
+                  versionName: version.versionName || 'Analysis',
+                })}
                 className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors group"
               >
                 {/* Recent indicator */}
@@ -204,11 +207,32 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
     return () => { active = false; };
   }, [shouldLoad]);
 
-  const selectRunAndClose = (runId) => {
+  const selectRunAndClose = (runId, portfolioData = {}) => {
     if (!runId) return;
     localStorage.setItem('analysisRunId', runId);
-    onSelectRun(runId);
+    // Store portfolio metadata
+    if (portfolioData.portfolioName) {
+      localStorage.setItem('portfolioName', portfolioData.portfolioName);
+    }
+    if (portfolioData.versionName) {
+      localStorage.setItem('versionName', portfolioData.versionName);
+    }
+    onSelectRun(runId, portfolioData);
     if (!embedded) onClose?.();
+  };
+
+  // Helper to find portfolio metadata by run ID
+  const findPortfolioByRunId = (runId) => {
+    for (const portfolio of portfolios) {
+      const version = portfolio.versions?.find(v => v.analysisRunId === runId);
+      if (version) {
+        return {
+          portfolioName: portfolio.name,
+          versionName: version.versionName || 'Analysis',
+        };
+      }
+    }
+    return {};
   };
 
   const handleQuickDemo = async () => {
@@ -218,7 +242,10 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
       const response = await startAnalysis(DEFAULT_HOLDINGS, 'Quick Demo', 'demo');
       const runId = response?.analysis_run_id || response?.analysisRunId || response?.data?.analysis_run_id;
       if (runId) {
-        selectRunAndClose(runId);
+        selectRunAndClose(runId, {
+          portfolioName: 'Quick Demo',
+          versionName: 'Sample Portfolio',
+        });
       } else {
         setError('Unable to start demo. Please try again.');
       }
@@ -272,7 +299,7 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   {/* Continue Last */}
                   <button
-                    onClick={() => selectRunAndClose(lastRunId)}
+                    onClick={() => selectRunAndClose(lastRunId, findPortfolioByRunId(lastRunId))}
                     disabled={!lastRunId}
                     className="flex flex-col items-center gap-3 p-6 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md group"
                   >

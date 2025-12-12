@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { TrendingUp, TrendingDown, Activity, Target, Zap, ChevronRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Target, Zap, ChevronRight, ChevronDown, Folder } from 'lucide-react';
 
 // Animated number component with formatting
 const AnimatedValue = ({ value, prefix = '', suffix = '', decimals = 2, duration = 1000 }) => {
@@ -135,12 +135,16 @@ const HeroCard = ({
   riskLevel,
   volatility,
   holdingsCount = 0,
+  portfolioName,
+  versionName,
+  onSwitchPortfolio,
   onOptimize,
   onExport,
   onCompare,
   isLoading = false,
 }) => {
   const isPositiveChange = dailyChangePercent >= 0;
+  const displayName = portfolioName || 'My Portfolio';
 
   return (
     <div className="card-glass-hero relative overflow-hidden">
@@ -152,6 +156,27 @@ const HeroCard = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Left: Portfolio Value */}
           <div className="lg:col-span-2">
+            {/* Portfolio Switcher - Tappable header */}
+            <button
+              onClick={onSwitchPortfolio}
+              className="group flex items-center gap-2 mb-3 px-3 py-1.5 -ml-3 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all cursor-pointer"
+            >
+              <div className="p-1.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-sm">
+                <Folder className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate max-w-[200px] sm:max-w-[300px]">
+                  {displayName}
+                </span>
+                {versionName && (
+                  <span className="hidden sm:inline text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
+                    · {versionName}
+                  </span>
+                )}
+                <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
+              </div>
+            </button>
+
             <div className="flex items-start justify-between mb-4">
               <div>
                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">

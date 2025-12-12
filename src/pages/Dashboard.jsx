@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { AlertCircle, TrendingUp, Activity, Layers, Eye, RefreshCw, Moon, Sun, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
+import { AlertCircle, TrendingUp, Activity, Layers, Eye, Moon, Sun, BookOpen, ChevronDown, Shield, PieChart, GitBranch, BarChart3, Target, Cog } from 'lucide-react';
 import client from '@/services/client';
 import HealthSection from '@/components/dashboard/HealthSection';
 import InsightsSection from '@/components/dashboard/InsightsSection';
@@ -58,6 +58,9 @@ const Dashboard = () => {
   const showAdvanced = viewTier === 'analyst' || viewTier === 'quant';
   const [showOptimizationStrategies, setShowOptimizationStrategies] = useState(false);
   const [analysisRunId, setAnalysisRunId] = useState(localStorage.getItem('analysisRunId') || '');
+  const [portfolioName, setPortfolioName] = useState(localStorage.getItem('portfolioName') || '');
+  const [versionName, setVersionName] = useState(localStorage.getItem('versionName') || '');
+  const [showSessionSelector, setShowSessionSelector] = useState(false);
   const [newAnalysisOpen, setNewAnalysisOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     'health-score': true,
@@ -456,9 +459,21 @@ const Dashboard = () => {
     localStorage.setItem('viewTier', viewTier);
   }, [viewTier]);
 
-  const handleRunChange = (runId) => {
+  const handleRunChange = (runId, portfolioData = {}) => {
+    localStorage.setItem('analysisRunId', runId);
     setAnalysisRunId(runId);
     setError(null);
+    // Store portfolio metadata if provided
+    if (portfolioData.portfolioName) {
+      localStorage.setItem('portfolioName', portfolioData.portfolioName);
+      setPortfolioName(portfolioData.portfolioName);
+    }
+    if (portfolioData.versionName) {
+      localStorage.setItem('versionName', portfolioData.versionName);
+      setVersionName(portfolioData.versionName);
+    }
+    // Close the modal if open
+    setShowSessionSelector(false);
   };
 
   const goToPortfolioSelector = () => {
@@ -467,10 +482,24 @@ const Dashboard = () => {
     setError(null);
   };
 
-  const handleAnalysisStarted = (runId) => {
+  const openSessionSelectorModal = () => {
+    setShowSessionSelector(true);
+  };
+
+  const handleAnalysisStarted = (runId, portfolioData = {}) => {
     localStorage.setItem('analysisRunId', runId);
     setAnalysisRunId(runId);
+    // Store portfolio metadata if provided
+    if (portfolioData.portfolioName) {
+      localStorage.setItem('portfolioName', portfolioData.portfolioName);
+      setPortfolioName(portfolioData.portfolioName);
+    }
+    if (portfolioData.versionName) {
+      localStorage.setItem('versionName', portfolioData.versionName);
+      setVersionName(portfolioData.versionName);
+    }
     setNewAnalysisOpen(false);
+    setShowSessionSelector(false);
     toast.success('Analysis Started', 'Your portfolio analysis is now running.');
   };
 
@@ -597,6 +626,9 @@ const Dashboard = () => {
           riskLevel={riskLevelLabel}
           volatility={currentVol}
           holdingsCount={holdings.length}
+          portfolioName={portfolioName}
+          versionName={versionName}
+          onSwitchPortfolio={openSessionSelectorModal}
           onOptimize={() => {
             setShowOptimizationStrategies(true);
             document.getElementById('optimization-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -638,15 +670,6 @@ const Dashboard = () => {
               title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-
-            <button
-              onClick={goToPortfolioSelector}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-semibold transition-all bg-white/70 dark:bg-gray-800/70 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 hover:border-primary-200 hover:text-primary-700 shadow-sm"
-              title="Change analysis run"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span className="hidden sm:inline">Change run</span>
             </button>
 
             {/* View Tier Selector */}
@@ -747,6 +770,7 @@ const Dashboard = () => {
           volatility={analysis.volatility}
           stressTesting={analysis.stressTesting}
           riskDecomposition={analysis.riskDecomposition}
+          correlation={analysis.correlation}
           viewTier={viewTier}
           isLoading={sectionLoadingStates.risk}
         />
@@ -905,7 +929,7 @@ const Dashboard = () => {
                 </span>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white mb-1">Analyst View</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Understand the "why" behind each recommendation. See optimization strategies and implementation details.</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Understand the &quot;why&quot; behind each recommendation. See optimization strategies and implementation details.</div>
                 </div>
                 {viewTier === 'analyst' && <span className="ml-auto text-blue-600 font-bold text-sm">Active</span>}
               </div>
@@ -954,6 +978,15 @@ const Dashboard = () => {
         isOpen={newAnalysisOpen}
         onClose={() => setNewAnalysisOpen(false)}
         onAnalysisStarted={handleAnalysisStarted}
+      />
+
+      {/* Session Selector Modal (triggered from HeroCard) */}
+      <SessionSelectorDialog
+        open={showSessionSelector}
+        onClose={() => setShowSessionSelector(false)}
+        onSelectRun={handleRunChange}
+        onStartNewAnalysis={handleOpenNewAnalysis}
+        userName={user?.firstName}
       />
 
       {/* Command Palette (Cmd+K) */}

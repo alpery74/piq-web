@@ -44,6 +44,17 @@ const RiskOverviewCard = ({
   const betaExposureUsd = correlation?.betaExposureUsd || 0;
   const avgAssetRSquared = correlation?.avgAssetRSquaredPct || 0;
 
+  // Regression metadata (for Analyst/Quant views)
+  const regressionBenchmark = correlation?.regressionBenchmarkTicker || 'SPY';
+  const regressionAssetsCount = correlation?.regressionAssetsCount || 0;
+  const totalWeightAnalyzed = correlation?.totalWeightAnalyzed || 0;
+
+  // Correlation stress testing
+  const correlationStress = stressTesting?.correlationStressTesting || {};
+  const maxCorrelationIncrease = correlationStress?.maxCorrelationIncrease || 0;
+  const correlationBreakdownRisk = correlationStress?.correlationBreakdownRisk || 'UNKNOWN';
+  const stressScenarios = correlationStress?.stressScenarios || [];
+
   // Monte Carlo data
   const monteCarlo = stressTesting?.monteCarloAnalysis || {};
   const returnDist = monteCarlo?.returnDistribution || {};
@@ -77,7 +88,16 @@ const RiskOverviewCard = ({
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">Risk Overview</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {isLoading ? 'Analyzing risk metrics...' : `${simDays} days analyzed ${limitedHistory ? '(limited history)' : ''}`}
+              {isLoading ? 'Analyzing risk metrics...' : (
+                <>
+                  {simDays} days analyzed {limitedHistory ? '(limited history)' : ''}
+                  {(viewTier === 'analyst' || viewTier === 'quant') && regressionBenchmark && (
+                    <span className="ml-2 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs font-medium">
+                      vs {regressionBenchmark}
+                    </span>
+                  )}
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -239,6 +259,39 @@ const RiskOverviewCard = ({
                 </div>
               </div>
             </div>
+
+            {/* Correlation Stress Scenarios */}
+            {stressScenarios.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Historical Crisis Scenarios
+                </h4>
+                <div className="space-y-2">
+                  {stressScenarios.map((scenario, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-amber-900 dark:text-amber-200 text-sm">
+                          {scenario.name}
+                        </span>
+                        <span className={`font-bold ${
+                          (scenario.portfolioImpactPct || 0) < -20 ? 'text-red-600' :
+                          (scenario.portfolioImpactPct || 0) < -10 ? 'text-orange-600' : 'text-amber-600'
+                        }`}>
+                          {(scenario.portfolioImpactPct || 0).toFixed(1)}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-amber-700 dark:text-amber-400">
+                        {scenario.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -375,6 +428,51 @@ const RiskOverviewCard = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Regression Analysis Metadata */}
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <h5 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">Regression Analysis</h5>
+                  <div className="grid grid-cols-3 gap-3 text-sm">
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Benchmark</div>
+                      <div className="font-bold text-blue-700 dark:text-blue-300">{regressionBenchmark}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Assets Analyzed</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{regressionAssetsCount}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Weight Coverage</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{totalWeightAnalyzed.toFixed(1)}%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Correlation Breakdown Risk */}
+                {(maxCorrelationIncrease > 0 || correlationBreakdownRisk !== 'UNKNOWN') && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                    <h5 className="font-semibold text-amber-800 dark:text-amber-300 mb-3">Correlation Stress Analysis</h5>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Max Correlation Increase</div>
+                        <div className="font-bold text-amber-700 dark:text-amber-300">
+                          +{(maxCorrelationIncrease * 100).toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">Under market stress</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Breakdown Risk</div>
+                        <div className={`font-bold ${
+                          correlationBreakdownRisk === 'LOW' ? 'text-ios-green' :
+                          correlationBreakdownRisk === 'MODERATE' ? 'text-ios-orange' : 'text-ios-red'
+                        }`}>
+                          {correlationBreakdownRisk}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">Diversification failure risk</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
