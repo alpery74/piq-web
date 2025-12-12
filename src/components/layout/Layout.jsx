@@ -310,22 +310,78 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
               )}
             </div>
 
-            {/* Mobile Menu Button - iOS Style */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-ios tap-scale transition-colors"
-              style={{
-                background: mobileMenuOpen ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
-                color: mobileMenuOpen ? 'var(--ios-blue)' : '#8E8E93'
-              }}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+            {/* Mobile Icons - Search & Notifications */}
+            <div className="md:hidden flex items-center gap-1">
+              {/* Search/Command Button */}
+              <button
+                onClick={onOpenSearch}
+                className="p-2 rounded-full text-gray-500 hover:text-ios-blue hover:bg-ios-blue/10 transition-colors"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+
+              {/* Notifications Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => setNotificationsOpen(!notificationsOpen)}
+                  className="p-2 rounded-full text-gray-500 hover:text-ios-blue hover:bg-ios-blue/10 transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-ios-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Mobile Notifications Dropdown */}
+                {notificationsOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">Notifications</p>
+                      {notificationCount > 0 && (
+                        <span className="text-xs text-ios-blue font-medium">Mark all read</span>
+                      )}
+                    </div>
+                    <div className="max-h-64 overflow-y-auto">
+                      {notificationCount === 0 ? (
+                        <div className="py-6 text-center">
+                          <Bell className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400">No notifications yet</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Alerts appear here when analysis completes</p>
+                        </div>
+                      ) : (
+                        <div className="py-2">
+                          <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">Analysis Complete</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Your portfolio analysis has finished</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-ios tap-scale transition-colors"
+                style={{
+                  background: mobileMenuOpen ? 'rgba(0, 122, 255, 0.1)' : 'transparent',
+                  color: mobileMenuOpen ? 'var(--ios-blue)' : '#8E8E93'
+                }}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Mobile Navigation - iOS Sheet Style */}
