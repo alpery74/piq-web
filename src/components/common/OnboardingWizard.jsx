@@ -12,6 +12,7 @@ import {
   Eye,
   MousePointer,
   Zap,
+  Folder,
 } from 'lucide-react';
 
 // Context for sharing onboarding state across the app
@@ -96,6 +97,18 @@ const ONBOARDING_STEPS = [
     icon: Layers,
     color: 'ios-blue',
     targetSelector: '#holdings-section',
+    position: 'bottom',
+    highlightHeader: true,
+  },
+  {
+    id: 'optimization-section',
+    title: 'Optimization',
+    subtitle: 'AI-Powered Recommendations',
+    description:
+      'Get actionable portfolio optimization strategies, implementation steps, and risk decomposition analysis. See how to improve your portfolio based on your goals.',
+    icon: Target,
+    color: 'ios-orange',
+    targetSelector: '#optimization-section',
     position: 'bottom',
     highlightHeader: true,
   },

@@ -6,17 +6,17 @@ import {
   TrendingUp,
   Layers,
   Target,
-  Settings,
   Moon,
   Sun,
   Download,
   RefreshCw,
   HelpCircle,
   ChevronRight,
-  Command,
   BarChart3,
   Shield,
   Zap,
+  FolderPlus,
+  Play,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -66,9 +66,33 @@ const getCommands = (isDark, toggleTheme) => [
         id: 'action-switch',
         icon: RefreshCw,
         label: 'Switch Portfolio',
-        description: 'Change or create new portfolio',
+        description: 'Change to a different portfolio',
         action: () => {
           // Click the portfolio switcher button in HeroCard
+          const switcher = document.querySelector('.card-glass-hero button');
+          if (switcher) switcher.click();
+        },
+      },
+      {
+        id: 'action-new',
+        icon: FolderPlus,
+        label: 'New Portfolio',
+        description: 'Create a new portfolio analysis',
+        action: () => {
+          // Open portfolio switcher then click New Portfolio
+          const switcher = document.querySelector('.card-glass-hero button');
+          if (switcher) {
+            switcher.click();
+            // The modal will open with New Portfolio option
+          }
+        },
+      },
+      {
+        id: 'action-demo',
+        icon: Play,
+        label: 'Run Demo',
+        description: 'Try with sample data',
+        action: () => {
           const switcher = document.querySelector('.card-glass-hero button');
           if (switcher) switcher.click();
         },
@@ -153,6 +177,17 @@ const getCommands = (isDark, toggleTheme) => [
   {
     category: 'Help',
     items: [
+      {
+        id: 'help-tour',
+        icon: HelpCircle,
+        label: 'Start Guided Tour',
+        description: 'Learn how to use the dashboard',
+        action: () => {
+          // Trigger the guided tour - look for the help button in mobile nav or use localStorage reset
+          localStorage.removeItem('onboardingComplete');
+          window.location.reload();
+        },
+      },
       {
         id: 'help-glossary',
         icon: HelpCircle,
