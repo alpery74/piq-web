@@ -172,32 +172,121 @@ src/
 
 ## Design System
 
-### Color Palette (iOS-inspired)
+### Brand Colors (iOS-inspired)
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Blue | `#007AFF` | Primary actions, links |
-| Green | `#34C759` | Success, positive changes |
-| Orange | `#FF9500` | Warnings, moderate risk |
-| Red | `#FF3B30` | Errors, negative changes |
-| Purple | `#AF52DE` | Quant view, advanced features |
+| Color | Variable | Hex | Usage |
+|-------|----------|-----|-------|
+| Blue | `--ios-blue` | `#007AFF` | Primary actions, links, active states |
+| Green | `--ios-green` | `#34C759` | Success, positive changes, health scores |
+| Orange | `--ios-orange` | `#FF9500` | Warnings, moderate risk, caution |
+| Red | `--ios-red` | `#FF3B30` | Errors, negative changes, high risk |
+| Purple | `--ios-purple` | `#AF52DE` | Quant view, advanced features |
 
-### Dark Mode Colors
+### Light Mode Color Schema
 
-| Element | Light | Dark |
-|---------|-------|------|
-| Background | `#F5F5F7` | `#0A0B0D` |
-| Card | `white` | `#141417` |
-| Text | `gray-900` | `white` |
-| Border | `gray-200` | `gray-700` |
+| Element | Color | Tailwind Class |
+|---------|-------|----------------|
+| **Backgrounds** | | |
+| Page Background | `#F5F5F7` | `bg-gray-50` |
+| Card Background | `#FFFFFF` | `bg-white` |
+| Card Elevated | `#FFFFFF` | `bg-white` |
+| Input Background | `#F5F5F7` | `bg-gray-50` |
+| Hover State | `#F0F0F5` | `bg-gray-100` |
+| **Text** | | |
+| Primary Text | `#1D1D1F` | `text-gray-900` |
+| Secondary Text | `#6E6E73` | `text-gray-600` |
+| Muted Text | `#8E8E93` | `text-gray-500` |
+| Placeholder | `#AEAEB2` | `text-gray-400` |
+| **Borders** | | |
+| Default Border | `#E5E5EA` | `border-gray-200` |
+| Subtle Border | `#F2F2F7` | `border-gray-100` |
+| Focus Border | `#007AFF` | `border-primary-500` |
+| **Surfaces** | | |
+| Modal Overlay | `rgba(0,0,0,0.5)` | `bg-black/50` |
+| Glass Effect | `rgba(255,255,255,0.8)` | `bg-white/80` |
+| Tooltip | `#1D1D1F` | `bg-gray-900` |
+
+### Dark Mode Color Schema
+
+| Element | Color | Tailwind Class |
+|---------|-------|----------------|
+| **Backgrounds** | | |
+| Page Background | `#0A0B0D` | `dark:bg-gray-950` |
+| Card Background | `#141417` | `dark:bg-gray-900` |
+| Card Elevated | `#1C1C21` | `dark:bg-gray-800` |
+| Input Background | `#1C1C21` | `dark:bg-gray-800` |
+| Hover State | `#2C2C31` | `dark:bg-gray-700` |
+| **Text** | | |
+| Primary Text | `#FFFFFF` | `dark:text-white` |
+| Secondary Text | `#A1A1A6` | `dark:text-gray-400` |
+| Muted Text | `#8E8E93` | `dark:text-gray-500` |
+| Placeholder | `#636366` | `dark:text-gray-600` |
+| **Borders** | | |
+| Default Border | `#38383A` | `dark:border-gray-700` |
+| Subtle Border | `#2C2C2E` | `dark:border-gray-800` |
+| Focus Border | `#0A84FF` | `dark:border-primary-400` |
+| **Surfaces** | | |
+| Modal Overlay | `rgba(0,0,0,0.7)` | `dark:bg-black/70` |
+| Glass Effect | `rgba(20,20,23,0.8)` | `dark:bg-gray-900/80` |
+| Tooltip | `#F5F5F7` | `dark:bg-gray-100` |
+
+### Semantic Colors
+
+| State | Light Mode | Dark Mode | Usage |
+|-------|------------|-----------|-------|
+| Success BG | `#D1FAE5` | `rgba(52,199,89,0.2)` | Positive indicators |
+| Success Text | `#065F46` | `#34C759` | Success messages |
+| Warning BG | `#FEF3C7` | `rgba(255,149,0,0.2)` | Caution indicators |
+| Warning Text | `#92400E` | `#FF9500` | Warning messages |
+| Error BG | `#FEE2E2` | `rgba(255,59,48,0.2)` | Error indicators |
+| Error Text | `#991B1B` | `#FF3B30` | Error messages |
+| Info BG | `#DBEAFE` | `rgba(0,122,255,0.2)` | Information indicators |
+| Info Text | `#1E40AF` | `#007AFF` | Info messages |
+
+### Risk Level Colors
+
+| Level | Light Mode | Dark Mode | Health Score |
+|-------|------------|-----------|--------------|
+| Excellent | `#34C759` | `#30D158` | 80-100 |
+| Good | `#34C759` | `#30D158` | 60-79 |
+| Moderate | `#FF9500` | `#FF9F0A` | 40-59 |
+| Poor | `#FF3B30` | `#FF453A` | 0-39 |
 
 ### Glass Effects
 
 ```css
-.nav-glass     /* Header glass effect */
-.card-glass    /* Standard card effect */
-.card-glass-hero /* Hero card with gradient */
+/* Header navigation */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.8);  /* Light */
+  background: rgba(20, 20, 23, 0.8);     /* Dark */
+  backdrop-filter: blur(20px);
+}
+
+/* Standard cards */
+.card-glass {
+  background: rgba(255, 255, 255, 0.7);  /* Light */
+  background: rgba(28, 28, 33, 0.7);     /* Dark */
+  backdrop-filter: blur(10px);
+}
+
+/* Hero card with gradient */
+.card-glass-hero {
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.9),
+    rgba(245,245,247,0.9));              /* Light */
+  background: linear-gradient(135deg,
+    rgba(20,20,23,0.9),
+    rgba(28,28,33,0.9));                 /* Dark */
+}
 ```
+
+### View Tier Colors
+
+| Tier | Badge Color | Icon Color | Active State |
+|------|-------------|------------|--------------|
+| Simple | Gray | `text-gray-600` | `bg-gray-100` |
+| Analyst | Blue | `text-blue-600` | `bg-blue-600 text-white` |
+| Quant | Purple | `text-purple-600` | `bg-purple-600 text-white` |
 
 ## Key Components
 
