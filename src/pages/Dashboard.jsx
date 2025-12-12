@@ -643,7 +643,7 @@ const Dashboard = () => {
       )}
 
       {/* In-page anchor bar (single sticky element for this page) */}
-      <div className="md:sticky md:top-20 z-30 -mx-4 px-4 py-1.5 sm:py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="md:sticky md:top-20 z-40 -mx-4 px-4 py-1.5 sm:py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {sectionLinks.map((link) => (
@@ -673,7 +673,7 @@ const Dashboard = () => {
             </button>
 
             {/* View Tier Selector */}
-            <div className="relative group">
+            <div className="relative group z-50">
               <button
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-semibold transition-all ${
                   viewTier === 'quant'
@@ -691,7 +691,7 @@ const Dashboard = () => {
                 <ChevronDown className="w-3 h-3" />
               </button>
               {/* Dropdown */}
-              <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[100]">
                 {Object.entries(VIEW_TIERS).map(([key, tier]) => (
                   <button
                     key={key}
