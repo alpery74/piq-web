@@ -232,27 +232,23 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl animate-scale-in"
-        style={{
-          background: 'rgba(255, 255, 255, 0.98)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-        }}
+        className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl animate-scale-in bg-white/98 dark:bg-gray-900/98 backdrop-blur-xl"
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 px-6 py-4 border-b border-gray-200 bg-white/95 backdrop-blur-xl">
+        <div className="sticky top-0 z-10 px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-ios-blue/10 rounded-xl">
                 <BookOpen className="w-6 h-6 text-ios-blue" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Learn About Investing</h2>
-                <p className="text-sm text-gray-500">Understand the metrics behind your portfolio</p>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Learn About Investing</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Understand the metrics behind your portfolio</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <X className="w-5 h-5 text-gray-500" />
             </button>
@@ -274,7 +270,7 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                   activeTab === tab.id
                     ? 'bg-ios-blue text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -287,7 +283,7 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
         {/* Content */}
         <div className="flex h-[calc(90vh-140px)]">
           {/* Sidebar / List */}
-          <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
+          <div className="w-1/3 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
             {activeTab === 'glossary' && (
               <div className="p-4">
                 {/* Search */}
@@ -298,7 +294,7 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                     placeholder="Search terms..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-ios-blue focus:ring-2 focus:ring-ios-blue/20 outline-none text-sm"
+                    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-ios-blue focus:ring-2 focus:ring-ios-blue/20 outline-none text-sm"
                   />
                 </div>
 
@@ -312,7 +308,7 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                         className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
                           selectedTerm === term.key
                             ? 'bg-ios-blue text-white'
-                            : 'hover:bg-gray-100 text-gray-700'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                         }`}
                       >
                         <div className="font-medium text-sm">{term.term}</div>
@@ -342,19 +338,19 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                       className={`w-full text-left p-4 rounded-xl border transition-all ${
                         isActive
                           ? 'border-ios-blue bg-ios-blue/5'
-                          : 'border-gray-200 hover:border-ios-blue/50'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-ios-blue/50'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <div
                           className={`p-2 rounded-lg ${
-                            isActive ? 'bg-ios-blue text-white' : 'bg-gray-100 text-gray-600'
+                            isActive ? 'bg-ios-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           <PathIcon className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
-                          <div className="font-semibold text-gray-900">{path.title}</div>
+                          <div className="font-semibold text-gray-900 dark:text-white">{path.title}</div>
                           <div className="text-xs text-gray-500 mt-0.5">{path.description}</div>
                           <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                             <span>{path.terms.length} topics</span>

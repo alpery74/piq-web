@@ -734,8 +734,7 @@ const EducationalTooltip = ({
         onClick={handleToggle}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
-        className="inline-flex items-center justify-center rounded-full transition-colors hover:bg-ios-gray-5 p-0.5"
-        style={{ color: 'rgba(60, 60, 67, 0.4)' }}
+        className="inline-flex items-center justify-center rounded-full transition-colors hover:bg-ios-gray-5 dark:hover:bg-gray-700 p-0.5 text-gray-400 dark:text-gray-500"
         aria-label={`Learn about ${termData.term}`}
       >
         {showIcon && <HelpCircle size={iconSize} />}

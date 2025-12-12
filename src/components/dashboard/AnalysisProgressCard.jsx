@@ -78,8 +78,8 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
               <Activity className="w-5 h-5 text-ios-blue" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Analysis Progress</h3>
-              <p className="text-xs text-gray-600">
+              <h3 className="font-semibold text-gray-900 dark:text-white">Analysis Progress</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
                 {completedCount} of {totalCount} modules complete
               </p>
             </div>
@@ -97,7 +97,7 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
       </div>
 
       {/* Subtool List */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {SUBTOOL_ORDER.map((subtool) => {
           const config = SUBTOOL_CONFIG[subtool];
           const Icon = config.icon;
@@ -108,14 +108,14 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
             <div
               key={subtool}
               className={`flex items-center gap-3 px-4 py-2.5 transition-colors ${
-                isComplete ? 'bg-green-50/50' : 'bg-white'
+                isComplete ? 'bg-green-50/50 dark:bg-green-900/20' : 'bg-white dark:bg-gray-800'
               }`}
             >
               {/* Status Icon */}
               <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                 isComplete
-                  ? 'bg-green-100 text-green-600'
-                  : 'bg-gray-100 text-gray-400'
+                  ? 'bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
               }`}>
                 {isComplete ? (
                   <CheckCircle2 className="w-4 h-4" />
@@ -130,22 +130,22 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${
-                    isComplete ? 'text-green-600' : 'text-gray-400'
+                    isComplete ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'
                   }`} />
                   <span className={`text-sm font-medium truncate ${
-                    isComplete ? 'text-gray-900' : 'text-gray-500'
+                    isComplete ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
                   }`}>
                     {config.label}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 truncate">{config.description}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{config.description}</p>
               </div>
 
               {/* Status Badge */}
               <div className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${
                 isComplete
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'
+                  ? 'bg-green-100 dark:bg-green-800/50 text-green-700 dark:text-green-300'
+                  : 'bg-amber-100 dark:bg-amber-800/50 text-amber-700 dark:text-amber-300'
               }`}>
                 {isComplete ? 'Complete' : 'Running'}
               </div>
@@ -155,8 +155,8 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
       </div>
 
       {/* Footer hint */}
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-        <p className="text-xs text-gray-500 text-center">
+      <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700">
+        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
           Results appear in sections as each module completes
         </p>
       </div>
