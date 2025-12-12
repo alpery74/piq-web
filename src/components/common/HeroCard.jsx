@@ -159,22 +159,27 @@ const HeroCard = ({
             {/* Portfolio Switcher - Tappable header */}
             <button
               onClick={onSwitchPortfolio}
-              className="group flex items-center gap-2 mb-3 px-3 py-1.5 -ml-3 rounded-xl hover:bg-white/50 dark:hover:bg-white/10 transition-all cursor-pointer"
+              className="group flex items-center gap-3 mb-4 px-4 py-2.5 rounded-xl bg-white/60 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 hover:bg-white/80 dark:hover:bg-gray-700/80 hover:border-primary-300 dark:hover:border-primary-600 transition-all cursor-pointer shadow-sm hover:shadow-md"
             >
-              <div className="p-1.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-sm">
-                <Folder className="w-4 h-4 text-white" />
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-sm">
+                <Folder className="w-5 h-5 text-white" />
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate max-w-[200px] sm:max-w-[300px]">
-                  {displayName}
-                </span>
+              <div className="flex-1 min-w-0 text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">
+                    {displayName}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-primary-500 transition-colors flex-shrink-0" />
+                </div>
                 {versionName && (
-                  <span className="hidden sm:inline text-xs text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
-                    · {versionName}
+                  <span className="text-xs text-gray-500 dark:text-gray-400 truncate block">
+                    {versionName}
                   </span>
                 )}
-                <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
               </div>
+              <span className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2.5 py-1 rounded-full">
+                Switch
+              </span>
             </button>
 
             <div className="flex items-start justify-between mb-4">
