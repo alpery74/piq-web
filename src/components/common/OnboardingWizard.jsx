@@ -455,31 +455,54 @@ export const OnboardingProvider = ({ children }) => {
   const [hasCompleted, setHasCompleted] = useState(() => {
     return localStorage.getItem('onboardingComplete') === 'true';
   });
+  // Track if user has ever logged in before (not a new user)
+  const [isNewUser, setIsNewUser] = useState(() => {
+    return localStorage.getItem('hasLoggedInBefore') !== 'true';
+  });
 
-  // Show onboarding on first visit
-  useEffect(() => {
-    if (!hasCompleted) {
-      // Delay to let the page load first
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [hasCompleted]);
+  // Don't auto-show onboarding here - let Dashboard handle it
+  // This prevents showing on login page or other pages
 
   const startTour = () => setIsOpen(true);
+
   const endTour = () => {
     setIsOpen(false);
     setHasCompleted(true);
   };
+
   const resetTour = () => {
     localStorage.removeItem('onboardingComplete');
     setHasCompleted(false);
     setIsOpen(true);
   };
 
+  // Called when user successfully logs in for the first time
+  const markUserAsReturning = () => {
+    localStorage.setItem('hasLoggedInBefore', 'true');
+    setIsNewUser(false);
+  };
+
+  // Auto-start tour for new users (called from Dashboard after auth check)
+  const autoStartForNewUser = () => {
+    if (isNewUser && !hasCompleted) {
+      // Delay to let the page load first
+      setTimeout(() => {
+        setIsOpen(true);
+      }, 1500);
+    }
+  };
+
   return (
-    <OnboardingContext.Provider value={{ isOpen, hasCompleted, startTour, endTour, resetTour }}>
+    <OnboardingContext.Provider value={{
+      isOpen,
+      hasCompleted,
+      isNewUser,
+      startTour,
+      endTour,
+      resetTour,
+      markUserAsReturning,
+      autoStartForNewUser,
+    }}>
       {children}
     </OnboardingContext.Provider>
   );
@@ -493,9 +516,12 @@ export const useOnboarding = () => {
     return {
       isOpen: false,
       hasCompleted: true,
+      isNewUser: false,
       startTour: () => {},
       endTour: () => {},
       resetTour: () => {},
+      markUserAsReturning: () => {},
+      autoStartForNewUser: () => {},
     };
   }
   return context;

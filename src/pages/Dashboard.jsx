@@ -117,6 +117,19 @@ const Dashboard = () => {
     return () => clearTimeout(timeout);
   }, []);
 
+  // Auto-start onboarding tour for new users (only on Dashboard, not login page)
+  const onboardingTriggered = useRef(false);
+  useEffect(() => {
+    if (onboardingTriggered.current) return;
+    if (isAuthenticated && !serverWarmup.isWarming) {
+      onboardingTriggered.current = true;
+      // Trigger onboarding for new users after server is ready
+      onboarding.autoStartForNewUser();
+      // Mark user as returning after their first dashboard visit
+      onboarding.markUserAsReturning();
+    }
+  }, [isAuthenticated, serverWarmup.isWarming, onboarding]);
+
   // Track which sections are still loading based on pending subtools
   const sectionLoadingStates = useMemo(() => ({
     // Overview needs: math_correlation, math_risk_metrics, math_volatility, optimization_stress_testing
