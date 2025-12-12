@@ -14,16 +14,16 @@ const ExpandableSection = ({
   return (
     <div className="card hover:shadow-lg transition-all duration-300">
       <div
-        className="flex items-center justify-between pb-4 mb-4 border-b-2 border-gray-100 cursor-pointer hover:border-primary-200 transition-colors"
+        className="flex items-center justify-between pb-4 mb-4 border-b-2 border-gray-100 dark:border-gray-700 cursor-pointer hover:border-primary-200 dark:hover:border-primary-600 transition-colors"
         onClick={onToggle}
       >
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="p-2 bg-primary-50 rounded-lg">
-              <Icon className="w-5 h-5 text-primary-600" />
+            <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
+              <Icon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
           )}
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
         </div>
 
         <button
@@ -34,7 +34,7 @@ const ExpandableSection = ({
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
             isExpanded
               ? 'bg-primary-600 text-white hover:bg-primary-700 shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
           aria-expanded={isExpanded}
           aria-controls={`${id}-details`}
@@ -48,11 +48,11 @@ const ExpandableSection = ({
 
       {isExpanded && tier2 && (
         <div className="mt-6 animate-slide-up">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-5 rounded-lg">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20 border-l-4 border-blue-500 p-5 rounded-lg">
             <div className="flex items-start gap-3">
-              <HelpCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+              <HelpCircle className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <h3 className="font-bold text-blue-900 mb-3 text-lg flex items-center gap-2">💡 Analyst View</h3>
+                <h3 className="font-bold text-blue-900 dark:text-blue-200 mb-3 text-lg flex items-center gap-2">💡 Analyst View</h3>
                 {tier2}
               </div>
             </div>
@@ -62,13 +62,13 @@ const ExpandableSection = ({
 
       {isExpanded && showAdvanced && tier3 && (
         <div className="mt-6 animate-slide-up">
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 p-5 rounded-lg">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/20 border-l-4 border-purple-500 p-5 rounded-lg">
             <div className="flex items-start gap-3">
-              <Settings className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+              <Settings className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
               <div className="flex-1">
-                <h3 className="font-bold text-purple-900 mb-3 text-lg flex items-center gap-2">
+                <h3 className="font-bold text-purple-900 dark:text-purple-200 mb-3 text-lg flex items-center gap-2">
                   ⚙️ Quant View
-                  <span className="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full">Calculations</span>
+                  <span className="text-xs bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full">Calculations</span>
                 </h3>
                 {tier3}
               </div>

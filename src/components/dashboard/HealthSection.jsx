@@ -148,60 +148,60 @@ const HealthSection = ({
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Score Components</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Score Components</h3>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                     <EducationalTooltip term="hhi" iconSize={14}>
                       <span>Concentration Risk</span>
                     </EducationalTooltip>
                   </span>
-                  <span className="text-sm font-bold text-red-600">-{concentrationPenalty} points</span>
+                  <span className="text-sm font-bold text-red-600 dark:text-red-400">-{concentrationPenalty} points</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div className="bg-red-500 h-2.5 rounded-full" style={{ width: `${concentrationPenalty}%` }}></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                     <EducationalTooltip term="volatility" iconSize={14}>
                       <span>Volatility</span>
                     </EducationalTooltip>
                   </span>
-                  <span className="text-sm font-bold text-orange-600">-{volatilityPenalty} points</span>
+                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">-{volatilityPenalty} points</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div className="bg-orange-500 h-2.5 rounded-full" style={{ width: `${volatilityPenalty}%` }}></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                     <EducationalTooltip term="tailRisk" iconSize={14}>
                       <span>Tail Risk</span>
                     </EducationalTooltip>
                   </span>
-                  <span className="text-sm font-bold text-orange-600">-{tailPenalty} points</span>
+                  <span className="text-sm font-bold text-orange-600 dark:text-orange-400">-{tailPenalty} points</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div className="bg-orange-500 h-2.5 rounded-full" style={{ width: `${tailPenalty}%` }}></div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                     <EducationalTooltip term="effectiveHoldings" iconSize={14}>
                       <span>Diversification</span>
                     </EducationalTooltip>
                   </span>
-                  <span className="text-sm font-bold text-yellow-600">-{diversificationPenalty} points</span>
+                  <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">-{diversificationPenalty} points</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                   <div
                     className="bg-yellow-500 h-2.5 rounded-full"
                     style={{ width: `${diversificationPenalty * 2}%` }}
@@ -210,21 +210,21 @@ const HealthSection = ({
               </div>
 
               <div className="grid grid-cols-2 gap-3 mt-4">
-                <div className="text-center p-2 bg-green-100 rounded">
-                  <div className="font-bold text-green-800">Excellent</div>
-                  <div className="text-green-600">80-100</div>
+                <div className="text-center p-2 bg-green-100 dark:bg-green-900/40 rounded">
+                  <div className="font-bold text-green-800 dark:text-green-300">Excellent</div>
+                  <div className="text-green-600 dark:text-green-400">80-100</div>
                 </div>
-                <div className="text-center p-2 bg-amber-100 rounded">
-                  <div className="font-bold text-amber-800">Good</div>
-                  <div className="text-amber-600">60-79</div>
+                <div className="text-center p-2 bg-amber-100 dark:bg-amber-900/40 rounded">
+                  <div className="font-bold text-amber-800 dark:text-amber-300">Good</div>
+                  <div className="text-amber-600 dark:text-amber-400">60-79</div>
                 </div>
-                <div className="text-center p-2 bg-orange-100 rounded">
-                  <div className="font-bold text-orange-800">Fair</div>
-                  <div className="text-orange-600">40-59</div>
+                <div className="text-center p-2 bg-orange-100 dark:bg-orange-900/40 rounded">
+                  <div className="font-bold text-orange-800 dark:text-orange-300">Fair</div>
+                  <div className="text-orange-600 dark:text-orange-400">40-59</div>
                 </div>
-                <div className="text-center p-2 bg-red-100 rounded">
-                  <div className="font-bold text-red-800">Poor</div>
-                  <div className="text-red-600">0-39</div>
+                <div className="text-center p-2 bg-red-100 dark:bg-red-900/40 rounded">
+                  <div className="font-bold text-red-800 dark:text-red-300">Poor</div>
+                  <div className="text-red-600 dark:text-red-400">0-39</div>
                 </div>
               </div>
             </div>

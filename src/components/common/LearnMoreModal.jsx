@@ -397,8 +397,8 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                       >
                         <CatIcon className={`w-5 h-5 text-${cat.color}`} />
                         <div className="flex-1 text-left">
-                          <div className="font-semibold text-gray-900">{cat.label}</div>
-                          <div className="text-xs text-gray-500">{terms.length} terms</div>
+                          <div className="font-semibold text-gray-900 dark:text-white">{cat.label}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{terms.length} terms</div>
                         </div>
                         {isExpanded ? (
                           <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -415,7 +415,7 @@ const LearnMoreModal = ({ isOpen, onClose, initialTerm = null, initialCategory =
                               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
                                 selectedTerm === term.key
                                   ? 'bg-ios-blue text-white'
-                                  : 'hover:bg-gray-100 text-gray-700'
+                                  : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                               }`}
                             >
                               {term.term}
@@ -501,7 +501,7 @@ const TermDetail = ({ term, termKey, selectedPath, pathProgress, onNext, onPrev 
           <Icon className={`w-8 h-8 text-${category.color}`} />
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-gray-900">{term.term}</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{term.term}</h3>
           <p className="text-lg text-ios-blue mt-1">{term.short}</p>
           <span
             className={`inline-block mt-2 text-xs font-semibold px-3 py-1 rounded-full ${category.bgColor} ${category.borderColor} border`}
@@ -513,25 +513,25 @@ const TermDetail = ({ term, termKey, selectedPath, pathProgress, onNext, onPrev 
 
       {/* Full explanation */}
       <div className="prose prose-gray max-w-none">
-        <h4 className="text-lg font-semibold text-gray-900 mb-2">What is it?</h4>
-        <p className="text-gray-700 leading-relaxed">{term.full}</p>
+        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">What is it?</h4>
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{term.full}</p>
       </div>
 
       {/* Example */}
       {term.example && (
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className="w-5 h-5 text-amber-600" />
-            <h4 className="font-semibold text-amber-900">Real-World Example</h4>
+            <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h4 className="font-semibold text-amber-900 dark:text-amber-200">Real-World Example</h4>
           </div>
-          <p className="text-amber-800">{term.example}</p>
+          <p className="text-amber-800 dark:text-amber-300">{term.example}</p>
         </div>
       )}
 
       {/* Range indicators */}
       {term.range && (
         <div className="mt-6">
-          <h4 className="text-lg font-semibold text-gray-900 mb-3">How to Interpret</h4>
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">How to Interpret</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Object.entries(term.range).map(([key, val]) => (
               <div
