@@ -35,7 +35,7 @@ const ONBOARDING_STEPS = [
     title: 'Portfolio Overview',
     subtitle: 'Your Key Metrics at a Glance',
     description:
-      'See your total portfolio value, daily changes, and health score in one place. The health ring shows your overall portfolio wellness based on diversification, volatility, and risk metrics.',
+      'See your total portfolio value, daily changes, and health score in one place. Tap the portfolio name at the top to switch between portfolios or start a new analysis.',
     icon: Activity,
     color: 'ios-blue',
     targetSelector: '.card-glass-hero',

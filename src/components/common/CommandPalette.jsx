@@ -26,32 +26,36 @@ const getCommands = (isDark, toggleTheme) => [
     category: 'Navigation',
     items: [
       {
-        id: 'nav-health',
+        id: 'nav-overview',
         icon: Activity,
-        label: 'Go to Coach View',
+        label: 'Go to Overview',
+        description: 'Health score & key metrics',
         shortcut: '1',
-        action: () => document.getElementById('health-section')?.scrollIntoView({ behavior: 'smooth' }),
+        action: () => document.getElementById('overview-section')?.scrollIntoView({ behavior: 'smooth' }),
       },
       {
-        id: 'nav-insights',
-        icon: TrendingUp,
-        label: 'Go to Analyst View',
+        id: 'nav-risk',
+        icon: Shield,
+        label: 'Go to Risk Analysis',
+        description: 'VaR, volatility & stress testing',
         shortcut: '2',
-        action: () => document.getElementById('insights-section')?.scrollIntoView({ behavior: 'smooth' }),
+        action: () => document.getElementById('risk-section')?.scrollIntoView({ behavior: 'smooth' }),
       },
       {
         id: 'nav-holdings',
         icon: Layers,
-        label: 'Go to Quant View',
+        label: 'Go to Holdings',
+        description: 'Positions & allocations',
         shortcut: '3',
         action: () => document.getElementById('holdings-section')?.scrollIntoView({ behavior: 'smooth' }),
       },
       {
-        id: 'nav-goals',
+        id: 'nav-optimize',
         icon: Target,
-        label: 'Go to Goals',
+        label: 'Go to Optimization',
+        description: 'Strategies & implementation',
         shortcut: '4',
-        action: () => document.getElementById('goals-section')?.scrollIntoView({ behavior: 'smooth' }),
+        action: () => document.getElementById('optimization-section')?.scrollIntoView({ behavior: 'smooth' }),
       },
     ],
   },
@@ -59,10 +63,21 @@ const getCommands = (isDark, toggleTheme) => [
     category: 'Actions',
     items: [
       {
+        id: 'action-switch',
+        icon: RefreshCw,
+        label: 'Switch Portfolio',
+        description: 'Change or create new portfolio',
+        action: () => {
+          // Click the portfolio switcher button in HeroCard
+          const switcher = document.querySelector('.card-glass-hero button');
+          if (switcher) switcher.click();
+        },
+      },
+      {
         id: 'action-optimize',
         icon: Zap,
-        label: 'Optimize Portfolio',
-        description: 'Run optimization strategies',
+        label: 'View Optimization Strategies',
+        description: 'See portfolio recommendations',
         action: () => document.getElementById('optimization-section')?.scrollIntoView({ behavior: 'smooth' }),
       },
       {
@@ -72,18 +87,60 @@ const getCommands = (isDark, toggleTheme) => [
         description: 'Download PDF or CSV',
         action: () => window.print(),
       },
-      {
-        id: 'action-refresh',
-        icon: RefreshCw,
-        label: 'Refresh Analysis',
-        description: 'Re-run portfolio analysis',
-        action: () => window.location.reload(),
-      },
     ],
   },
   {
-    category: 'Settings',
+    category: 'View',
     items: [
+      {
+        id: 'view-simple',
+        icon: Activity,
+        label: 'Simple View',
+        description: 'Key metrics at a glance',
+        action: () => {
+          const viewTierBtn = document.querySelector('[title*="Current view"]');
+          if (viewTierBtn) {
+            viewTierBtn.click();
+            setTimeout(() => {
+              const simpleBtn = document.querySelector('button:has(.text-sm:contains("Simple"))') ||
+                               Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Simple'));
+              if (simpleBtn) simpleBtn.click();
+            }, 100);
+          }
+        },
+      },
+      {
+        id: 'view-analyst',
+        icon: TrendingUp,
+        label: 'Analyst View',
+        description: 'Deeper insights & context',
+        action: () => {
+          const viewTierBtn = document.querySelector('[title*="Current view"]');
+          if (viewTierBtn) {
+            viewTierBtn.click();
+            setTimeout(() => {
+              const analystBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Analyst'));
+              if (analystBtn) analystBtn.click();
+            }, 100);
+          }
+        },
+      },
+      {
+        id: 'view-quant',
+        icon: BarChart3,
+        label: 'Quant View',
+        description: 'Full data transparency',
+        action: () => {
+          const viewTierBtn = document.querySelector('[title*="Current view"]');
+          if (viewTierBtn) {
+            viewTierBtn.click();
+            setTimeout(() => {
+              const quantBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Quant'));
+              if (quantBtn) quantBtn.click();
+            }, 100);
+          }
+        },
+      },
       {
         id: 'settings-theme',
         icon: isDark ? Sun : Moon,
@@ -91,34 +148,24 @@ const getCommands = (isDark, toggleTheme) => [
         shortcut: 'T',
         action: toggleTheme,
       },
-      {
-        id: 'settings-advanced',
-        icon: BarChart3,
-        label: 'Toggle Advanced Metrics',
-        shortcut: 'A',
-        action: () => {
-          const btn = document.querySelector('[aria-pressed]');
-          if (btn) btn.click();
-        },
-      },
     ],
   },
   {
     category: 'Help',
     items: [
       {
-        id: 'help-guide',
+        id: 'help-glossary',
         icon: HelpCircle,
-        label: 'View User Guide',
-        description: 'Learn how to use the dashboard',
-        action: () => window.open('/legal', '_self'),
+        label: 'Learn Financial Terms',
+        description: 'Educational glossary',
+        action: () => document.querySelector('[title="Learn about investing terms"]')?.click(),
       },
       {
-        id: 'help-glossary',
+        id: 'help-legal',
         icon: Shield,
-        label: 'Financial Terms Glossary',
-        description: 'Understand key metrics',
-        action: () => document.querySelector('[title="Learn about investing terms"]')?.click(),
+        label: 'About & Legal',
+        description: 'Terms, privacy & disclaimers',
+        action: () => window.open('/legal', '_self'),
       },
     ],
   },

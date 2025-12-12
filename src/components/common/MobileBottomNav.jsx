@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Activity, TrendingUp, Layers, Target, Menu, X, Settings, Moon, Sun, HelpCircle } from 'lucide-react';
+import { Activity, TrendingUp, Layers, Target, Menu, X, FolderSync, Moon, Sun, HelpCircle } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
 // Navigation items - IDs must match Dashboard.jsx section IDs
@@ -38,15 +38,15 @@ const NAV_ITEMS = [
 // More menu items
 const MORE_ITEMS = [
   {
+    id: 'switch-portfolio',
+    label: 'Switch Portfolio',
+    icon: FolderSync,
+  },
+  {
     id: 'theme',
     label: 'Dark Mode',
     icon: Moon,
     darkIcon: Sun,
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
   },
   {
     id: 'help',
@@ -106,8 +106,10 @@ const MobileBottomNav = ({ onStartTour }) => {
       case 'help':
         onStartTour?.();
         break;
-      case 'settings':
-        // Open settings
+      case 'switch-portfolio':
+        // Click the portfolio switcher button in HeroCard
+        const switcher = document.querySelector('.card-glass-hero button');
+        if (switcher) switcher.click();
         break;
     }
     setIsMoreOpen(false);
