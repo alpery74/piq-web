@@ -295,20 +295,20 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
               />
             ) : (
               <div className="space-y-6">
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                {/* Quick Actions - Always 3 columns, compact on mobile */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
                   {/* Continue Last */}
                   <button
                     onClick={() => selectRunAndClose(lastRunId, findPortfolioByRunId(lastRunId))}
                     disabled={!lastRunId}
-                    className="flex flex-col items-center gap-3 p-6 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md group"
+                    className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md group"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-blue-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                      <Clock className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-blue-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                      <Clock className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Continue</p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400 truncate max-w-[100px]">
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">Continue</p>
+                      <p className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 truncate max-w-[70px] sm:max-w-[100px]">
                         {lastRunId ? 'Last run' : 'No history'}
                       </p>
                     </div>
@@ -317,14 +317,14 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
                   {/* New Portfolio */}
                   <button
                     onClick={handleNewPortfolio}
-                    className="flex flex-col items-center gap-3 p-6 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all shadow-sm hover:shadow-md group"
+                    className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all shadow-sm hover:shadow-md group"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                      <Plus className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                      <Plus className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">New</p>
-                      <p className="text-xs text-indigo-600 dark:text-indigo-400">Portfolio</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">New</p>
+                      <p className="text-[10px] sm:text-xs text-indigo-600 dark:text-indigo-400">Portfolio</p>
                     </div>
                   </button>
 
@@ -332,16 +332,16 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
                   <button
                     onClick={handleQuickDemo}
                     disabled={startingDemo}
-                    className="flex flex-col items-center gap-3 p-6 rounded-xl bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all disabled:opacity-50 shadow-sm hover:shadow-md group"
+                    className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-6 rounded-xl bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 hover:border-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all disabled:opacity-50 shadow-sm hover:shadow-md group"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-green-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                      <Play className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-green-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                      <Play className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        {startingDemo ? 'Starting...' : 'Demo'}
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
+                        {startingDemo ? '...' : 'Demo'}
                       </p>
-                      <p className="text-xs text-green-600 dark:text-green-400">Sample data</p>
+                      <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">Sample</p>
                     </div>
                   </button>
                 </div>
@@ -478,20 +478,20 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
             />
           ) : (
             <div className="space-y-4">
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              {/* Quick Actions - Always 3 columns, compact on mobile */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 {/* Continue Last */}
                 <button
-                  onClick={() => selectRunAndClose(lastRunId)}
+                  onClick={() => selectRunAndClose(lastRunId, findPortfolioByRunId(lastRunId))}
                   disabled={!lastRunId}
-                  className="flex flex-col items-center gap-3 p-5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md group"
+                  className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md group"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                    <Clock className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Continue</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 truncate max-w-[80px]">
+                    <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">Continue</p>
+                    <p className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 truncate max-w-[60px] sm:max-w-[80px]">
                       {lastRunId ? 'Last run' : 'No history'}
                     </p>
                   </div>
@@ -500,14 +500,14 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
                 {/* New Portfolio */}
                 <button
                   onClick={handleNewPortfolio}
-                  className="flex flex-col items-center gap-3 p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all shadow-sm hover:shadow-md group"
+                  className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-2 border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-600 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all shadow-sm hover:shadow-md group"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                    <Plus className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                    <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">New</p>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-400">Portfolio</p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">New</p>
+                    <p className="text-[10px] sm:text-xs text-indigo-600 dark:text-indigo-400">Portfolio</p>
                   </div>
                 </button>
 
@@ -515,16 +515,16 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
                 <button
                   onClick={handleQuickDemo}
                   disabled={startingDemo}
-                  className="flex flex-col items-center gap-3 p-5 rounded-xl bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all disabled:opacity-50 shadow-sm hover:shadow-md group"
+                  className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 rounded-xl bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 transition-all disabled:opacity-50 shadow-sm hover:shadow-md group"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                    <Play className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-500 flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                    <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      {startingDemo ? 'Starting...' : 'Demo'}
+                    <p className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
+                      {startingDemo ? '...' : 'Demo'}
                     </p>
-                    <p className="text-xs text-green-600 dark:text-green-400">Sample data</p>
+                    <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">Sample</p>
                   </div>
                 </button>
               </div>
