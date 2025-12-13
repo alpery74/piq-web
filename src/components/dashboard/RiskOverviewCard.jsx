@@ -10,7 +10,9 @@ import {
   BarChart3,
   ChevronDown,
   ChevronUp,
-  Loader2
+  Loader2,
+  Clock,
+  ArrowDownRight
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
 import { formatPercent, formatNumber } from '@/utils/formatters';
@@ -39,6 +41,21 @@ const RiskOverviewCard = ({
   const bestDay = volatility?.simulationBestDayPct || 0;
   const simDays = volatility?.simulationDaysCount || 0;
   const limitedHistory = volatility?.limitedHistory || false;
+
+  // Tier 1: Historical drawdown metrics
+  const maxDrawdownPct = volatility?.maximumDrawdownPct ?? null;
+  const maxDrawdownDays = volatility?.maximumDrawdownDurationDays ?? null;
+  const currentDrawdownPct = volatility?.currentDrawdownPct ?? null;
+  const recoveryEstimateDays = volatility?.recoveryTimeEstimateDays ?? null;
+  const drawdownStatus = volatility?.drawdownAnalysisStatus || 'not_available';
+  const hasDrawdownData = drawdownStatus === 'complete' && maxDrawdownPct !== null;
+
+  // Tier 1: Rolling Sharpe ratios
+  const rollingSharpe30d = volatility?.rollingSharpe30d ?? null;
+  const rollingSharpe60d = volatility?.rollingSharpe60d ?? null;
+  const rollingSharpe90d = volatility?.rollingSharpe90d ?? null;
+  const rollingSharpStatus = volatility?.rollingSharpStatus || 'not_available';
+  const hasRollingSharpeData = rollingSharpStatus === 'complete' && rollingSharpe30d !== null;
 
   // Beta exposure
   const betaExposureUsd = correlation?.betaExposureUsd || 0;
@@ -173,6 +190,86 @@ const RiskOverviewCard = ({
             </div>
           </div>
         </div>
+
+        {/* Historical Drawdown - Simple Tier (Tier 1 Feature) */}
+        {hasDrawdownData && (
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              <ArrowDownRight className="w-4 h-4" />
+              Historical Drawdown
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+                <EducationalTooltip term="maxDrawdown" iconSize={12}>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">Max Drawdown</span>
+                </EducationalTooltip>
+                <div className="text-xl font-bold text-ios-red mt-1">
+                  {maxDrawdownPct.toFixed(1)}%
+                </div>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Current Drawdown</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  currentDrawdownPct < -10 ? 'text-ios-red' :
+                  currentDrawdownPct < -5 ? 'text-ios-orange' : 'text-ios-green'
+                }`}>
+                  {currentDrawdownPct !== null ? `${currentDrawdownPct.toFixed(1)}%` : 'N/A'}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Peak to Trough</span>
+                <div className="text-xl font-bold text-gray-900 dark:text-white mt-1">
+                  {maxDrawdownDays !== null ? `${maxDrawdownDays}d` : 'N/A'}
+                </div>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Est. Recovery</span>
+                <div className="text-xl font-bold text-ios-blue mt-1">
+                  {recoveryEstimateDays !== null ? `${recoveryEstimateDays}d` : 'N/A'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rolling Sharpe Ratios - Analyst Tier (Tier 1 Feature) */}
+        {(viewTier === 'analyst' || viewTier === 'quant') && hasRollingSharpeData && (
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Rolling Performance
+            </h4>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">30-Day Sharpe</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  rollingSharpe30d >= 1 ? 'text-ios-green' :
+                  rollingSharpe30d >= 0 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {rollingSharpe30d !== null ? rollingSharpe30d.toFixed(2) : 'N/A'}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">60-Day Sharpe</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  rollingSharpe60d >= 1 ? 'text-ios-green' :
+                  rollingSharpe60d >= 0 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {rollingSharpe60d !== null ? rollingSharpe60d.toFixed(2) : 'N/A'}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">90-Day Sharpe</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  rollingSharpe90d >= 1 ? 'text-ios-green' :
+                  rollingSharpe90d >= 0 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {rollingSharpe90d !== null ? rollingSharpe90d.toFixed(2) : 'N/A'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Analyst Tier - Stress Scenarios */}
         {(viewTier === 'analyst' || viewTier === 'quant') && (

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { TrendingUp, TrendingDown, Activity, Target, Zap, ChevronRight, ChevronDown, Folder } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Target, Zap, ChevronRight, ChevronDown, Folder, DollarSign } from 'lucide-react';
 
 // Animated number component with formatting
 const AnimatedValue = ({ value, prefix = '', suffix = '', decimals = 2, duration = 1000 }) => {
@@ -135,6 +135,7 @@ const HeroCard = ({
   riskLevel,
   volatility,
   holdingsCount = 0,
+  annualDividendIncome = null,
   portfolioName,
   versionName,
   onSwitchPortfolio,
@@ -145,6 +146,7 @@ const HeroCard = ({
 }) => {
   const isPositiveChange = dailyChangePercent >= 0;
   const displayName = portfolioName || 'My Portfolio';
+  const hasDividendData = annualDividendIncome !== null && annualDividendIncome > 0;
 
   return (
     <div className="card-glass-hero relative overflow-hidden">
@@ -225,7 +227,7 @@ const HeroCard = ({
             </div>
 
             {/* Quick stats row */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className={`grid gap-4 mb-6 ${hasDividendData ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3'}`}>
               <div className="bg-white/50 dark:bg-white/5 rounded-xl p-3 backdrop-blur-sm border border-white/30 dark:border-white/10">
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Risk Level</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -253,6 +255,17 @@ const HeroCard = ({
                   {holdingsCount} {holdingsCount === 1 ? 'asset' : 'assets'}
                 </p>
               </div>
+              {hasDividendData && (
+                <div className="bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl p-3 backdrop-blur-sm border border-emerald-200/50 dark:border-emerald-700/30">
+                  <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400 mb-1 flex items-center gap-1">
+                    <DollarSign className="w-3 h-3" />
+                    Est. Annual Income
+                  </p>
+                  <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                    <AnimatedValue value={annualDividendIncome} prefix="$" decimals={0} />
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Quick actions */}

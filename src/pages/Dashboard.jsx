@@ -176,6 +176,17 @@ const Dashboard = () => {
       sharpe: v.predictiveSharpeRatio ?? v.sharpe ?? 0,
       var95DailyPct: v.historicalVar95DailyPct ?? v.var95DailyPct ?? 0,
       cvar95DailyPct: v.historicalCvar95DailyPct ?? v.cvar95DailyPct ?? 0,
+      // Tier 1: Drawdown metrics
+      maximumDrawdownPct: v.maximumDrawdownPct ?? null,
+      maximumDrawdownDurationDays: v.maximumDrawdownDurationDays ?? null,
+      currentDrawdownPct: v.currentDrawdownPct ?? null,
+      recoveryTimeEstimateDays: v.recoveryTimeEstimateDays ?? null,
+      drawdownAnalysisStatus: v.drawdownAnalysisStatus ?? 'not_available',
+      // Tier 1: Rolling Sharpe ratios
+      rollingSharpe30d: v.rollingSharpe30d ?? null,
+      rollingSharpe60d: v.rollingSharpe60d ?? null,
+      rollingSharpe90d: v.rollingSharpe90d ?? null,
+      rollingSharpStatus: v.rollingSharpStatus ?? 'not_available',
     };
   };
 
@@ -193,6 +204,19 @@ const Dashboard = () => {
         ticker: rm.alphaBookTopHoldingTicker ?? rm.topHolding?.ticker ?? 'N/A',
         weightPct: rm.alphaBookTopHoldingPct ?? rm.topHolding?.weightPct ?? 0,
       },
+      // Tier 1: Portfolio fundamentals
+      weightedPeRatio: rm.weightedPeRatio ?? null,
+      weightedDividendYieldPct: rm.weightedDividendYieldPct ?? null,
+      weightedBeta: rm.weightedBeta ?? null,
+      annualDividendIncomeEstimate: rm.annualDividendIncomeEstimate ?? null,
+      // Tier 1: Market cap breakdown
+      marketCapMegaPct: rm.marketCapMegaPct ?? 0,
+      marketCapLargePct: rm.marketCapLargePct ?? 0,
+      marketCapMidPct: rm.marketCapMidPct ?? 0,
+      marketCapSmallPct: rm.marketCapSmallPct ?? 0,
+      marketCapMicroPct: rm.marketCapMicroPct ?? 0,
+      fundamentalsCoveragePct: rm.fundamentalsCoveragePct ?? 0,
+      fundamentalsStatus: rm.fundamentalsStatus ?? 'not_available',
     };
   };
 
@@ -626,6 +650,7 @@ const Dashboard = () => {
           riskLevel={riskLevelLabel}
           volatility={currentVol}
           holdingsCount={holdings.length}
+          annualDividendIncome={analysis.riskMetrics?.annualDividendIncomeEstimate ?? null}
           portfolioName={portfolioName}
           versionName={versionName}
           onSwitchPortfolio={openSessionSelectorModal}

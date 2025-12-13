@@ -1,8 +1,8 @@
-import { Activity, Shield, Target } from 'lucide-react';
+import { Activity, Shield, Target, DollarSign, PieChart } from 'lucide-react';
 import ExpandableSection from './ExpandableSection';
 import InfoTooltip from './InfoTooltip';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
-import { formatNumber, formatPercent } from '@/utils/formatters';
+import { formatNumber, formatPercent, formatCurrency } from '@/utils/formatters';
 
 const HealthSection = ({
   analysis,
@@ -46,6 +46,22 @@ const HealthSection = ({
   const safeTopHolding = safeRiskMetrics.topHolding || { ticker: 'N/A', weightPct: 0 };
   const safeIdiosyncraticDetails = safeRiskDecomposition.idiosyncraticRiskAnalysis || safeRiskDecomposition.idiosyncraticDetails || {};
   const safeMarginalContributions = safeRiskDecomposition.marginalRiskContributions || safeRiskDecomposition.marginalContributions || [];
+
+  // Tier 1: Portfolio fundamentals
+  const weightedPeRatio = safeRiskMetrics.weightedPeRatio ?? null;
+  const weightedDividendYieldPct = safeRiskMetrics.weightedDividendYieldPct ?? null;
+  const weightedBeta = safeRiskMetrics.weightedBeta ?? null;
+  const annualDividendIncome = safeRiskMetrics.annualDividendIncomeEstimate ?? null;
+  const fundamentalsStatus = safeRiskMetrics.fundamentalsStatus || 'not_available';
+  const hasFundamentalsData = fundamentalsStatus === 'complete' && weightedPeRatio !== null;
+
+  // Tier 1: Market cap breakdown
+  const marketCapMega = safeRiskMetrics.marketCapMegaPct ?? 0;
+  const marketCapLarge = safeRiskMetrics.marketCapLargePct ?? 0;
+  const marketCapMid = safeRiskMetrics.marketCapMidPct ?? 0;
+  const marketCapSmall = safeRiskMetrics.marketCapSmallPct ?? 0;
+  const marketCapMicro = safeRiskMetrics.marketCapMicroPct ?? 0;
+  const hasMarketCapData = (marketCapMega + marketCapLarge + marketCapMid + marketCapSmall + marketCapMicro) > 0;
 
   return (
     <section
@@ -93,6 +109,116 @@ const HealthSection = ({
           {safeLowest.ticker} ({(safeLowest.value || 0).toFixed(2)})
         </span>
       </div>
+
+      {/* Tier 1: Portfolio Fundamentals Badges */}
+      {hasFundamentalsData && (
+        <div className="flex flex-wrap gap-2 mb-4 text-xs">
+          <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 text-indigo-800 dark:text-indigo-300 font-semibold inline-flex items-center gap-1">
+            <EducationalTooltip term="peRatio" iconSize={12}>
+              <span>P/E:</span>
+            </EducationalTooltip>
+            {weightedPeRatio !== null ? weightedPeRatio.toFixed(1) : 'N/A'}
+          </span>
+          <span className="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-300 font-semibold inline-flex items-center gap-1">
+            <EducationalTooltip term="dividendYield" iconSize={12}>
+              <span>Div Yield:</span>
+            </EducationalTooltip>
+            {weightedDividendYieldPct !== null ? `${weightedDividendYieldPct.toFixed(2)}%` : 'N/A'}
+          </span>
+          <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-300 font-semibold inline-flex items-center gap-1">
+            <EducationalTooltip term="beta" iconSize={12}>
+              <span>Wtd β:</span>
+            </EducationalTooltip>
+            {weightedBeta !== null ? weightedBeta.toFixed(2) : 'N/A'}
+          </span>
+          {annualDividendIncome !== null && annualDividendIncome > 0 && (
+            <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 font-semibold inline-flex items-center gap-1">
+              <DollarSign className="w-3 h-3" />
+              <span>Est. Income:</span>
+              {formatCurrency(annualDividendIncome, 0)}/yr
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Tier 1: Market Cap Breakdown */}
+      {hasMarketCapData && (
+        <div className="mb-4 p-3 bg-white/50 dark:bg-gray-800/50 rounded-xl border border-amber-200 dark:border-amber-700">
+          <div className="flex items-center gap-2 mb-2">
+            <PieChart className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+            <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">Market Cap Breakdown</span>
+          </div>
+          <div className="flex gap-1 h-3 rounded-full overflow-hidden">
+            {marketCapMega > 0 && (
+              <div
+                className="bg-purple-500 dark:bg-purple-400"
+                style={{ width: `${marketCapMega}%` }}
+                title={`Mega Cap: ${marketCapMega.toFixed(1)}%`}
+              />
+            )}
+            {marketCapLarge > 0 && (
+              <div
+                className="bg-blue-500 dark:bg-blue-400"
+                style={{ width: `${marketCapLarge}%` }}
+                title={`Large Cap: ${marketCapLarge.toFixed(1)}%`}
+              />
+            )}
+            {marketCapMid > 0 && (
+              <div
+                className="bg-green-500 dark:bg-green-400"
+                style={{ width: `${marketCapMid}%` }}
+                title={`Mid Cap: ${marketCapMid.toFixed(1)}%`}
+              />
+            )}
+            {marketCapSmall > 0 && (
+              <div
+                className="bg-orange-500 dark:bg-orange-400"
+                style={{ width: `${marketCapSmall}%` }}
+                title={`Small Cap: ${marketCapSmall.toFixed(1)}%`}
+              />
+            )}
+            {marketCapMicro > 0 && (
+              <div
+                className="bg-red-500 dark:bg-red-400"
+                style={{ width: `${marketCapMicro}%` }}
+                title={`Micro Cap: ${marketCapMicro.toFixed(1)}%`}
+              />
+            )}
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
+            {marketCapMega > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                <span className="text-gray-600 dark:text-gray-400">Mega {marketCapMega.toFixed(0)}%</span>
+              </span>
+            )}
+            {marketCapLarge > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                <span className="text-gray-600 dark:text-gray-400">Large {marketCapLarge.toFixed(0)}%</span>
+              </span>
+            )}
+            {marketCapMid > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span className="text-gray-600 dark:text-gray-400">Mid {marketCapMid.toFixed(0)}%</span>
+              </span>
+            )}
+            {marketCapSmall > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                <span className="text-gray-600 dark:text-gray-400">Small {marketCapSmall.toFixed(0)}%</span>
+              </span>
+            )}
+            {marketCapMicro > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="text-gray-600 dark:text-gray-400">Micro {marketCapMicro.toFixed(0)}%</span>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       <ExpandableSection
         id="health-score"
