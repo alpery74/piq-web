@@ -1,4 +1,4 @@
-import { Activity, Shield, Target, DollarSign, PieChart } from 'lucide-react';
+import { Activity, Shield, Target, DollarSign, PieChart, TrendingUp, TrendingDown, BarChart3, Percent, Wallet, Scale } from 'lucide-react';
 import ExpandableSection from './ExpandableSection';
 import InfoTooltip from './InfoTooltip';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
@@ -23,6 +23,7 @@ const HealthSection = ({
   concentrationWeight,
   topRisk,
   showAdvanced,
+  viewTier = 'simple', // 'simple', 'analyst', 'quant'
   activeTooltip,
   setActiveTooltip,
   isExpanded,
@@ -62,6 +63,41 @@ const HealthSection = ({
   const marketCapSmall = safeRiskMetrics.marketCapSmallPct ?? 0;
   const marketCapMicro = safeRiskMetrics.marketCapMicroPct ?? 0;
   const hasMarketCapData = (marketCapMega + marketCapLarge + marketCapMid + marketCapSmall + marketCapMicro) > 0;
+
+  // TIER 2: Cost Analysis (Feature #8)
+  const safePerformance = analysis?.performance || {};
+  const annualCostDrag = safePerformance.annualCostDragDollars ?? 0;
+  const tenYearCost = safePerformance.tenYearProjectedCost ?? 0;
+  const costAsPctReturns = safePerformance.costAsPctOfExpectedReturns ?? 0;
+  const highestCostEtf = safePerformance.highestCostEtfTicker ?? null;
+  const highestCostAmount = safePerformance.highestCostEtfAnnualDollars ?? 0;
+  const costPerEtf = safePerformance.costPerEtf ?? [];
+  const costAnalysisStatus = safePerformance.costAnalysisStatus ?? 'not_available';
+  const hasCostData = costAnalysisStatus === 'complete' && annualCostDrag > 0;
+
+  // TIER 2: Tax-Loss Harvesting (Feature #5)
+  const taxLossOpportunities = safeRiskMetrics.taxLossHarvestingOpportunities ?? [];
+  const harvestingCandidates = safeRiskMetrics.harvestingCandidates ?? [];
+  const totalEstimatedLosses = safeRiskMetrics.totalEstimatedLosses ?? 0;
+  const totalEstimatedGains = safeRiskMetrics.totalEstimatedGains ?? 0;
+  const netUnrealizedGainLoss = safeRiskMetrics.netUnrealizedGainLoss ?? 0;
+  const estimatedTaxSavings = safeRiskMetrics.estimatedTaxSavingsAt20pct ?? 0;
+  const positionsWithLosses = safeRiskMetrics.positionsWithLosses ?? 0;
+  const positionsWithGains = safeRiskMetrics.positionsWithGains ?? 0;
+  const taxLossStatus = safeRiskMetrics.taxLossHarvestingStatus ?? 'not_available';
+  const hasTaxLossData = taxLossStatus === 'complete';
+
+  // TIER 2: Multi-Factor Exposure (Feature #7)
+  const safeCorrelation = analysis?.correlation || {};
+  const sizeFactorExposure = safeCorrelation.sizeFactorExposure ?? 0;
+  const valueFactorExposure = safeCorrelation.valueFactorExposure ?? 0;
+  const momentumFactorExposure = safeCorrelation.momentumFactorExposure ?? 0;
+  const factorTilts = safeCorrelation.factorTilts ?? {};
+  const sizeInterpretation = safeCorrelation.sizeInterpretation ?? null;
+  const valueInterpretation = safeCorrelation.valueInterpretation ?? null;
+  const momentumInterpretation = safeCorrelation.momentumInterpretation ?? null;
+  const multiFactorStatus = safeCorrelation.multiFactorStatus ?? 'not_available';
+  const hasFactorData = multiFactorStatus === 'complete';
 
   return (
     <section
@@ -217,6 +253,155 @@ const HealthSection = ({
               </span>
             )}
           </div>
+        </div>
+      )}
+
+      {/* TIER 2: Multi-Factor Exposure Badges (Feature #7) - ALL views */}
+      {hasFactorData && (
+        <div className="flex flex-wrap gap-2 mb-4 text-xs">
+          <span className={`px-3 py-1 rounded-full border font-semibold inline-flex items-center gap-1 ${
+            factorTilts.sizeTilt === 'small_cap'
+              ? 'bg-orange-100 dark:bg-orange-900/30 border-orange-200 dark:border-orange-700 text-orange-800 dark:text-orange-300'
+              : factorTilts.sizeTilt === 'large_cap'
+              ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700 text-purple-800 dark:text-purple-300'
+              : 'bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+          }`}>
+            <Scale className="w-3 h-3" />
+            <span>Size:</span>
+            {factorTilts.sizeTilt === 'small_cap' ? 'Small Cap' : factorTilts.sizeTilt === 'large_cap' ? 'Large Cap' : 'Balanced'}
+          </span>
+          <span className={`px-3 py-1 rounded-full border font-semibold inline-flex items-center gap-1 ${
+            factorTilts.valueTilt === 'value'
+              ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-300'
+              : factorTilts.valueTilt === 'growth'
+              ? 'bg-pink-100 dark:bg-pink-900/30 border-pink-200 dark:border-pink-700 text-pink-800 dark:text-pink-300'
+              : 'bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+          }`}>
+            <BarChart3 className="w-3 h-3" />
+            <span>Style:</span>
+            {factorTilts.valueTilt === 'value' ? 'Value' : factorTilts.valueTilt === 'growth' ? 'Growth' : 'Blend'}
+          </span>
+          <span className={`px-3 py-1 rounded-full border font-semibold inline-flex items-center gap-1 ${
+            factorTilts.momentumTilt === 'high_momentum'
+              ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
+              : factorTilts.momentumTilt === 'low_momentum'
+              ? 'bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
+              : 'bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
+          }`}>
+            <TrendingUp className="w-3 h-3" />
+            <span>Momentum:</span>
+            {factorTilts.momentumTilt === 'high_momentum' ? 'High' : factorTilts.momentumTilt === 'low_momentum' ? 'Low' : 'Neutral'}
+          </span>
+        </div>
+      )}
+
+      {/* TIER 2: Cost Analysis Card (Feature #8) - ALL views */}
+      {hasCostData && (
+        <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-700">
+          <div className="flex items-center gap-2 mb-2">
+            <Wallet className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+            <span className="text-xs font-semibold text-rose-800 dark:text-rose-300">ETF Cost Analysis</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs text-rose-600 dark:text-rose-400">Annual Fee Drag</p>
+              <p className="text-lg font-bold text-rose-800 dark:text-rose-200">{formatCurrency(annualCostDrag, 0)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-rose-600 dark:text-rose-400">10-Year Projected</p>
+              <p className="text-lg font-bold text-rose-800 dark:text-rose-200">{formatCurrency(tenYearCost, 0)}</p>
+            </div>
+          </div>
+          {/* Analyst+ view: More details */}
+          {(viewTier === 'analyst' || viewTier === 'quant') && (
+            <div className="mt-3 pt-3 border-t border-rose-200 dark:border-rose-700">
+              <div className="flex justify-between text-xs">
+                <span className="text-rose-600 dark:text-rose-400">% of Expected Returns:</span>
+                <span className="font-semibold text-rose-800 dark:text-rose-200">{costAsPctReturns.toFixed(1)}%</span>
+              </div>
+              {highestCostEtf && (
+                <div className="flex justify-between text-xs mt-1">
+                  <span className="text-rose-600 dark:text-rose-400">Highest Cost ETF:</span>
+                  <span className="font-semibold text-rose-800 dark:text-rose-200">{highestCostEtf} ({formatCurrency(highestCostAmount, 0)}/yr)</span>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Quant view: Full breakdown */}
+          {viewTier === 'quant' && costPerEtf.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-rose-200 dark:border-rose-700">
+              <p className="text-xs font-semibold text-rose-700 dark:text-rose-300 mb-2">Per-ETF Breakdown:</p>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {costPerEtf.slice(0, 5).map((etf, idx) => (
+                  <div key={idx} className="flex justify-between text-xs">
+                    <span className="text-rose-600 dark:text-rose-400">{etf.ticker} ({etf.expenseRatioPct?.toFixed(2)}%)</span>
+                    <span className="font-mono text-rose-800 dark:text-rose-200">{formatCurrency(etf.annualCostDollars, 0)}/yr</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TIER 2: Tax-Loss Harvesting Card (Feature #5) - ALL views */}
+      {hasTaxLossData && (
+        <div className={`mb-4 p-3 rounded-xl border ${
+          netUnrealizedGainLoss >= 0
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700'
+            : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700'
+        }`}>
+          <div className="flex items-center gap-2 mb-2">
+            {netUnrealizedGainLoss >= 0 ? (
+              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+            ) : (
+              <TrendingDown className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            )}
+            <span className={`text-xs font-semibold ${
+              netUnrealizedGainLoss >= 0 ? 'text-green-800 dark:text-green-300' : 'text-amber-800 dark:text-amber-300'
+            }`}>Unrealized Gains/Losses</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className={`text-xs ${netUnrealizedGainLoss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>Net Position</p>
+              <p className={`text-lg font-bold ${netUnrealizedGainLoss >= 0 ? 'text-green-800 dark:text-green-200' : 'text-amber-800 dark:text-amber-200'}`}>
+                {netUnrealizedGainLoss >= 0 ? '+' : ''}{formatCurrency(netUnrealizedGainLoss, 0)}
+              </p>
+            </div>
+            {estimatedTaxSavings > 0 && (
+              <div>
+                <p className="text-xs text-amber-600 dark:text-amber-400">Potential Tax Savings</p>
+                <p className="text-lg font-bold text-amber-800 dark:text-amber-200">{formatCurrency(estimatedTaxSavings, 0)}</p>
+              </div>
+            )}
+          </div>
+          {/* Analyst+ view: Position breakdown */}
+          {(viewTier === 'analyst' || viewTier === 'quant') && (
+            <div className="mt-3 pt-3 border-t border-current opacity-20">
+              <div className="flex justify-between text-xs">
+                <span className="opacity-70">Positions with gains:</span>
+                <span className="font-semibold text-green-700 dark:text-green-300">{positionsWithGains} (+{formatCurrency(totalEstimatedGains, 0)})</span>
+              </div>
+              <div className="flex justify-between text-xs mt-1">
+                <span className="opacity-70">Positions with losses:</span>
+                <span className="font-semibold text-red-600 dark:text-red-400">{positionsWithLosses} (-{formatCurrency(totalEstimatedLosses, 0)})</span>
+              </div>
+            </div>
+          )}
+          {/* Quant view: Harvesting candidates */}
+          {viewTier === 'quant' && harvestingCandidates.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-current opacity-20">
+              <p className="text-xs font-semibold mb-2">Tax-Loss Harvesting Candidates:</p>
+              <div className="space-y-1">
+                {harvestingCandidates.slice(0, 3).map((candidate, idx) => (
+                  <div key={idx} className="flex justify-between text-xs bg-red-100/50 dark:bg-red-900/30 px-2 py-1 rounded">
+                    <span className="font-medium">{candidate.ticker}</span>
+                    <span className="text-red-600 dark:text-red-400">{candidate.estimatedGainLossPct?.toFixed(1)}% ({formatCurrency(candidate.estimatedGainLossDollars, 0)})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

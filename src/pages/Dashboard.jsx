@@ -187,6 +187,13 @@ const Dashboard = () => {
       rollingSharpe60d: v.rollingSharpe60d ?? null,
       rollingSharpe90d: v.rollingSharpe90d ?? null,
       rollingSharpeStatus: v.rollingSharpeStatus ?? 'not_available',
+      // TIER 2: Goal Projection (Feature #6)
+      goalProjections: v.goalProjections ?? null,
+      monteCarloSimulations: v.monteCarloSimulations ?? 0,
+      projectionYears: v.projectionYears ?? [],
+      historicalAnnualReturnPct: v.historicalAnnualReturnPct ?? null,
+      historicalAnnualVolatilityPct: v.historicalAnnualVolatilityPct ?? null,
+      goalProjectionStatus: v.goalProjectionStatus ?? 'not_available',
     };
   };
 
@@ -217,6 +224,16 @@ const Dashboard = () => {
       marketCapMicroPct: rm.marketCapMicroPct ?? 0,
       fundamentalsCoveragePct: rm.fundamentalsCoveragePct ?? 0,
       fundamentalsStatus: rm.fundamentalsStatus ?? 'not_available',
+      // TIER 2: Tax-Loss Harvesting (Feature #5)
+      taxLossHarvestingOpportunities: rm.taxLossHarvestingOpportunities ?? [],
+      harvestingCandidates: rm.harvestingCandidates ?? [],
+      totalEstimatedLosses: rm.totalEstimatedLosses ?? 0,
+      totalEstimatedGains: rm.totalEstimatedGains ?? 0,
+      netUnrealizedGainLoss: rm.netUnrealizedGainLoss ?? 0,
+      estimatedTaxSavingsAt20pct: rm.estimatedTaxSavingsAt20pct ?? 0,
+      positionsWithLosses: rm.positionsWithLosses ?? 0,
+      positionsWithGains: rm.positionsWithGains ?? 0,
+      taxLossHarvestingStatus: rm.taxLossHarvestingStatus ?? 'not_available',
     };
   };
 
@@ -232,6 +249,15 @@ const Dashboard = () => {
         ticker: c.lowestBetaTicker ?? c.lowestBeta?.ticker ?? 'N/A',
         value: c.lowestBetaValue ?? c.lowestBeta?.value ?? 0,
       },
+      // TIER 2: Multi-Factor Exposure (Feature #7)
+      sizeFactorExposure: c.sizeFactorExposure ?? 0,
+      valueFactorExposure: c.valueFactorExposure ?? 0,
+      momentumFactorExposure: c.momentumFactorExposure ?? 0,
+      factorTilts: c.factorTilts ?? {},
+      sizeInterpretation: c.sizeInterpretation ?? null,
+      valueInterpretation: c.valueInterpretation ?? null,
+      momentumInterpretation: c.momentumInterpretation ?? null,
+      multiFactorStatus: c.multiFactorStatus ?? 'not_available',
     };
   };
 
@@ -279,10 +305,30 @@ const Dashboard = () => {
     };
   };
 
+  // TIER 2: Normalize performance (math_performance) for Cost Analysis (Feature #8)
+  const normalizePerformance = (p) => {
+    if (!p) return null;
+    return {
+      ...p,
+      betaBookTotalValue: p.betaBookTotalValue ?? 0,
+      betaBookPortfolioPct: p.betaBookPortfolioPct ?? 0,
+      betaBookHoldingsCount: p.betaBookHoldingsCount ?? 0,
+      betaBookWeightedExpenseRatioPct: p.betaBookWeightedExpenseRatioPct ?? 0,
+      // TIER 2: Cost Analysis fields
+      annualCostDragDollars: p.annualCostDragDollars ?? 0,
+      costPerEtf: p.costPerEtf ?? [],
+      tenYearProjectedCost: p.tenYearProjectedCost ?? 0,
+      costAsPctOfExpectedReturns: p.costAsPctOfExpectedReturns ?? 0,
+      highestCostEtfTicker: p.highestCostEtfTicker ?? null,
+      highestCostEtfAnnualDollars: p.highestCostEtfAnnualDollars ?? 0,
+      costAnalysisStatus: p.costAnalysisStatus ?? 'not_available',
+    };
+  };
+
   const liveAnalysis = useMemo(() => ({
     correlation: normalizeCorrelation(polledResults.math_correlation),
     riskMetrics: normalizeRiskMetrics(polledResults.math_risk_metrics),
-    performance: polledResults.math_performance,
+    performance: normalizePerformance(polledResults.math_performance),
     volatility: normalizeVolatility(polledResults.math_volatility),
     riskDecomposition: normalizeRiskDecomposition(polledResults.optimization_risk_decomposition),
     strategies: normalizeStrategies(polledResults.optimization_strategy_generation),
@@ -775,6 +821,7 @@ const Dashboard = () => {
           concentrationWeight={concentrationWeight}
           topRisk={topRisk}
           showAdvanced={showAdvanced}
+          viewTier={viewTier}
           activeTooltip={activeTooltip}
           setActiveTooltip={setActiveTooltip}
           isExpanded={expandedSections['health-score']}
@@ -892,6 +939,11 @@ const Dashboard = () => {
           currentHealthScore={healthScore || 0}
           currentHoldings={holdings.length}
           currentBeta={portfolioBeta}
+          goalProjections={analysis.volatility?.goalProjections}
+          historicalAnnualReturnPct={analysis.volatility?.historicalAnnualReturnPct}
+          historicalAnnualVolatilityPct={analysis.volatility?.historicalAnnualVolatilityPct}
+          goalProjectionStatus={analysis.volatility?.goalProjectionStatus}
+          viewTier={viewTier}
         />
 
         {/* What-If Scenario Simulator */}

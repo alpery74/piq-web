@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Target, TrendingDown, Shield, PieChart, Plus, ChevronRight, Check, X } from 'lucide-react';
+import { Target, TrendingDown, Shield, PieChart, Plus, ChevronRight, Check, X, TrendingUp, BarChart3, Calendar, Percent } from 'lucide-react';
+import { formatCurrency, formatPercent } from '@/utils/formatters';
 
 // Goal type configurations
 const GOAL_TYPES = {
@@ -229,18 +230,91 @@ const AddGoalModal = ({ isOpen, onClose, onAdd, currentMetrics }) => {
   );
 };
 
+// TIER 2: Monte Carlo Projection Card (Feature #6)
+const ProjectionCard = ({ projection, viewTier = 'simple' }) => {
+  if (!projection) return null;
+
+  const years = projection.years || 0;
+  const medianValue = projection.medianProjectedValue || 0;
+  const pessimistic = projection.pessimistic10pct || 0;
+  const optimistic = projection.bullish90pct || 0;
+  const expectedGrowth = projection.expectedGrowthPct || 0;
+
+  return (
+    <div className="bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/30 dark:border-white/10">
+      <div className="flex items-center gap-2 mb-2">
+        <Calendar className="w-4 h-4 text-ios-blue" />
+        <span className="font-semibold text-gray-900 dark:text-white">{years}-Year Projection</span>
+      </div>
+      <div className="text-2xl font-bold text-ios-blue mb-1">
+        {formatCurrency(medianValue, 0)}
+      </div>
+      <div className={`text-sm font-medium ${expectedGrowth >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+        {expectedGrowth >= 0 ? '+' : ''}{expectedGrowth.toFixed(1)}% expected
+      </div>
+
+      {/* Analyst+ view: Range */}
+      {(viewTier === 'analyst' || viewTier === 'quant') && (
+        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-1 text-xs">
+          <div className="flex justify-between">
+            <span className="text-gray-500 dark:text-gray-400">Pessimistic (10%)</span>
+            <span className="font-medium text-red-600 dark:text-red-400">{formatCurrency(pessimistic, 0)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500 dark:text-gray-400">Optimistic (90%)</span>
+            <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(optimistic, 0)}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Quant view: Probability targets */}
+      {viewTier === 'quant' && (
+        <div className="mt-2 space-y-1 text-xs">
+          {projection.probReach25pctGrowth !== undefined && (
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">P(+25%)</span>
+              <span className="font-mono">{projection.probReach25pctGrowth?.toFixed(0)}%</span>
+            </div>
+          )}
+          {projection.probReach50pctGrowth !== undefined && (
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">P(+50%)</span>
+              <span className="font-mono">{projection.probReach50pctGrowth?.toFixed(0)}%</span>
+            </div>
+          )}
+          {projection.probReach100pctGrowth !== undefined && (
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">P(+100%)</span>
+              <span className="font-mono">{projection.probReach100pctGrowth?.toFixed(0)}%</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Main Goals Section
 const GoalsSection = ({
   currentVolatility = 0,
   currentHealthScore = 0,
   currentHoldings = 0,
   currentBeta = 0,
+  // TIER 2: Goal Projection props
+  goalProjections = null,
+  historicalAnnualReturnPct = null,
+  historicalAnnualVolatilityPct = null,
+  goalProjectionStatus = 'not_available',
+  viewTier = 'simple',
 }) => {
   const [goals, setGoals] = useState(() => {
     const saved = localStorage.getItem('portfolioGoals');
     return saved ? JSON.parse(saved) : [];
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // TIER 2: Check if we have projection data
+  const hasProjectionData = goalProjectionStatus === 'complete' && goalProjections;
 
   // Map current metrics to goal types
   const currentMetrics = {
@@ -292,6 +366,35 @@ const GoalsSection = ({
           Add Goal
         </button>
       </div>
+
+      {/* TIER 2: Monte Carlo Projections (Feature #6) */}
+      {hasProjectionData && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart3 className="w-4 h-4 text-ios-purple" />
+            <h4 className="font-semibold text-gray-900 dark:text-white text-sm">Monte Carlo Projections</h4>
+            {(viewTier === 'analyst' || viewTier === 'quant') && historicalAnnualReturnPct !== null && (
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                Based on {historicalAnnualReturnPct?.toFixed(1)}% historical return, {historicalAnnualVolatilityPct?.toFixed(1)}% vol
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {goalProjections['1Year'] && (
+              <ProjectionCard projection={goalProjections['1Year']} viewTier={viewTier} />
+            )}
+            {goalProjections['3Year'] && (
+              <ProjectionCard projection={goalProjections['3Year']} viewTier={viewTier} />
+            )}
+            {goalProjections['5Year'] && (
+              <ProjectionCard projection={goalProjections['5Year']} viewTier={viewTier} />
+            )}
+            {goalProjections['10Year'] && (
+              <ProjectionCard projection={goalProjections['10Year']} viewTier={viewTier} />
+            )}
+          </div>
+        </div>
+      )}
 
       {updatedGoals.length === 0 ? (
         <div className="text-center py-8">
