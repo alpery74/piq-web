@@ -76,6 +76,7 @@ const HealthSection = ({
   const hasCostData = costAnalysisStatus === 'complete' && annualCostDrag > 0;
 
   // TIER 2: Tax-Loss Harvesting (Feature #5)
+  const taxLossOpportunities = safeRiskMetrics.taxLossHarvestingOpportunities ?? [];
   const harvestingCandidates = safeRiskMetrics.harvestingCandidates ?? [];
   const totalEstimatedLosses = safeRiskMetrics.totalEstimatedLosses ?? 0;
   const totalEstimatedGains = safeRiskMetrics.totalEstimatedGains ?? 0;
@@ -88,7 +89,13 @@ const HealthSection = ({
 
   // TIER 2: Multi-Factor Exposure (Feature #7)
   const safeCorrelation = analysis?.correlation || {};
+  const sizeFactorExposure = safeCorrelation.sizeFactorExposure ?? 0;
+  const valueFactorExposure = safeCorrelation.valueFactorExposure ?? 0;
+  const momentumFactorExposure = safeCorrelation.momentumFactorExposure ?? 0;
   const factorTilts = safeCorrelation.factorTilts ?? {};
+  const sizeInterpretation = safeCorrelation.sizeInterpretation ?? null;
+  const valueInterpretation = safeCorrelation.valueInterpretation ?? null;
+  const momentumInterpretation = safeCorrelation.momentumInterpretation ?? null;
   const multiFactorStatus = safeCorrelation.multiFactorStatus ?? 'not_available';
   const hasFactorData = multiFactorStatus === 'complete';
 
