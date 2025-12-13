@@ -186,7 +186,7 @@ const Dashboard = () => {
       rollingSharpe30d: v.rollingSharpe30d ?? null,
       rollingSharpe60d: v.rollingSharpe60d ?? null,
       rollingSharpe90d: v.rollingSharpe90d ?? null,
-      rollingSharpStatus: v.rollingSharpStatus ?? 'not_available',
+      rollingSharpeStatus: v.rollingSharpeStatus ?? 'not_available',
     };
   };
 

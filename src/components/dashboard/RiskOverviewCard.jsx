@@ -54,8 +54,8 @@ const RiskOverviewCard = ({
   const rollingSharpe30d = volatility?.rollingSharpe30d ?? null;
   const rollingSharpe60d = volatility?.rollingSharpe60d ?? null;
   const rollingSharpe90d = volatility?.rollingSharpe90d ?? null;
-  const rollingSharpStatus = volatility?.rollingSharpStatus || 'not_available';
-  const hasRollingSharpeData = rollingSharpStatus === 'complete' && rollingSharpe30d !== null;
+  const rollingSharpeStatus = volatility?.rollingSharpeStatus || 'not_available';
+  const hasRollingSharpeData = rollingSharpeStatus === 'complete' && rollingSharpe30d !== null;
 
   // Beta exposure
   const betaExposureUsd = correlation?.betaExposureUsd || 0;
