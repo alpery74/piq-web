@@ -189,8 +189,6 @@ const Dashboard = () => {
       rollingSharpeStatus: v.rollingSharpeStatus ?? 'not_available',
       // TIER 2: Goal Projection (Feature #6)
       goalProjections: v.goalProjections ?? null,
-      monteCarloSimulations: v.monteCarloSimulations ?? 0,
-      projectionYears: v.projectionYears ?? [],
       historicalAnnualReturnPct: v.historicalAnnualReturnPct ?? null,
       historicalAnnualVolatilityPct: v.historicalAnnualVolatilityPct ?? null,
       goalProjectionStatus: v.goalProjectionStatus ?? 'not_available',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Target, TrendingDown, Shield, PieChart, Plus, ChevronRight, Check, X, TrendingUp, BarChart3, Calendar, Percent } from 'lucide-react';
-import { formatCurrency, formatPercent } from '@/utils/formatters';
+import { Target, TrendingDown, Shield, PieChart, Plus, Check, X, BarChart3, Calendar } from 'lucide-react';
+import { formatCurrency } from '@/utils/formatters';
 
 // Goal type configurations
 const GOAL_TYPES = {
@@ -64,7 +64,7 @@ const ProgressBar = ({ current, target, color = 'ios-blue', showLabels = true })
 };
 
 // Single goal card
-const GoalCard = ({ goal, onRemove, onEdit }) => {
+const GoalCard = ({ goal, onRemove, onEdit: _onEdit }) => {
   const config = GOAL_TYPES[goal.type];
   const Icon = config?.icon || Target;
   const progress = (goal.current / goal.target) * 100;

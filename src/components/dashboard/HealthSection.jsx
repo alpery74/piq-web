@@ -1,4 +1,4 @@
-import { Activity, Shield, Target, DollarSign, PieChart, TrendingUp, TrendingDown, BarChart3, Percent, Wallet, Scale } from 'lucide-react';
+import { Activity, Shield, Target, DollarSign, PieChart, TrendingUp, TrendingDown, BarChart3, Wallet, Scale } from 'lucide-react';
 import ExpandableSection from './ExpandableSection';
 import InfoTooltip from './InfoTooltip';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
@@ -76,7 +76,6 @@ const HealthSection = ({
   const hasCostData = costAnalysisStatus === 'complete' && annualCostDrag > 0;
 
   // TIER 2: Tax-Loss Harvesting (Feature #5)
-  const taxLossOpportunities = safeRiskMetrics.taxLossHarvestingOpportunities ?? [];
   const harvestingCandidates = safeRiskMetrics.harvestingCandidates ?? [];
   const totalEstimatedLosses = safeRiskMetrics.totalEstimatedLosses ?? 0;
   const totalEstimatedGains = safeRiskMetrics.totalEstimatedGains ?? 0;
@@ -89,13 +88,7 @@ const HealthSection = ({
 
   // TIER 2: Multi-Factor Exposure (Feature #7)
   const safeCorrelation = analysis?.correlation || {};
-  const sizeFactorExposure = safeCorrelation.sizeFactorExposure ?? 0;
-  const valueFactorExposure = safeCorrelation.valueFactorExposure ?? 0;
-  const momentumFactorExposure = safeCorrelation.momentumFactorExposure ?? 0;
   const factorTilts = safeCorrelation.factorTilts ?? {};
-  const sizeInterpretation = safeCorrelation.sizeInterpretation ?? null;
-  const valueInterpretation = safeCorrelation.valueInterpretation ?? null;
-  const momentumInterpretation = safeCorrelation.momentumInterpretation ?? null;
   const multiFactorStatus = safeCorrelation.multiFactorStatus ?? 'not_available';
   const hasFactorData = multiFactorStatus === 'complete';
 
@@ -577,7 +570,7 @@ const HealthSection = ({
               <div className="bg-white/50 dark:bg-gray-800/50 p-4 rounded-lg">
                 <div className="font-bold mb-2 text-gray-900 dark:text-white">🔀 Diversification (-5)</div>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  With {formatNumber(analysis.riskMetrics?.effectiveHoldings ?? 0, 1)} effective holdings, you're slightly
+                  With {formatNumber(analysis.riskMetrics?.effectiveHoldings ?? 0, 1)} effective holdings, you&apos;re slightly
                   under-diversified. Target 10+ for optimal risk spreading.
                 </p>
               </div>
