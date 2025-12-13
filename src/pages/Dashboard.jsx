@@ -940,6 +940,8 @@ const Dashboard = () => {
           currentHoldings={holdings.length}
           currentBeta={portfolioBeta}
           goalProjections={analysis.volatility?.goalProjections}
+          monteCarloSimulations={analysis.volatility?.monteCarloSimulations}
+          projectionYears={analysis.volatility?.projectionYears}
           historicalAnnualReturnPct={analysis.volatility?.historicalAnnualReturnPct}
           historicalAnnualVolatilityPct={analysis.volatility?.historicalAnnualVolatilityPct}
           goalProjectionStatus={analysis.volatility?.goalProjectionStatus}

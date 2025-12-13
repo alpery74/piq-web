@@ -302,6 +302,8 @@ const GoalsSection = ({
   currentBeta = 0,
   // TIER 2: Goal Projection props
   goalProjections = null,
+  monteCarloSimulations = 0,
+  projectionYears = [],
   historicalAnnualReturnPct = null,
   historicalAnnualVolatilityPct = null,
   goalProjectionStatus = 'not_available',
@@ -370,15 +372,26 @@ const GoalsSection = ({
       {/* TIER 2: Monte Carlo Projections (Feature #6) */}
       {hasProjectionData && (
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center flex-wrap gap-2 mb-3">
             <BarChart3 className="w-4 h-4 text-ios-purple" />
             <h4 className="font-semibold text-gray-900 dark:text-white text-sm">Monte Carlo Projections</h4>
+            {monteCarloSimulations > 0 && (
+              <span className="px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full">
+                {monteCarloSimulations.toLocaleString()} simulations
+              </span>
+            )}
             {(viewTier === 'analyst' || viewTier === 'quant') && historicalAnnualReturnPct !== null && (
               <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
                 Based on {historicalAnnualReturnPct?.toFixed(1)}% historical return, {historicalAnnualVolatilityPct?.toFixed(1)}% vol
               </span>
             )}
           </div>
+          {/* Quant view: Show projection years metadata */}
+          {viewTier === 'quant' && projectionYears.length > 0 && (
+            <div className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+              Projection horizons: {projectionYears.join(', ')} years
+            </div>
+          )}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {goalProjections['1Year'] && (
               <ProjectionCard projection={goalProjections['1Year']} viewTier={viewTier} />

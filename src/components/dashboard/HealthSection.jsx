@@ -295,6 +295,50 @@ const HealthSection = ({
         </div>
       )}
 
+      {/* TIER 2: Multi-Factor Exposure Details (Analyst/Quant view) */}
+      {hasFactorData && (viewTier === 'analyst' || viewTier === 'quant') && (
+        <div className="mb-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-700">
+          <div className="flex items-center gap-2 mb-2">
+            <Scale className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="text-xs font-semibold text-indigo-800 dark:text-indigo-300">Fama-French Factor Exposures</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <p className="text-xs text-indigo-600 dark:text-indigo-400">Size (SMB)</p>
+              <p className={`text-lg font-bold ${sizeFactorExposure >= 0 ? 'text-orange-600 dark:text-orange-400' : 'text-purple-600 dark:text-purple-400'}`}>
+                {sizeFactorExposure >= 0 ? '+' : ''}{sizeFactorExposure.toFixed(2)}
+              </p>
+              {sizeInterpretation && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sizeInterpretation}</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs text-indigo-600 dark:text-indigo-400">Value (HML)</p>
+              <p className={`text-lg font-bold ${valueFactorExposure >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-pink-600 dark:text-pink-400'}`}>
+                {valueFactorExposure >= 0 ? '+' : ''}{valueFactorExposure.toFixed(2)}
+              </p>
+              {valueInterpretation && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{valueInterpretation}</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs text-indigo-600 dark:text-indigo-400">Momentum (WML)</p>
+              <p className={`text-lg font-bold ${momentumFactorExposure >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                {momentumFactorExposure >= 0 ? '+' : ''}{momentumFactorExposure.toFixed(2)}
+              </p>
+              {momentumInterpretation && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{momentumInterpretation}</p>
+              )}
+            </div>
+          </div>
+          {viewTier === 'quant' && (
+            <div className="mt-2 pt-2 border-t border-indigo-200 dark:border-indigo-700 text-xs text-indigo-700 dark:text-indigo-300">
+              <p>SMB = Small Minus Big (size premium) | HML = High Minus Low (value premium) | WML = Winners Minus Losers (momentum)</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* TIER 2: Cost Analysis Card (Feature #8) - ALL views */}
       {hasCostData && (
         <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-700">
@@ -360,6 +404,11 @@ const HealthSection = ({
             <span className={`text-xs font-semibold ${
               netUnrealizedGainLoss >= 0 ? 'text-green-800 dark:text-green-300' : 'text-amber-800 dark:text-amber-300'
             }`}>Unrealized Gains/Losses</span>
+            {taxLossOpportunities.length > 0 && (
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+                {taxLossOpportunities.length} positions analyzed
+              </span>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -397,6 +446,29 @@ const HealthSection = ({
                   <div key={idx} className="flex justify-between text-xs bg-red-100/50 dark:bg-red-900/30 px-2 py-1 rounded">
                     <span className="font-medium">{candidate.ticker}</span>
                     <span className="text-red-600 dark:text-red-400">{candidate.estimatedGainLossPct?.toFixed(1)}% ({formatCurrency(candidate.estimatedGainLossDollars, 0)})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Quant view: All positions breakdown */}
+          {viewTier === 'quant' && taxLossOpportunities.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-current opacity-20">
+              <p className="text-xs font-semibold mb-2">All Positions Gain/Loss Analysis:</p>
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {taxLossOpportunities.map((pos, idx) => (
+                  <div key={idx} className={`flex justify-between text-xs px-2 py-1 rounded ${
+                    pos.estimatedGainLossDollars < 0
+                      ? 'bg-red-50 dark:bg-red-900/20'
+                      : pos.estimatedGainLossDollars > 0
+                      ? 'bg-green-50 dark:bg-green-900/20'
+                      : 'bg-gray-50 dark:bg-gray-800/50'
+                  }`}>
+                    <span className="font-medium">{pos.ticker}</span>
+                    <span className="text-gray-500 dark:text-gray-400">{formatCurrency(pos.currentValue, 0)}</span>
+                    <span className={pos.estimatedGainLossDollars < 0 ? 'text-red-600 dark:text-red-400' : pos.estimatedGainLossDollars > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}>
+                      {pos.estimatedGainLossPct?.toFixed(1)}% ({pos.estimatedGainLossDollars >= 0 ? '+' : ''}{formatCurrency(pos.estimatedGainLossDollars, 0)})
+                    </span>
                   </div>
                 ))}
               </div>
