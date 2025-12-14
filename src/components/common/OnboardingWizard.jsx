@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -12,7 +13,6 @@ import {
   Eye,
   MousePointer,
   Zap,
-  Folder,
 } from 'lucide-react';
 
 // Context for sharing onboarding state across the app

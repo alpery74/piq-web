@@ -12,9 +12,6 @@ const SUBTOOLS = [
   'optimization_stress_testing',
 ];
 
-// Heroku cold start typically takes 5-15 seconds
-const COLD_START_THRESHOLD_MS = 3000;
-
 const getDelayMs = (recommendation, emptyPolls) => {
   switch (recommendation) {
     case 'aggressive':

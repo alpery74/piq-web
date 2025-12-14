@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -12,10 +12,6 @@ import {
   Play,
   AlertCircle,
   Loader2,
-  TrendingUp,
-  Building2,
-  DollarSign,
-  Percent,
   Info,
   Sparkles,
   Check,
@@ -94,7 +90,7 @@ const SearchResultItem = ({ result, onSelect }) => (
 );
 
 // Selected stock row
-const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight, sharesInputRef, isLatest }) => {
+const SelectedStockRow = ({ stock, onUpdateShares, onRemove, weight, isLatest }) => {
   const [sharesInput, setSharesInput] = useState(stock.shares?.toString() || '');
   const inputRef = useRef(null);
 
@@ -248,6 +244,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
       setSearchResults([]);
       setShowSearchDropdown(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchQuery]);
 
   // Close dropdown when clicking outside
@@ -651,7 +648,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                 {showSearchDropdown && searchQuery.length >= 1 && searchResults.length === 0 && !isSearching && (
                   <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-4 text-center">
                     <p className="text-gray-500 dark:text-gray-400 text-sm">
-                      No results found for "{searchQuery}"
+                      No results found for &ldquo;{searchQuery}&rdquo;
                     </p>
                   </div>
                 )}
@@ -672,7 +669,7 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                   </div>
 
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {selectedStocks.map((stock, index) => (
+                    {selectedStocks.map((stock) => (
                       <SelectedStockRow
                         key={stock.ticker}
                         stock={stock}
@@ -780,10 +777,10 @@ const NewAnalysisModal = ({ isOpen, onClose, onAnalysisStarted }) => {
                 </div>
               </div>
 
-              {/* What You'll Get */}
+              {/* What You Get */}
               <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                  What You'll Get
+                  What You Get
                 </h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">

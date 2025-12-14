@@ -63,7 +63,7 @@ const SUBTOOL_ORDER = [
   'optimization_implementation',
 ];
 
-const AnalysisProgressCard = ({ pending, results, isConnected }) => {
+const AnalysisProgressCard = ({ pending, isConnected }) => {
   const completedCount = SUBTOOL_ORDER.filter(s => !pending.has(s)).length;
   const totalCount = SUBTOOL_ORDER.length;
   const progressPct = Math.round((completedCount / totalCount) * 100);
@@ -102,7 +102,6 @@ const AnalysisProgressCard = ({ pending, results, isConnected }) => {
           const config = SUBTOOL_CONFIG[subtool];
           const Icon = config.icon;
           const isComplete = !pending.has(subtool);
-          const hasResult = results[subtool] !== undefined;
 
           return (
             <div

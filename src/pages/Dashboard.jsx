@@ -11,6 +11,7 @@ import RiskOverviewCard from '@/components/dashboard/RiskOverviewCard';
 import FundamentalsCard from '@/components/dashboard/FundamentalsCard';
 import CorrelationClustersCard from '@/components/dashboard/CorrelationClustersCard';
 import StrategyComparisonCard from '@/components/dashboard/StrategyComparisonCard';
+import PerformanceAttributionCard from '@/components/dashboard/PerformanceAttributionCard';
 import BackendStatus from '@/components/common/BackendStatus';
 import HeroCard from '@/components/common/HeroCard';
 import CommandPalette, { useCommandPalette } from '@/components/common/CommandPalette';
@@ -194,6 +195,8 @@ const Dashboard = () => {
       historicalAnnualReturnPct: v.historicalAnnualReturnPct ?? null,
       historicalAnnualVolatilityPct: v.historicalAnnualVolatilityPct ?? null,
       goalProjectionStatus: v.goalProjectionStatus ?? 'not_available',
+      // FEATURE 12: Peer Comparison Percentiles
+      peerComparison: v.peerComparison ?? null,
     };
   };
 
@@ -302,6 +305,8 @@ const Dashboard = () => {
       marginalContributions: rd.marginalRiskContributions ?? rd.marginalContributions ?? [],
       // Keep dynamicPositionLimits as-is (it's an object with positionLimits array inside)
       dynamicPositionLimits: rd.dynamicPositionLimits ?? {},
+      // FEATURE 11: Active Share Analysis
+      activeShareAnalysis: rd.activeShareAnalysis ?? null,
     };
   };
 
@@ -325,6 +330,30 @@ const Dashboard = () => {
     };
   };
 
+  // FEATURE 10: Normalize quality metrics (math_quality_metrics)
+  const normalizeQualityMetrics = (qm) => {
+    if (!qm) return null;
+    return {
+      ...qm,
+      profitability: qm.profitability ?? {},
+      financialHealth: qm.financialHealth ?? {},
+      qualityScore: qm.qualityScore ?? null,
+      qualityTier: qm.qualityTier ?? null,
+      qualityMetricsStatus: qm.status ?? 'not_available',
+    };
+  };
+
+  // FEATURE 9: Normalize performance attribution (math_performance_attribution)
+  const normalizePerformanceAttribution = (pa) => {
+    if (!pa) return null;
+    return {
+      ...pa,
+      attributionSummary: pa.attributionSummary ?? {},
+      sectorAttribution: pa.sectorAttribution ?? [],
+      attributionStatus: pa.status ?? 'not_available',
+    };
+  };
+
   const liveAnalysis = useMemo(() => ({
     correlation: normalizeCorrelation(polledResults.math_correlation),
     riskMetrics: normalizeRiskMetrics(polledResults.math_risk_metrics),
@@ -334,6 +363,10 @@ const Dashboard = () => {
     strategies: normalizeStrategies(polledResults.optimization_strategy_generation),
     stressTesting: normalizeStressTesting(polledResults.optimization_stress_testing),
     implementation: polledResults.optimization_implementation,
+    // FEATURE 10: Quality Metrics
+    qualityMetrics: normalizeQualityMetrics(polledResults.math_quality_metrics),
+    // FEATURE 9: Performance Attribution
+    performanceAttribution: normalizePerformanceAttribution(polledResults.math_performance_attribution),
   }), [polledResults]);
 
   const analysis = useMemo(() => ({
@@ -402,6 +435,10 @@ const Dashboard = () => {
       monteCarloAnalysis: {},
     }, ['tail_risk_assessment']),
     implementation: liveAnalysis.implementation || {},
+    // FEATURE 10: Quality Metrics
+    qualityMetrics: liveAnalysis.qualityMetrics || null,
+    // FEATURE 9: Performance Attribution
+    performanceAttribution: liveAnalysis.performanceAttribution || null,
   }), [liveAnalysis]);
 
   const totalPortfolioValue = (analysis.riskMetrics?.alphaBookTotalValue ?? 0) + (analysis.performance?.betaBookTotalValue ?? 0);
@@ -670,7 +707,6 @@ const Dashboard = () => {
       {polling && connectionStatus === 'connected' && pending?.size > 0 && (
         <AnalysisProgressCard
           pending={pending}
-          results={polledResults}
           isConnected={connectionStatus === 'connected'}
         />
       )}
@@ -912,6 +948,7 @@ const Dashboard = () => {
 
         <FundamentalsCard
           riskDecomposition={analysis.riskDecomposition}
+          qualityMetrics={analysis.qualityMetrics}
           viewTier={viewTier}
         />
       </div>
@@ -929,6 +966,14 @@ const Dashboard = () => {
           <StrategyComparisonCard
             strategies={analysis.strategies}
             currentVolatility={currentVol}
+            viewTier={viewTier}
+          />
+        )}
+
+        {/* FEATURE 9: Performance Attribution - Analyst/Quant only */}
+        {(viewTier === 'analyst' || viewTier === 'quant') && analysis.performanceAttribution && (
+          <PerformanceAttributionCard
+            performanceAttribution={analysis.performanceAttribution}
             viewTier={viewTier}
           />
         )}

@@ -126,11 +126,11 @@ const InsightsSection = ({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-green-100 dark:bg-green-800/40 border border-green-300 dark:border-green-700 rounded-lg p-3">
                       <div className="text-xs font-semibold text-green-800 dark:text-green-300 mb-1">PRO</div>
-                      <div className="text-sm text-green-900 dark:text-green-200">Won't crash with market</div>
+                      <div className="text-sm text-green-900 dark:text-green-200">Will not crash with market</div>
                     </div>
                     <div className="bg-red-100 dark:bg-red-800/40 border border-red-300 dark:border-red-700 rounded-lg p-3">
                       <div className="text-xs font-semibold text-red-800 dark:text-red-300 mb-1">CON</div>
-                      <div className="text-sm text-red-900 dark:text-red-200">Won't rally with market</div>
+                      <div className="text-sm text-red-900 dark:text-red-200">Will not rally with market</div>
                     </div>
                   </div>
                 </div>
@@ -367,7 +367,7 @@ const InsightsSection = ({
         tier2={
           <div className="space-y-4 text-blue-900 dark:text-blue-200">
             <p className="text-base leading-relaxed">
-              These insights are ranked by priority and potential impact on your portfolio. Here's what each means for you:
+              These insights are ranked by priority and potential impact on your portfolio. Here is what each means for you:
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -385,7 +385,7 @@ const InsightsSection = ({
               <div className="bg-white/60 dark:bg-gray-800/60 p-5 rounded-lg border-l-4 border-blue-400">
                 <h4 className="font-bold mb-2 text-blue-900 dark:text-blue-300">🛡️ Low Beta Context</h4>
                 <p className="text-sm mb-3 text-gray-700 dark:text-gray-300">
-                  β {portfolioBeta.toFixed(2)} means your returns are mostly idiosyncratic. That's great if you pick winners, but
+                  β {portfolioBeta.toFixed(2)} means your returns are mostly idiosyncratic. This is great if you pick winners, but
                   it also means less uplift when markets rally.
                 </p>
                 <div className="text-xs bg-blue-50 dark:bg-blue-900/30 p-3 rounded border border-blue-200 dark:border-blue-800 text-gray-800 dark:text-gray-200">

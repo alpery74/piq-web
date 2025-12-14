@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect } from 'react';
-import { X, BookOpen, ChevronRight, ChevronDown, ExternalLink, Lightbulb, AlertTriangle, TrendingUp, TrendingDown, Target, Shield, Activity, BarChart3, PieChart, Percent, Search } from 'lucide-react';
+import { X, BookOpen, ChevronRight, ChevronDown, Lightbulb, AlertTriangle, TrendingUp, Target, Shield, Activity, BarChart3, PieChart, Percent, Search } from 'lucide-react';
 import { FINANCIAL_TERMS } from './EducationalTooltip';
 
 /**

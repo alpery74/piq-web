@@ -4,21 +4,21 @@ import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  Percent,
   ChevronDown,
   ChevronUp,
   AlertCircle,
   CheckCircle2
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
-import { formatPercent, formatNumber, formatCurrency } from '@/utils/formatters';
+import { formatPercent } from '@/utils/formatters';
 
 /**
  * FundamentalsCard - Company fundamentals analysis
- * Shows P/E ratios, dividend yields, beta ranges from backend
+ * Shows P/E ratios, dividend yields, beta ranges, and quality metrics from backend
  */
 const FundamentalsCard = ({
   riskDecomposition,
+  qualityMetrics,
   viewTier = 'simple',
 }) => {
   const [expanded, setExpanded] = useState(false);
@@ -29,8 +29,15 @@ const FundamentalsCard = ({
   const dividend = fundamentals.dividendAnalysis || {};
   const riskMetrics = fundamentals.riskMetrics || {};
 
-  // If no data, don't render
-  if (!fundamentals || Object.keys(fundamentals).length === 0) {
+  // FEATURE 10: Quality Metrics
+  const profitability = qualityMetrics?.profitability || {};
+  const financialHealth = qualityMetrics?.financialHealth || {};
+  const qualityScore = qualityMetrics?.qualityScore ?? null;
+  const qualityTier = qualityMetrics?.qualityTier ?? null;
+  const hasQualityData = qualityMetrics && qualityScore !== null;
+
+  // If no data at all, don't render
+  if ((!fundamentals || Object.keys(fundamentals).length === 0) && !hasQualityData) {
     return null;
   }
 
@@ -122,6 +129,117 @@ const FundamentalsCard = ({
             </div>
           </div>
         </div>
+
+        {/* FEATURE 10: Quality Metrics - ALL views */}
+        {hasQualityData && (
+          <div className="mt-6 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <span className="font-semibold text-emerald-800 dark:text-emerald-300">Quality Score</span>
+              </div>
+              <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${
+                qualityTier === 'Excellent' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' :
+                qualityTier === 'Good' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                qualityTier === 'Fair' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' :
+                'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+              }`}>
+                <span className="text-2xl font-bold">{qualityScore?.toFixed(0)}</span>
+                <span className="text-xs">/ 100</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {/* ROE */}
+              <div className="p-2 bg-white/70 dark:bg-gray-800/50 rounded-lg text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Return on Equity</span>
+                <div className={`text-lg font-bold mt-0.5 ${
+                  (profitability.returnOnEquityPct || 0) >= 15 ? 'text-ios-green' :
+                  (profitability.returnOnEquityPct || 0) >= 10 ? 'text-ios-blue' : 'text-ios-orange'
+                }`}>
+                  {profitability.returnOnEquityPct !== undefined ? `${profitability.returnOnEquityPct.toFixed(1)}%` : 'N/A'}
+                </div>
+              </div>
+
+              {/* Debt to Equity */}
+              <div className="p-2 bg-white/70 dark:bg-gray-800/50 rounded-lg text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Debt/Equity</span>
+                <div className={`text-lg font-bold mt-0.5 ${
+                  (financialHealth.debtToEquity || 0) <= 0.5 ? 'text-ios-green' :
+                  (financialHealth.debtToEquity || 0) <= 1 ? 'text-ios-blue' :
+                  (financialHealth.debtToEquity || 0) <= 2 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {financialHealth.debtToEquity !== undefined ? financialHealth.debtToEquity.toFixed(2) : 'N/A'}
+                </div>
+              </div>
+
+              {/* Gross Margin */}
+              <div className="p-2 bg-white/70 dark:bg-gray-800/50 rounded-lg text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Gross Margin</span>
+                <div className={`text-lg font-bold mt-0.5 ${
+                  (profitability.grossMarginPct || 0) >= 40 ? 'text-ios-green' :
+                  (profitability.grossMarginPct || 0) >= 25 ? 'text-ios-blue' : 'text-ios-orange'
+                }`}>
+                  {profitability.grossMarginPct !== undefined ? `${profitability.grossMarginPct.toFixed(1)}%` : 'N/A'}
+                </div>
+              </div>
+
+              {/* Net Margin */}
+              <div className="p-2 bg-white/70 dark:bg-gray-800/50 rounded-lg text-center">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Net Margin</span>
+                <div className={`text-lg font-bold mt-0.5 ${
+                  (profitability.netMarginPct || 0) >= 15 ? 'text-ios-green' :
+                  (profitability.netMarginPct || 0) >= 8 ? 'text-ios-blue' :
+                  (profitability.netMarginPct || 0) > 0 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {profitability.netMarginPct !== undefined ? `${profitability.netMarginPct.toFixed(1)}%` : 'N/A'}
+                </div>
+              </div>
+            </div>
+
+            {/* Analyst+ View: Additional quality metrics */}
+            {(viewTier === 'analyst' || viewTier === 'quant') && (
+              <div className="mt-3 pt-3 border-t border-emerald-200 dark:border-emerald-700">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Current Ratio:</span>
+                    <span className={`font-semibold ${
+                      (financialHealth.currentRatio || 0) >= 1.5 ? 'text-ios-green' :
+                      (financialHealth.currentRatio || 0) >= 1 ? 'text-ios-orange' : 'text-ios-red'
+                    }`}>
+                      {financialHealth.currentRatio?.toFixed(2) || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">ROA:</span>
+                    <span className="font-semibold">{profitability.returnOnAssetsPct?.toFixed(1) || 'N/A'}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Operating Margin:</span>
+                    <span className="font-semibold">{profitability.operatingMarginPct?.toFixed(1) || 'N/A'}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Quality Tier:</span>
+                    <span className={`font-semibold ${
+                      qualityTier === 'Excellent' ? 'text-ios-green' :
+                      qualityTier === 'Good' ? 'text-ios-blue' :
+                      qualityTier === 'Fair' ? 'text-ios-orange' : 'text-ios-red'
+                    }`}>
+                      {qualityTier || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quant View: Coverage info */}
+            {viewTier === 'quant' && qualityMetrics?.coveragePct !== undefined && (
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                Quality metrics based on {qualityMetrics.coveragePct?.toFixed(0)}% of portfolio holdings
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Analyst Tier - Position Classifications */}
         {(viewTier === 'analyst' || viewTier === 'quant') && (

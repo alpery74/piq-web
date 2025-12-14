@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -215,11 +216,6 @@ const CommandPalette = ({ isOpen, onClose }) => {
 
   const commands = useMemo(() => getCommands(isDark, toggleTheme), [isDark, toggleTheme]);
 
-  // Flatten commands for navigation
-  const flatCommands = useMemo(() => {
-    return commands.flatMap((cat) => cat.items);
-  }, [commands]);
-
   // Filter commands based on search
   const filteredCommands = useMemo(() => {
     if (!search.trim()) return commands;
@@ -332,7 +328,7 @@ const CommandPalette = ({ isOpen, onClose }) => {
               <p className="text-gray-500 dark:text-gray-400">No commands found</p>
             </div>
           ) : (
-            filteredCommands.map((category, catIndex) => (
+            filteredCommands.map((category) => (
               <div key={category.category}>
                 <div className="px-4 py-2">
                   <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">

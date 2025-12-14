@@ -7,10 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
-  AlertCircle,
-  ArrowRight,
   BarChart3,
-  Percent
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
 import { formatPercent, formatCurrency } from '@/utils/formatters';
@@ -104,7 +101,7 @@ const StrategyComparisonCard = ({
 
   // Convert strategies to array for display
   const strategyList = Object.entries(availableStrategies)
-    .filter(([key, data]) => data.available)
+    .filter(([, data]) => data.available)
     .map(([key, data]) => ({
       key,
       ...data,

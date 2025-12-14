@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useRef, useEffect } from 'react';
 import { HelpCircle, BookOpen, TrendingUp, TrendingDown, AlertTriangle, Shield, Target, Percent, BarChart3, PieChart, Activity, Zap } from 'lucide-react';
 

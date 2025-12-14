@@ -65,6 +65,7 @@ const SettingsModal = ({ isOpen, onClose }) => {
     if (isOpen && token) {
       fetchSubscription();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, token]);
 
   const fetchSubscription = async () => {

@@ -188,7 +188,7 @@ const Layout = ({ children, onOpenSearch, onOpenSettings, onStartTour, notificat
                             <Bell className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                             <p className="text-sm text-gray-500 dark:text-gray-400">No notifications yet</p>
                             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              You'll see alerts here when analysis completes
+                              Alerts appear here when analysis completes
                             </p>
                           </div>
                         ) : (

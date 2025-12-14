@@ -15,7 +15,6 @@ import {
 
 // Simulated impact calculations
 const calculateImpact = (holdings, changes, metrics) => {
-  const totalValue = holdings.reduce((sum, h) => sum + h.value, 0);
   let newVolatility = metrics.volatility;
   let newBeta = metrics.beta;
   let newConcentration = metrics.concentration;
@@ -98,7 +97,7 @@ const ChangeIndicator = ({ before, after, unit = '', inverse = false }) => {
 };
 
 // Holding adjustment row
-const HoldingRow = ({ holding, change, onChangeUpdate, totalValue }) => {
+const HoldingRow = ({ holding, change, onChangeUpdate }) => {
   const currentValue = holding.value;
   const newValue = currentValue * (1 + change / 100);
   const valueDelta = newValue - currentValue;
@@ -341,7 +340,6 @@ const WhatIfSimulator = ({
                     holding={holding}
                     change={changes[holding.ticker] || 0}
                     onChangeUpdate={updateChange}
-                    totalValue={holdings.reduce((sum, h) => sum + h.value, 0)}
                   />
                 ))}
               </div>

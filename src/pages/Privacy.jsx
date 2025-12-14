@@ -8,8 +8,8 @@ const Privacy = () => {
         <section className="card">
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">1. Introduction</h2>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            PIQ Labs ("PIQ," "we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, 
-            and safeguard your information when you visit our website, use the PIQ mobile application, or engage with any PIQ services (collectively, the "Services"). 
+            PIQ Labs (&ldquo;PIQ,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose,
+            and safeguard your information when you visit our website, use the PIQ mobile application, or engage with any PIQ services (collectively, the &ldquo;Services&rdquo;).
             We follow a data-minimization approach and only collect the small set of details described in Section 2.
           </p>
         </section>

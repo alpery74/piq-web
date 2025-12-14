@@ -4,9 +4,7 @@ import {
   TrendingUp,
   TrendingDown,
   AlertTriangle,
-  Shield,
   Zap,
-  Calendar,
   BarChart3,
   ChevronDown,
   ChevronUp,
@@ -15,7 +13,7 @@ import {
   ArrowDownRight
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
-import { formatPercent, formatNumber } from '@/utils/formatters';
+import { formatPercent } from '@/utils/formatters';
 
 /**
  * RiskOverviewCard - Comprehensive risk metrics display
@@ -56,6 +54,14 @@ const RiskOverviewCard = ({
   const rollingSharpe90d = volatility?.rollingSharpe90d ?? null;
   const rollingSharpeStatus = volatility?.rollingSharpeStatus || 'not_available';
   const hasRollingSharpeData = rollingSharpeStatus === 'complete' && rollingSharpe30d !== null;
+
+  // FEATURE 12: Peer Comparison Percentiles
+  const peerComparison = volatility?.peerComparison || null;
+  const hasPeerComparisonData = peerComparison && peerComparison.sharpePercentile !== undefined;
+
+  // FEATURE 11: Active Share Analysis
+  const activeShareAnalysis = riskDecomposition?.activeShareAnalysis || null;
+  const hasActiveShareData = activeShareAnalysis && activeShareAnalysis.activeSharePct !== undefined;
 
   // Beta exposure
   const betaExposureUsd = correlation?.betaExposureUsd || 0;
@@ -268,6 +274,150 @@ const RiskOverviewCard = ({
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* FEATURE 12: Peer Comparison Percentiles - Analyst Tier */}
+        {(viewTier === 'analyst' || viewTier === 'quant') && hasPeerComparisonData && (
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Peer Comparison
+              {peerComparison.isDefaultData && (
+                <span className="text-xs px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full">
+                  Sample Data
+                </span>
+              )}
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="p-3 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl text-center border border-green-200 dark:border-green-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Sharpe Percentile</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  peerComparison.sharpePercentile >= 75 ? 'text-ios-green' :
+                  peerComparison.sharpePercentile >= 50 ? 'text-ios-blue' :
+                  peerComparison.sharpePercentile >= 25 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {peerComparison.sharpePercentile}th
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">vs peers</div>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl text-center border border-blue-200 dark:border-blue-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Volatility Percentile</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  peerComparison.volatilityPercentile >= 75 ? 'text-ios-green' :
+                  peerComparison.volatilityPercentile >= 50 ? 'text-ios-blue' :
+                  peerComparison.volatilityPercentile >= 25 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {peerComparison.volatilityPercentile}th
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">lower is riskier</div>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl text-center border border-purple-200 dark:border-purple-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Beta Percentile</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  peerComparison.betaPercentile >= 75 ? 'text-ios-green' :
+                  peerComparison.betaPercentile >= 50 ? 'text-ios-blue' :
+                  peerComparison.betaPercentile >= 25 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {peerComparison.betaPercentile}th
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">market sensitivity</div>
+              </div>
+              <div className="p-3 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl text-center border border-amber-200 dark:border-amber-800">
+                <span className="text-xs text-gray-600 dark:text-gray-400">Drawdown Percentile</span>
+                <div className={`text-xl font-bold mt-1 ${
+                  peerComparison.drawdownPercentile >= 75 ? 'text-ios-green' :
+                  peerComparison.drawdownPercentile >= 50 ? 'text-ios-blue' :
+                  peerComparison.drawdownPercentile >= 25 ? 'text-ios-orange' : 'text-ios-red'
+                }`}>
+                  {peerComparison.drawdownPercentile}th
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">loss resilience</div>
+              </div>
+            </div>
+            {viewTier === 'quant' && peerComparison.sampleSize > 0 && (
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                Based on {peerComparison.sampleSize} peer portfolios analyzed in the last 30 days
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* FEATURE 11: Active Share Analysis - Analyst Tier */}
+        {(viewTier === 'analyst' || viewTier === 'quant') && hasActiveShareData && (
+          <div className="mt-4">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Active Share vs Benchmark
+              {activeShareAnalysis.benchmarkTicker && (
+                <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">
+                  vs {activeShareAnalysis.benchmarkTicker}
+                </span>
+              )}
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Active Share Score */}
+              <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Active Share</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                    activeShareAnalysis.interpretation === 'Closet Indexer' ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' :
+                    activeShareAnalysis.interpretation === 'Moderately Active' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                    activeShareAnalysis.interpretation === 'Active' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' :
+                    'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                  }`}>
+                    {activeShareAnalysis.interpretation}
+                  </span>
+                </div>
+                <div className={`text-3xl font-bold ${
+                  activeShareAnalysis.activeSharePct < 20 ? 'text-gray-500' :
+                  activeShareAnalysis.activeSharePct < 60 ? 'text-ios-blue' :
+                  activeShareAnalysis.activeSharePct < 80 ? 'text-purple-600' : 'text-indigo-600'
+                }`}>
+                  {activeShareAnalysis.activeSharePct.toFixed(1)}%
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {activeShareAnalysis.activeSharePct < 20 ? 'Portfolio closely tracks benchmark' :
+                   activeShareAnalysis.activeSharePct < 60 ? 'Some deviation from benchmark' :
+                   activeShareAnalysis.activeSharePct < 80 ? 'Significant active management' : 'Highly differentiated portfolio'}
+                </p>
+              </div>
+
+              {/* Holdings Overlap */}
+              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Holdings Overlap</span>
+                <div className="mt-2 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Shared with benchmark</span>
+                    <span className="font-semibold">{activeShareAnalysis.holdingsOverlap?.inBothCount || 0}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">Unique to portfolio</span>
+                    <span className="font-semibold">{activeShareAnalysis.holdingsOverlap?.portfolioOnlyCount || 0}</span>
+                  </div>
+                  {viewTier === 'quant' && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Total benchmark holdings</span>
+                      <span className="font-semibold">{activeShareAnalysis.holdingsOverlap?.benchmarkOnlyCount || 'N/A'}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quant Tier: Largest Active Positions */}
+            {viewTier === 'quant' && activeShareAnalysis.largestActivePositions && activeShareAnalysis.largestActivePositions.length > 0 && (
+              <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                <h5 className="text-xs font-semibold text-purple-800 dark:text-purple-300 mb-2">Largest Active Bets (vs benchmark)</h5>
+                <div className="flex flex-wrap gap-2">
+                  {activeShareAnalysis.largestActivePositions.slice(0, 5).map((pos, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded text-xs font-medium">
+                      {pos.ticker}: {pos.weightDiffPct >= 0 ? '+' : ''}{pos.weightDiffPct?.toFixed(1)}%
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

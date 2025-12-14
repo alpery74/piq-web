@@ -273,7 +273,6 @@ const SessionSelectorDialog = ({ open, onClose, onSelectRun, onStartNewAnalysis,
   };
 
   const hasPortfolios = portfolios.length > 0;
-  const displayName = userName || 'there';
 
   // For modal mode, don't render if not open
   if (!embedded && !open) return null;

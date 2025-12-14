@@ -106,11 +106,11 @@ const MobileBottomNav = ({ onStartTour }) => {
       case 'help':
         onStartTour?.();
         break;
-      case 'switch-portfolio':
-        // Click the portfolio switcher button in HeroCard
+      case 'switch-portfolio': {
         const switcher = document.querySelector('.card-glass-hero button');
         if (switcher) switcher.click();
         break;
+      }
     }
     setIsMoreOpen(false);
   };
