@@ -8,6 +8,9 @@ import {
   ChevronUp,
   CheckCircle2,
   BarChart3,
+  Leaf,
+  Award,
+  AlertCircle,
 } from 'lucide-react';
 import EducationalTooltip from '@/components/common/EducationalTooltip';
 import { formatPercent, formatCurrency } from '@/utils/formatters';
@@ -18,11 +21,19 @@ import { formatPercent, formatCurrency } from '@/utils/formatters';
  */
 const StrategyComparisonCard = ({
   strategies,
+  esgOptimization,
+  showEsgMode,
+  onToggleEsgMode,
   currentVolatility,
   viewTier = 'simple',
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState(null);
+
+  // ESG data extraction
+  const esgAvailable = esgOptimization?.status === 'available';
+  const portfolioEsg = esgOptimization?.portfolioEsg;
+  const esgStrategies = esgOptimization?.strategies;
 
   // Extract strategy data
   const availableStrategies = strategies?.availableStrategies || {};
@@ -72,6 +83,31 @@ const StrategyComparisonCard = ({
     },
   };
 
+  // ESG Strategy display config
+  const esgStrategyConfig = {
+    esg_tilted_minimum_variance: {
+      label: 'ESG-Tilted Min Var',
+      shortLabel: 'ESG Min Var',
+      icon: Leaf,
+      color: 'green',
+      description: 'Lower volatility with ESG tilt',
+    },
+    esg_improvement: {
+      label: 'ESG Improvement',
+      shortLabel: 'ESG Improve',
+      icon: TrendingUp,
+      color: 'emerald',
+      description: 'Reduce low-ESG holdings',
+    },
+    esg_leaders: {
+      label: 'ESG Leaders',
+      shortLabel: 'ESG Leaders',
+      icon: Award,
+      color: 'teal',
+      description: 'Overweight high-ESG stocks',
+    },
+  };
+
   const colorClasses = {
     blue: {
       bg: 'bg-blue-50 dark:bg-blue-900/20',
@@ -96,6 +132,18 @@ const StrategyComparisonCard = ({
       border: 'border-orange-200 dark:border-orange-800',
       text: 'text-orange-700 dark:text-orange-300',
       badge: 'bg-orange-100 dark:bg-orange-800',
+    },
+    emerald: {
+      bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+      border: 'border-emerald-200 dark:border-emerald-800',
+      text: 'text-emerald-700 dark:text-emerald-300',
+      badge: 'bg-emerald-100 dark:bg-emerald-800',
+    },
+    teal: {
+      bg: 'bg-teal-50 dark:bg-teal-900/20',
+      border: 'border-teal-200 dark:border-teal-800',
+      text: 'text-teal-700 dark:text-teal-300',
+      badge: 'bg-teal-100 dark:bg-teal-800',
     },
   };
 
@@ -126,17 +174,176 @@ const StrategyComparisonCard = ({
             </p>
           </div>
         </div>
-        {recommended.recommended && (
-          <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-semibold">
-            <CheckCircle2 className="w-4 h-4" />
-            {strategyConfig[recommended.recommended]?.shortLabel || recommended.recommended}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* ESG Mode Toggle */}
+          {esgAvailable && (
+            <button
+              onClick={() => onToggleEsgMode?.(!showEsgMode)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+                showEsgMode
+                  ? 'bg-green-600 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+              title={showEsgMode ? 'Switch to Standard Optimization' : 'Switch to ESG-Aware Optimization'}
+            >
+              <Leaf className="w-4 h-4" />
+              ESG
+            </button>
+          )}
+          {recommended.recommended && !showEsgMode && (
+            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-semibold">
+              <CheckCircle2 className="w-4 h-4" />
+              {strategyConfig[recommended.recommended]?.shortLabel || recommended.recommended}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="p-5">
-        {/* Simple Tier - Strategy Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* ESG Mode - Portfolio ESG Summary */}
+        {showEsgMode && portfolioEsg && (
+          <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Leaf className="w-5 h-5 text-green-600" />
+                <span className="font-semibold text-green-800 dark:text-green-200">Portfolio ESG Score</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-green-700 dark:text-green-300">
+                  {portfolioEsg.portfolio_esg_score?.toFixed(1) || portfolioEsg.portfolioEsgScore?.toFixed(1) || 'N/A'}
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                  (portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating) === 'Leader'
+                    ? 'bg-green-200 text-green-800'
+                    : (portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating) === 'Average'
+                    ? 'bg-yellow-200 text-yellow-800'
+                    : 'bg-red-200 text-red-800'
+                }`}>
+                  {portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating || 'N/A'}
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-sm">
+              <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                <div className="text-xs text-gray-500 dark:text-gray-400">Environmental</div>
+                <div className="font-bold text-green-600">
+                  {portfolioEsg.portfolio_environmental_score?.toFixed(1) || portfolioEsg.portfolioEnvironmentalScore?.toFixed(1) || 'N/A'}
+                </div>
+              </div>
+              <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                <div className="text-xs text-gray-500 dark:text-gray-400">Social</div>
+                <div className="font-bold text-blue-600">
+                  {portfolioEsg.portfolio_social_score?.toFixed(1) || portfolioEsg.portfolioSocialScore?.toFixed(1) || 'N/A'}
+                </div>
+              </div>
+              <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                <div className="text-xs text-gray-500 dark:text-gray-400">Governance</div>
+                <div className="font-bold text-purple-600">
+                  {portfolioEsg.portfolio_governance_score?.toFixed(1) || portfolioEsg.portfolioGovernanceScore?.toFixed(1) || 'N/A'}
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+              ESG data coverage: {portfolioEsg.esg_coverage_pct?.toFixed(0) || portfolioEsg.esgCoveragePct?.toFixed(0) || 0}% of portfolio
+            </div>
+          </div>
+        )}
+
+        {/* ESG Mode - ESG Strategies */}
+        {showEsgMode && esgStrategies?.available && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {Object.entries(esgStrategies)
+              .filter(([key, data]) => key !== 'available' && key !== 'current_portfolio_esg' && key !== 'current_esg_rating' && data?.available !== false)
+              .map(([key, data]) => {
+                const config = esgStrategyConfig[key] || { label: key, icon: Leaf, color: 'green' };
+                const Icon = config.icon;
+                const colors = colorClasses[config.color] || colorClasses.green;
+                const currentEsg = data.current_portfolio_esg || data.currentPortfolioEsg || portfolioEsg?.portfolio_esg_score || 0;
+                const newEsg = data.new_portfolio_esg || data.newPortfolioEsg || currentEsg;
+                const esgImprovement = data.esg_improvement || data.esgImprovement || (newEsg - currentEsg);
+
+                return (
+                  <div
+                    key={key}
+                    className={`relative p-4 rounded-xl border-2 ${colors.bg} ${colors.border}`}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={`p-2 rounded-lg ${colors.badge}`}>
+                        <Icon className={`w-4 h-4 ${colors.text}`} />
+                      </div>
+                      <span className={`font-semibold text-sm ${colors.text}`}>
+                        {config.label}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {/* Current ESG */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Current ESG</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                          {currentEsg?.toFixed(1) || 'N/A'}
+                        </span>
+                      </div>
+
+                      {/* New ESG (if available) */}
+                      {newEsg !== currentEsg && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">New ESG</span>
+                          <span className="font-semibold text-green-600">
+                            {newEsg?.toFixed(1) || 'N/A'}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* ESG Improvement */}
+                      {esgImprovement > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">Improvement</span>
+                          <span className="font-semibold text-green-600">
+                            +{esgImprovement?.toFixed(1)} pts
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Positions Affected */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Trades</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {data.total_positions_to_adjust || data.totalPositionsToAdjust || data.recommendations?.length || 0} positions
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
+
+        {/* ESG Mode - Recommendations */}
+        {showEsgMode && esgOptimization?.recommendations?.length > 0 && (
+          <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertCircle className="w-5 h-5 text-amber-600" />
+              <span className="font-semibold text-amber-800 dark:text-amber-200">ESG Recommendations</span>
+            </div>
+            <ul className="space-y-2">
+              {esgOptimization.recommendations.slice(0, 3).map((rec, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-300">
+                  <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
+                    rec.priority === 'HIGH' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
+                  }`}>
+                    {rec.priority}
+                  </span>
+                  <span>{rec.recommendation}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Standard Mode - Strategy Cards */}
+        {!showEsgMode && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {strategyList.map((strategy) => {
             const Icon = strategy.config.icon;
             const colors = colorClasses[strategy.config.color] || colorClasses.blue;
@@ -215,10 +422,11 @@ const StrategyComparisonCard = ({
               </button>
             );
           })}
-        </div>
+          </div>
+        )}
 
-        {/* Selected Strategy Details */}
-        {selectedStrategy && (
+        {/* Selected Strategy Details - Standard Mode Only */}
+        {!showEsgMode && selectedStrategy && (
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
             {(() => {
               const strategy = strategyList.find(s => s.key === selectedStrategy);
@@ -289,8 +497,8 @@ const StrategyComparisonCard = ({
           </div>
         )}
 
-        {/* Analyst Tier - Benchmark Comparison */}
-        {(viewTier === 'analyst' || viewTier === 'quant') && benchmarkComparison.benchmarkTicker && (
+        {/* Analyst Tier - Benchmark Comparison (Standard Mode Only) */}
+        {!showEsgMode && (viewTier === 'analyst' || viewTier === 'quant') && benchmarkComparison.benchmarkTicker && (
           <div className="mt-6">
             <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
@@ -352,8 +560,8 @@ const StrategyComparisonCard = ({
           </div>
         )}
 
-        {/* Quant Tier - Full Strategy Metrics */}
-        {viewTier === 'quant' && (
+        {/* Quant Tier - Full Strategy Metrics (Standard Mode Only) */}
+        {!showEsgMode && viewTier === 'quant' && (
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={() => setExpanded(!expanded)}

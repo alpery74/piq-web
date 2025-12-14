@@ -105,7 +105,7 @@ const ONBOARDING_STEPS = [
     title: 'Optimization',
     subtitle: 'AI-Powered Recommendations',
     description:
-      'Get actionable portfolio optimization strategies, implementation steps, and risk decomposition analysis. See how to improve your portfolio based on your goals.',
+      'Get actionable portfolio optimization strategies, implementation steps, and risk decomposition analysis. Toggle "ESG Mode" to see ESG-aware optimization strategies with environmental, social, and governance scores.',
     icon: Target,
     color: 'ios-orange',
     targetSelector: '#optimization-section',

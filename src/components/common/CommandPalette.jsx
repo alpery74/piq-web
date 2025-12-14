@@ -18,6 +18,7 @@ import {
   Zap,
   FolderPlus,
   Play,
+  Leaf,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -172,6 +173,23 @@ const getCommands = (isDark, toggleTheme) => [
         label: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
         shortcut: 'T',
         action: toggleTheme,
+      },
+      {
+        id: 'view-esg',
+        icon: Leaf,
+        label: 'Toggle ESG Mode',
+        description: 'Switch between standard and ESG-aware optimization',
+        shortcut: 'E',
+        action: () => {
+          // Find and click the ESG toggle button in StrategyComparisonCard
+          const esgBtn = document.querySelector('button[title*="ESG"]');
+          if (esgBtn) {
+            esgBtn.click();
+          } else {
+            // Scroll to optimization section first
+            document.getElementById('optimization-section')?.scrollIntoView({ behavior: 'smooth' });
+          }
+        },
       },
     ],
   },

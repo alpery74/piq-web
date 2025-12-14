@@ -58,6 +58,7 @@ const Dashboard = () => {
   // For backward compatibility
   const showAdvanced = viewTier === 'analyst' || viewTier === 'quant';
   const [showOptimizationStrategies, setShowOptimizationStrategies] = useState(false);
+  const [showEsgMode, setShowEsgMode] = useState(false);
   const [analysisRunId, setAnalysisRunId] = useState(localStorage.getItem('analysisRunId') || '');
   const [portfolioName, setPortfolioName] = useState(localStorage.getItem('portfolioName') || '');
   const [versionName, setVersionName] = useState(localStorage.getItem('versionName') || '');
@@ -367,6 +368,18 @@ const Dashboard = () => {
     qualityMetrics: normalizeQualityMetrics(polledResults.math_quality_metrics),
     // FEATURE 9: Performance Attribution
     performanceAttribution: normalizePerformanceAttribution(polledResults.math_performance_attribution),
+    // ESG Optimization
+    esgOptimization: (() => {
+      const esg = polledResults.optimization_esg;
+      if (!esg || esg.status !== 'available') return null;
+      return {
+        status: esg.status,
+        portfolioEsg: esg.portfolio_esg_summary || esg.portfolioEsgSummary,
+        strategies: esg.esg_strategies || esg.esgStrategies,
+        recommendations: esg.esg_recommendations || esg.esgRecommendations,
+        tradeoff: esg.esg_vs_standard_tradeoff || esg.esgVsStandardTradeoff,
+      };
+    })(),
   }), [polledResults]);
 
   const analysis = useMemo(() => ({
@@ -439,6 +452,8 @@ const Dashboard = () => {
     qualityMetrics: liveAnalysis.qualityMetrics || null,
     // FEATURE 9: Performance Attribution
     performanceAttribution: liveAnalysis.performanceAttribution || null,
+    // ESG Optimization
+    esgOptimization: liveAnalysis.esgOptimization || null,
   }), [liveAnalysis]);
 
   const totalPortfolioValue = (analysis.riskMetrics?.alphaBookTotalValue ?? 0) + (analysis.performance?.betaBookTotalValue ?? 0);
@@ -965,6 +980,9 @@ const Dashboard = () => {
         {(viewTier === 'analyst' || viewTier === 'quant') && (
           <StrategyComparisonCard
             strategies={analysis.strategies}
+            esgOptimization={analysis.esgOptimization}
+            showEsgMode={showEsgMode}
+            onToggleEsgMode={setShowEsgMode}
             currentVolatility={currentVol}
             viewTier={viewTier}
           />
