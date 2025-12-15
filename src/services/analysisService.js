@@ -37,6 +37,11 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
   if (data.results) {
     const parsed = {};
     Object.entries(data.results).forEach(([subtool, result]) => {
+      // DEBUG: Log what we receive for the new tools
+      if (['math_quality_metrics', 'math_performance_attribution', 'optimization_esg'].includes(subtool)) {
+        console.log(`[DEBUG] Received ${subtool}:`, { status: result?.status, hasResult: !!result?.result, resultType: typeof result?.result });
+      }
+
       // Handle format: {status: 'ready', result: '...JSON string...'}
       if (result?.status === 'ready' && result.result) {
         try {
@@ -52,8 +57,12 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
       } else if (result && typeof result === 'object' && !('status' in result)) {
         // Direct object format - no wrapper
         parsed[subtool] = snakeToCamel(result);
+      } else if (import.meta.env.DEV) {
+        // DEBUG: Log why a result was skipped
+        console.warn(`[DEBUG] Skipped ${subtool}: status=${result?.status}, hasResult=${!!result?.result}`);
       }
     });
+    console.log('[DEBUG] Parsed results keys:', Object.keys(parsed));
     return {
       ...data,
       parsedResults: parsed,
