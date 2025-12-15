@@ -175,21 +175,22 @@ const StrategyComparisonCard = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* ESG Mode Toggle */}
-          {esgAvailable && (
-            <button
-              onClick={() => onToggleEsgMode?.(!showEsgMode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
-                showEsgMode
-                  ? 'bg-green-600 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-              title={showEsgMode ? 'Switch to Standard Optimization' : 'Switch to ESG-Aware Optimization'}
-            >
-              <Leaf className="w-4 h-4" />
-              ESG
-            </button>
-          )}
+          {/* ESG Mode Toggle - Always visible, disabled when no data */}
+          <button
+            onClick={() => esgAvailable && onToggleEsgMode?.(!showEsgMode)}
+            disabled={!esgAvailable}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all ${
+              !esgAvailable
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+                : showEsgMode
+                ? 'bg-green-600 dark:bg-green-500 text-white shadow-md hover:bg-green-700 dark:hover:bg-green-600'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
+            }`}
+            title={!esgAvailable ? 'ESG data not available' : showEsgMode ? 'Switch to Standard Optimization' : 'Switch to ESG-Aware Optimization'}
+          >
+            <Leaf className="w-4 h-4" />
+            ESG
+          </button>
           {recommended.recommended && !showEsgMode && (
             <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-semibold">
               <CheckCircle2 className="w-4 h-4" />
@@ -205,7 +206,7 @@ const StrategyComparisonCard = ({
           <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Leaf className="w-5 h-5 text-green-600" />
+                <Leaf className="w-5 h-5 text-green-600 dark:text-green-400" />
                 <span className="font-semibold text-green-800 dark:text-green-200">Portfolio ESG Score</span>
               </div>
               <div className="flex items-center gap-2">
@@ -214,10 +215,10 @@ const StrategyComparisonCard = ({
                 </span>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                   (portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating) === 'Leader'
-                    ? 'bg-green-200 text-green-800'
+                    ? 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200'
                     : (portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating) === 'Average'
-                    ? 'bg-yellow-200 text-yellow-800'
-                    : 'bg-red-200 text-red-800'
+                    ? 'bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200'
+                    : 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200'
                 }`}>
                   {portfolioEsg.portfolio_esg_rating || portfolioEsg.portfolioEsgRating || 'N/A'}
                 </span>
@@ -226,19 +227,19 @@ const StrategyComparisonCard = ({
             <div className="grid grid-cols-3 gap-3 text-sm">
               <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
                 <div className="text-xs text-gray-500 dark:text-gray-400">Environmental</div>
-                <div className="font-bold text-green-600">
+                <div className="font-bold text-green-600 dark:text-green-400">
                   {portfolioEsg.portfolio_environmental_score?.toFixed(1) || portfolioEsg.portfolioEnvironmentalScore?.toFixed(1) || 'N/A'}
                 </div>
               </div>
               <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
                 <div className="text-xs text-gray-500 dark:text-gray-400">Social</div>
-                <div className="font-bold text-blue-600">
+                <div className="font-bold text-blue-600 dark:text-blue-400">
                   {portfolioEsg.portfolio_social_score?.toFixed(1) || portfolioEsg.portfolioSocialScore?.toFixed(1) || 'N/A'}
                 </div>
               </div>
               <div className="text-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-lg">
                 <div className="text-xs text-gray-500 dark:text-gray-400">Governance</div>
-                <div className="font-bold text-purple-600">
+                <div className="font-bold text-purple-600 dark:text-purple-400">
                   {portfolioEsg.portfolio_governance_score?.toFixed(1) || portfolioEsg.portfolioGovernanceScore?.toFixed(1) || 'N/A'}
                 </div>
               </div>
@@ -289,7 +290,7 @@ const StrategyComparisonCard = ({
                       {newEsg !== currentEsg && (
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-500 dark:text-gray-400">New ESG</span>
-                          <span className="font-semibold text-green-600">
+                          <span className="font-semibold text-green-600 dark:text-green-400">
                             {newEsg?.toFixed(1) || 'N/A'}
                           </span>
                         </div>
@@ -299,7 +300,7 @@ const StrategyComparisonCard = ({
                       {esgImprovement > 0 && (
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-500 dark:text-gray-400">Improvement</span>
-                          <span className="font-semibold text-green-600">
+                          <span className="font-semibold text-green-600 dark:text-green-400">
                             +{esgImprovement?.toFixed(1)} pts
                           </span>
                         </div>
@@ -323,14 +324,16 @@ const StrategyComparisonCard = ({
         {showEsgMode && esgOptimization?.recommendations?.length > 0 && (
           <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
             <div className="flex items-center gap-2 mb-3">
-              <AlertCircle className="w-5 h-5 text-amber-600" />
+              <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               <span className="font-semibold text-amber-800 dark:text-amber-200">ESG Recommendations</span>
             </div>
             <ul className="space-y-2">
               {esgOptimization.recommendations.slice(0, 3).map((rec, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-300">
                   <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${
-                    rec.priority === 'HIGH' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
+                    rec.priority === 'HIGH'
+                      ? 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200'
+                      : 'bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200'
                   }`}>
                     {rec.priority}
                   </span>
@@ -439,7 +442,7 @@ const StrategyComparisonCard = ({
                   <div className="flex items-center justify-between mb-4">
                     <h4 className={`font-semibold ${colors.text}`}>{strategy.config.label}</h4>
                     {strategy.isRecommended && (
-                      <span className="text-xs text-amber-600 font-semibold">{recommended.reason}</span>
+                      <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold">{recommended.reason}</span>
                     )}
                   </div>
 
@@ -458,16 +461,16 @@ const StrategyComparisonCard = ({
                             }`}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="font-semibold">{change.ticker}</span>
+                              <span className="font-semibold text-gray-900 dark:text-white">{change.ticker}</span>
                               <span className={
-                                change.action === 'INCREASE' ? 'text-green-600' :
-                                change.action === 'DECREASE' ? 'text-red-600' :
-                                'text-gray-500'
+                                change.action === 'INCREASE' ? 'text-green-600 dark:text-green-400' :
+                                change.action === 'DECREASE' ? 'text-red-600 dark:text-red-400' :
+                                'text-gray-500 dark:text-gray-400'
                               }>
                                 {change.action}
                               </span>
                             </div>
-                            <div className="text-gray-500 mt-1">
+                            <div className="text-gray-500 dark:text-gray-400 mt-1">
                               {change.currentWeight?.toFixed(1)}% → {change.optimalWeight?.toFixed(1)}%
                             </div>
                           </div>
@@ -479,16 +482,16 @@ const StrategyComparisonCard = ({
                   {/* Cost Estimate */}
                   <div className="grid grid-cols-3 gap-3 text-sm">
                     <div className="p-2 bg-white dark:bg-gray-800 rounded-lg text-center">
-                      <div className="text-xs text-gray-500">Total Turnover</div>
-                      <div className="font-bold">{(strategy.costs.totalTurnoverPct || 0).toFixed(1)}%</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Total Turnover</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{(strategy.costs.totalTurnoverPct || 0).toFixed(1)}%</div>
                     </div>
                     <div className="p-2 bg-white dark:bg-gray-800 rounded-lg text-center">
-                      <div className="text-xs text-gray-500">Est. Cost</div>
-                      <div className="font-bold">{formatCurrency(strategy.costs.estimatedCostDollars || 0, 2)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Est. Cost</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{formatCurrency(strategy.costs.estimatedCostDollars || 0, 2)}</div>
                     </div>
                     <div className="p-2 bg-white dark:bg-gray-800 rounded-lg text-center">
-                      <div className="text-xs text-gray-500">Cost (bps)</div>
-                      <div className="font-bold">{(strategy.costs.estimatedCostBps || 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Cost (bps)</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{(strategy.costs.estimatedCostBps || 0).toFixed(2)}</div>
                     </div>
                   </div>
                 </>
@@ -528,7 +531,7 @@ const StrategyComparisonCard = ({
                         {(strategy.benchmarkData.estimatedSharpe || 0).toFixed(3)}
                       </td>
                       <td className="px-3 py-2 text-center">
-                        <span className={strategy.benchmarkData.sharpeVsBenchmark > 0 ? 'text-green-600' : 'text-red-600'}>
+                        <span className={strategy.benchmarkData.sharpeVsBenchmark > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
                           {(strategy.benchmarkData.sharpeVsBenchmark || 0).toFixed(3)}
                         </span>
                       </td>
@@ -650,16 +653,16 @@ const StrategyComparisonCard = ({
                     </h5>
                     <div className="grid grid-cols-3 gap-3 text-sm">
                       <div>
-                        <div className="text-xs text-gray-500">Expected Return</div>
-                        <div className="font-bold">{formatPercent(benchmarkComparison.benchmarkMetrics.expectedReturn || 0, 1)}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Expected Return</div>
+                        <div className="font-bold text-gray-900 dark:text-white">{formatPercent(benchmarkComparison.benchmarkMetrics.expectedReturn || 0, 1)}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500">Volatility</div>
-                        <div className="font-bold">{formatPercent(benchmarkComparison.benchmarkMetrics.volatility || 0, 1)}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Volatility</div>
+                        <div className="font-bold text-gray-900 dark:text-white">{formatPercent(benchmarkComparison.benchmarkMetrics.volatility || 0, 1)}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500">Sharpe Ratio</div>
-                        <div className="font-bold">{(benchmarkComparison.benchmarkMetrics.sharpeRatio || 0).toFixed(3)}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Sharpe Ratio</div>
+                        <div className="font-bold text-gray-900 dark:text-white">{(benchmarkComparison.benchmarkMetrics.sharpeRatio || 0).toFixed(3)}</div>
                       </div>
                     </div>
                   </div>
@@ -670,12 +673,12 @@ const StrategyComparisonCard = ({
                   <h5 className="font-semibold text-blue-800 dark:text-blue-300 mb-3">Current Portfolio</h5>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <div className="text-xs text-gray-500">Current Beta</div>
-                      <div className="font-bold">{(benchmarkComparison.currentPortfolioBeta || 0).toFixed(3)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Current Beta</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{(benchmarkComparison.currentPortfolioBeta || 0).toFixed(3)}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-500">Current Sharpe</div>
-                      <div className="font-bold">{(benchmarkComparison.currentPortfolioSharpe || 0).toFixed(3)}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Current Sharpe</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{(benchmarkComparison.currentPortfolioSharpe || 0).toFixed(3)}</div>
                     </div>
                   </div>
                 </div>
