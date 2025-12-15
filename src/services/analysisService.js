@@ -35,11 +35,19 @@ export const pollUnifiedResults = async (analysisRunId, since) => {
   const data = response.data || {};
 
   if (data.results) {
+    // DEBUG: Log ALL received tool names from API
+    console.log('[DEBUG] API returned tools:', Object.keys(data.results));
+
     const parsed = {};
     Object.entries(data.results).forEach(([subtool, result]) => {
       // DEBUG: Log what we receive for the new tools
       if (['math_quality_metrics', 'math_performance_attribution', 'optimization_esg'].includes(subtool)) {
         console.log(`[DEBUG] Received ${subtool}:`, { status: result?.status, hasResult: !!result?.result, resultType: typeof result?.result });
+        // Extra debug: show first 200 chars of result if it exists
+        if (result?.result) {
+          const preview = typeof result.result === 'string' ? result.result.substring(0, 200) : JSON.stringify(result.result).substring(0, 200);
+          console.log(`[DEBUG] ${subtool} result preview:`, preview);
+        }
       }
 
       // Handle format: {status: 'ready', result: '...JSON string...'}
