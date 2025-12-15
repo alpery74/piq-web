@@ -340,7 +340,7 @@ const Dashboard = () => {
       financialHealth: qm.financialHealth ?? {},
       qualityScore: qm.qualityScore ?? null,
       qualityTier: qm.qualityTier ?? null,
-      qualityMetricsStatus: qm.status ?? 'not_available',
+      qualityMetricsStatus: qm.analysisStatus ?? 'not_available',
     };
   };
 
@@ -351,7 +351,7 @@ const Dashboard = () => {
       ...pa,
       attributionSummary: pa.attributionSummary ?? {},
       sectorAttribution: pa.sectorAttribution ?? [],
-      attributionStatus: pa.status ?? 'not_available',
+      attributionStatus: pa.analysisStatus ?? 'not_available',
     };
   };
 
