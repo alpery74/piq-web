@@ -6,10 +6,13 @@ const SUBTOOLS = [
   'math_risk_metrics',
   'math_performance',
   'math_volatility',
+  'math_quality_metrics',
+  'math_performance_attribution',
   'optimization_risk_decomposition',
   'optimization_strategy_generation',
   'optimization_implementation',
   'optimization_stress_testing',
+  'optimization_esg',
 ];
 
 const getDelayMs = (recommendation, emptyPolls) => {

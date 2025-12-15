@@ -1,4 +1,4 @@
-import { CheckCircle2, Loader2, Clock, Activity, TrendingUp, PieChart, Shield, Target, Cog } from 'lucide-react';
+import { CheckCircle2, Loader2, Clock, Activity, TrendingUp, PieChart, Shield, Target, Cog, BarChart3, Leaf } from 'lucide-react';
 
 // Map subtool names to display info
 const SUBTOOL_CONFIG = {
@@ -50,6 +50,24 @@ const SUBTOOL_CONFIG = {
     icon: Shield,
     section: 'risk',
   },
+  math_quality_metrics: {
+    label: 'Quality Metrics',
+    description: 'Data quality and analysis confidence',
+    icon: BarChart3,
+    section: 'overview',
+  },
+  math_performance_attribution: {
+    label: 'Performance Attribution',
+    description: 'Return sources and factor analysis',
+    icon: TrendingUp,
+    section: 'overview',
+  },
+  optimization_esg: {
+    label: 'ESG Optimization',
+    description: 'Environmental, Social, Governance',
+    icon: Leaf,
+    section: 'optimization',
+  },
 };
 
 const SUBTOOL_ORDER = [
@@ -57,10 +75,13 @@ const SUBTOOL_ORDER = [
   'math_risk_metrics',
   'math_performance',
   'math_volatility',
+  'math_quality_metrics',
+  'math_performance_attribution',
   'optimization_risk_decomposition',
   'optimization_strategy_generation',
   'optimization_stress_testing',
   'optimization_implementation',
+  'optimization_esg',
 ];
 
 const AnalysisProgressCard = ({ pending, isConnected }) => {
